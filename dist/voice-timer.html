@@ -1,0 +1,2945 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" id="meta-theme-color" content="#00e5ff">
+  <meta name="description" content="Speaking Timer & Stopwatch — High-precision voice announcements, customizable LED fonts, and OLED neon themes.">
+  <title>Speaking Timer & Stopwatch</title>
+
+  <!-- PWA Manifest -->
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2308090d' stroke='%2300e5ff' stroke-width='4'/><text x='50' y='65' font-size='45' text-anchor='middle' fill='%2300e5ff' font-family='sans-serif' font-weight='bold'>⏱️</text></svg>">
+
+  <!-- Google Fonts: 8 Distinct Typography Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=Montserrat:wght@800;900&family=Orbitron:wght@600;800;900&family=Permanent+Marker&family=Share+Tech+Mono&family=Bebas+Neue&family=VT323&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            theme: 'var(--primary)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Stylesheet -->
+  
+<style>
+/* Speaking Timer & Stopwatch — Custom OLED & Glassmorphism Styles */
+
+:root {
+  /* Default Theme: Electric Cyan */
+  --primary: #00e5ff;
+  --primary-glow: rgba(0, 229, 255, 0.45);
+  --primary-glow-subtle: rgba(0, 229, 255, 0.15);
+  --primary-rgb: 0, 229, 255;
+  --bg-color: #08090d;
+  --panel-bg: rgba(18, 20, 28, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text-dim: #94a3b8;
+  --digit-off: rgba(255, 255, 255, 0.05);
+}
+
+/* Theme definitions */
+[data-theme="cyan"] {
+  --primary: #00e5ff;
+  --primary-glow: rgba(0, 229, 255, 0.45);
+  --primary-glow-subtle: rgba(0, 229, 255, 0.15);
+  --primary-rgb: 0, 229, 255;
+}
+
+[data-theme="amber"] {
+  --primary: #ffb703;
+  --primary-glow: rgba(255, 183, 3, 0.45);
+  --primary-glow-subtle: rgba(255, 183, 3, 0.15);
+  --primary-rgb: 255, 183, 3;
+}
+
+[data-theme="lime"] {
+  --primary: #39ff14;
+  --primary-glow: rgba(57, 255, 20, 0.45);
+  --primary-glow-subtle: rgba(57, 255, 20, 0.15);
+  --primary-rgb: 57, 255, 20;
+}
+
+[data-theme="purple"] {
+  --primary: #d946ef;
+  --primary-glow: rgba(217, 70, 239, 0.45);
+  --primary-glow-subtle: rgba(217, 70, 239, 0.15);
+  --primary-rgb: 217, 70, 239;
+}
+
+[data-theme="crimson"] {
+  --primary: #ff0055;
+  --primary-glow: rgba(255, 0, 85, 0.45);
+  --primary-glow-subtle: rgba(255, 0, 85, 0.15);
+  --primary-rgb: 255, 0, 85;
+}
+
+[data-theme="orange"] {
+  --primary: #ff6b00;
+  --primary-glow: rgba(255, 107, 0, 0.45);
+  --primary-glow-subtle: rgba(255, 107, 0, 0.15);
+  --primary-rgb: 255, 107, 0;
+}
+
+[data-theme="pink"] {
+  --primary: #ff2a8d;
+  --primary-glow: rgba(255, 42, 141, 0.45);
+  --primary-glow-subtle: rgba(255, 42, 141, 0.15);
+  --primary-rgb: 255, 42, 141;
+}
+
+[data-theme="white"] {
+  --primary: #f8fafc;
+  --primary-glow: rgba(248, 250, 252, 0.4);
+  --primary-glow-subtle: rgba(248, 250, 252, 0.15);
+  --primary-rgb: 248, 250, 252;
+}
+
+/* Font Families */
+.font-orbitron { font-family: 'Orbitron', monospace, sans-serif; }
+.font-segment { font-family: 'Share Tech Mono', monospace, sans-serif; }
+.font-pixel { font-family: 'VT323', monospace, monospace; }
+.font-stencil { font-family: 'Black Ops One', cursive, sans-serif; }
+.font-sport { font-family: 'Chakra Petch', sans-serif; }
+.font-marker { font-family: 'Permanent Marker', cursive, sans-serif; }
+.font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+.font-modern { font-family: 'Montserrat', sans-serif; font-weight: 800; }
+
+/* Background radial gradient glow */
+body {
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(circle at 50% 15%, var(--primary-glow-subtle) 0%, transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(20, 24, 38, 0.5) 0%, transparent 50%);
+  color: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+}
+
+.glass-panel-elevated {
+  background: rgba(24, 27, 38, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* Dynamic Primary Color Helpers */
+.text-theme {
+  color: var(--primary);
+}
+
+.bg-theme {
+  background-color: var(--primary);
+}
+
+.border-theme {
+  border-color: var(--primary);
+}
+
+.glow-text {
+  text-shadow: 0 0 16px var(--primary-glow), 0 0 32px var(--primary-glow-subtle);
+}
+
+.glow-box {
+  box-shadow: 0 0 25px var(--primary-glow);
+}
+
+.glow-box-subtle {
+  box-shadow: 0 0 15px var(--primary-glow-subtle);
+}
+
+/* Big digit display */
+.digit-display {
+  color: var(--primary);
+  text-shadow: 0 0 20px var(--primary-glow), 0 0 40px var(--primary-glow-subtle);
+  line-height: 1;
+}
+
+/* Pulsing Start & Running Buttons */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 18px rgba(52, 211, 153, 0);
+  }
+  100% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+
+@keyframes pulse-amber {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 18px rgba(251, 191, 36, 0);
+  }
+  100% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
+
+.btn-running {
+  animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.btn-paused {
+  animation: pulse-amber 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+/* Pre-start Countdown Flash */
+@keyframes count-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-count-pop {
+  animation: count-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Safe areas for mobile devices */
+.safe-pb {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+.safe-pt {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* Transitions */
+.tab-indicator {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile Toggle Switch */
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+.toggle-checkbox:checked + .toggle-label {
+  background-color: var(--primary-glow-subtle);
+  border-color: var(--primary);
+}
+
+</style>
+</head>
+<body class="flex flex-col justify-between max-w-lg mx-auto px-4 safe-pt safe-pb antialiased">
+
+  <!-- Top Navigation Header -->
+  <header class="pt-2 pb-3">
+    <!-- Top Action Icons Bar -->
+    <div class="flex items-center justify-between mb-3 px-1">
+      <div class="flex items-center gap-2">
+        <button id="btn-open-menu" data-open-modal="settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <span class="text-sm font-semibold tracking-wide text-gray-200">Voice Timer</span>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <!-- Global Mute Toggle -->
+        <button id="btn-header-mute" title="Mute/Unmute Speech & Audio" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i id="header-mute-icon" data-lucide="volume-2" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Theme Palette -->
+        <button id="btn-open-theme" data-open-modal="theme" title="Color Themes" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="palette" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Font Selector -->
+        <button id="btn-open-font" data-open-modal="font" title="Display Fonts" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95 font-mono font-bold text-sm">
+          <span class="w-5 h-5 flex items-center justify-center">A</span>
+        </button>
+
+        <!-- Fullscreen -->
+        <button id="btn-fullscreen" title="Fullscreen Mode" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="maximize" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Settings Gear -->
+        <button id="btn-open-settings" data-open-modal="settings" title="Settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="settings" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Segment Switcher (Timer / Stopwatch) -->
+    <div class="relative p-1 rounded-2xl glass-panel flex items-center">
+      <div id="tab-indicator" class="tab-indicator absolute top-1 left-1 bottom-1 w-[calc(50%-4px)] bg-white/10 border border-white/10 rounded-xl"></div>
+      
+      <button id="tab-timer-btn" class="relative z-10 flex-1 py-2.5 flex items-center justify-center gap-2 text-sm text-theme font-bold transition">
+        <i data-lucide="hourglass" class="w-4 h-4"></i>
+        <span>Timer</span>
+      </button>
+
+      <button id="tab-stopwatch-btn" class="relative z-10 flex-1 py-2.5 flex items-center justify-center gap-2 text-sm text-gray-400 font-medium transition">
+        <i data-lucide="timer" class="w-4 h-4"></i>
+        <span>Stopwatch</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: TIMER VIEW                                                  -->
+  <!-- ========================================================================= -->
+  <main id="timer-section" class="flex-1 flex flex-col justify-between py-2 space-y-3.5">
+    
+    <!-- Big Digital Display Card -->
+    <div class="relative flex flex-col items-center justify-center py-5 px-4 rounded-3xl glass-panel-elevated border border-white/10 shadow-2xl overflow-hidden group">
+      <!-- Ambient Glow Behind Digits -->
+      <div class="absolute inset-0 bg-radial from-transparent to-transparent pointer-events-none opacity-40"></div>
+
+      <!-- Status Indicator Badge (READY / RUNNING / PAUSED / TIME'S UP) -->
+      <div id="timer-status-badge" class="mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-400">
+        <span id="timer-status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+        <span id="timer-status-text">READY</span>
+      </div>
+
+      <!-- Main Digits (HH : MM : SS) -->
+      <div id="open-keypad-btn" title="Tap to set exact time" class="cursor-pointer select-none flex items-baseline justify-center gap-1 sm:gap-2 digit-display font-stencil text-6xl sm:text-7xl font-extrabold tracking-tight active:scale-98 transition">
+        <div class="flex flex-col items-center">
+          <span id="timer-hours">00</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">h</span>
+        </div>
+        <span class="opacity-75 text-5xl sm:text-6xl self-center -mt-3">:</span>
+        <div class="flex flex-col items-center">
+          <span id="timer-minutes">01</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">m</span>
+        </div>
+        <span class="opacity-75 text-5xl sm:text-6xl self-center -mt-3">:</span>
+        <div class="flex flex-col items-center">
+          <span id="timer-seconds">00</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">s</span>
+        </div>
+      </div>
+
+      <!-- Linear Progress Bar -->
+      <div class="w-full h-1.5 bg-white/10 rounded-full mt-4 overflow-hidden">
+        <div id="timer-progress-bar" class="h-full bg-theme transition-all duration-300 rounded-full" style="width: 100%;"></div>
+      </div>
+
+      <!-- Edit Time Hint -->
+      <div class="mt-2 text-[11px] text-gray-400 flex items-center gap-1">
+        <i data-lucide="edit-3" class="w-3 h-3"></i>
+        <span>Tap digits to customize duration</span>
+      </div>
+    </div>
+
+    <!-- MAIN CONTROLS: DIRECTLY UNDER THE CLOCK -->
+    <div class="flex items-center justify-between px-2 pt-1 pb-1">
+      <button id="timer-reset-btn" class="px-5 py-3 rounded-2xl glass-panel text-sm font-semibold text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 flex items-center gap-1.5 shadow-md">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        <span>Reset</span>
+      </button>
+
+      <!-- Giant Floating Glowing Action Button -->
+      <button id="timer-play-btn" aria-label="Play/Pause" class="w-20 h-20 rounded-full bg-theme text-black font-extrabold flex items-center justify-center glow-box transition active:scale-90 hover:brightness-110 shadow-2xl">
+        <svg class="w-8 h-8 fill-current translate-x-0.5" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+      </button>
+
+      <button id="timer-clear-btn" class="px-5 py-3 rounded-2xl glass-panel text-sm font-semibold text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 flex items-center gap-1.5 shadow-md">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+        <span>Clear</span>
+      </button>
+    </div>
+
+    <!-- Quick Add Time Buttons -->
+    <div class="grid grid-cols-5 gap-1.5">
+      <button data-add-time="10" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+10s</button>
+      <button data-add-time="30" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+30s</button>
+      <button data-add-time="60" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+1m</button>
+      <button data-add-time="300" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+5m</button>
+      <button data-add-time="600" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+10m</button>
+    </div>
+
+    <!-- Quick Settings & Voice Bar -->
+    <div class="p-3 rounded-2xl glass-panel space-y-2.5">
+      <!-- Top row: Pre-countdown & Interval -->
+      <div class="flex items-center justify-between text-xs gap-2">
+        <div class="flex items-center gap-1.5">
+          <span class="text-gray-300">Countdown before starting:</span>
+          <select id="timer-precount-select" class="bg-black/50 border border-white/10 text-theme text-xs rounded-lg px-2 py-1 outline-none focus:border-theme">
+            <option value="0">Off (0s)</option>
+            <option value="3">3s</option>
+            <option value="5">5s</option>
+            <option value="10">10s</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <label class="flex items-center gap-1 cursor-pointer select-none">
+            <input type="checkbox" id="timer-sound-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+            <i data-lucide="whistle" class="w-3.5 h-3.5 text-gray-300"></i>
+          </label>
+        </div>
+      </div>
+
+      <!-- Second row: Interval Checkbox & Speaking Checkbox -->
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-white/5">
+        <!-- Interval Speaking -->
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="timer-interval-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+          <span class="text-gray-200">Interval</span>
+          <select id="timer-interval-select" class="bg-black/50 border border-white/10 text-theme text-xs rounded-lg px-1.5 py-0.5 outline-none focus:border-theme ml-auto">
+            <option value="5">5s</option>
+            <option value="10" selected>10s</option>
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+            <option value="60">1m</option>
+            <option value="120">2m</option>
+            <option value="300">5m</option>
+          </select>
+        </label>
+
+        <!-- Speaking Voice Toggle -->
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="timer-speaking-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+          <span class="text-gray-200">Speaking</span>
+          <i data-lucide="mic" class="w-3.5 h-3.5 text-theme ml-auto"></i>
+        </label>
+      </div>
+
+      <!-- Third row: Countdown & Vibration -->
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-white/5">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="timer-countdown-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+          <span class="text-gray-300">5s Countdown</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="timer-vibrate-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+          <span class="text-gray-300">Vibration</span>
+          <i data-lucide="smartphone-nfc" class="w-3.5 h-3.5 text-gray-400 ml-auto"></i>
+        </label>
+      </div>
+    </div>
+
+    <!-- Presets Section -->
+    <div class="space-y-1.5">
+      <div class="flex items-center justify-between text-xs px-1 text-gray-400">
+        <span class="font-medium">Quick Presets</span>
+        <button id="add-preset-btn" class="text-theme hover:underline flex items-center gap-1 font-semibold">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+          <span>Save Current</span>
+        </button>
+      </div>
+      <div id="presets-container" class="grid grid-cols-2 gap-2.5">
+        <!-- Preset cards dynamically injected (2 per row) -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: STOPWATCH VIEW                                              -->
+  <!-- ========================================================================= -->
+  <main id="stopwatch-section" class="hidden flex-1 flex flex-col justify-between py-2 space-y-3.5">
+    
+    <!-- Big Stopwatch Display Card -->
+    <div class="relative flex flex-col items-center justify-center py-5 px-4 rounded-3xl glass-panel-elevated border border-white/10 shadow-2xl overflow-hidden">
+      <!-- Status Indicator Badge (READY / RUNNING / PAUSED) -->
+      <div id="sw-status-badge" class="mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-400">
+        <span id="sw-status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+        <span id="sw-status-text">READY</span>
+      </div>
+
+      <div class="flex items-baseline justify-center digit-display font-stencil font-extrabold tracking-tight">
+        <span id="sw-time" class="text-6xl sm:text-7xl">00:00</span>
+        <span id="sw-ms" class="text-3xl sm:text-4xl text-theme opacity-80 font-mono ml-1">.00</span>
+      </div>
+      <div class="mt-2 text-[11px] text-gray-400 font-mono tracking-wider">
+        MINUTES : SECONDS . CENTISECONDS
+      </div>
+    </div>
+
+    <!-- MAIN CONTROLS: DIRECTLY UNDER STOPWATCH CLOCK -->
+    <div class="flex items-center justify-between px-2 pt-1 pb-1">
+      <button id="sw-reset-btn" class="px-4 py-3 rounded-2xl glass-panel text-sm font-semibold text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 shadow-md">
+        Reset
+      </button>
+
+      <!-- Giant Floating Glowing Action Button -->
+      <button id="sw-play-btn" aria-label="Play/Pause" class="w-20 h-20 rounded-full bg-theme text-black font-extrabold flex items-center justify-center glow-box transition active:scale-90 hover:brightness-110 shadow-2xl">
+        <svg class="w-8 h-8 fill-current translate-x-0.5" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+      </button>
+
+      <button id="sw-lap-btn" disabled class="px-4 py-3 rounded-2xl glass-panel text-sm font-semibold text-theme hover:border-theme transition active:scale-95 opacity-50 cursor-not-allowed shadow-md">
+        Lap
+      </button>
+
+      <button data-open-modal="share" class="p-3 rounded-2xl glass-panel text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 shadow-md" title="Share Laps">
+        <i data-lucide="share-2" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Stopwatch Quick Options Bar -->
+    <div class="p-3 rounded-2xl glass-panel space-y-2.5">
+      <!-- Row 1: Interval Speaking & Speak Lap Time -->
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-interval-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-200">Interval</span>
+          <select id="sw-interval-select" class="bg-black/50 border border-white/10 text-theme text-xs rounded-lg px-1.5 py-0.5 outline-none focus:border-theme ml-auto">
+            <option value="5" selected>5s</option>
+            <option value="10">10s</option>
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+            <option value="60">1m</option>
+          </select>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-speaking-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-200">Speaking</span>
+          <i data-lucide="mic" class="w-3.5 h-3.5 text-theme ml-auto"></i>
+        </label>
+      </div>
+
+      <!-- Row 2: Speak Lap & Speak Total -->
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-white/5">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-speak-lap-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-300">Speak Lap Time</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-speak-total-toggle" class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-300">Speak Lap Total</span>
+        </label>
+      </div>
+
+      <!-- Row 3: Vibration -->
+      <div class="flex items-center justify-between text-xs pt-1 border-t border-white/5">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-vibrate-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-300">Vibrate on Lap & Interval</span>
+        </label>
+        <i data-lucide="smartphone-nfc" class="w-3.5 h-3.5 text-gray-400"></i>
+      </div>
+    </div>
+
+    <!-- Laps Analytics & List Card -->
+    <div class="flex-1 rounded-2xl glass-panel p-3 flex flex-col min-h-[150px] max-h-[220px]">
+      <!-- Stats summary banner -->
+      <div id="sw-lap-stats" class="hidden grid grid-cols-3 gap-2 pb-2 mb-2 border-b border-white/10 text-center text-xs">
+        <div>
+          <div class="text-[10px] text-gray-400">Fastest</div>
+          <div id="sw-fastest-lap" class="font-mono font-bold text-emerald-400">-</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-gray-400">Slowest</div>
+          <div id="sw-slowest-lap" class="font-mono font-bold text-rose-400">-</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-gray-400">Total Laps</div>
+          <div id="sw-total-laps" class="font-mono font-bold text-gray-200">0</div>
+        </div>
+      </div>
+
+      <!-- Scrollable Lap Items -->
+      <div id="sw-laps-empty" class="flex-1 flex flex-col items-center justify-center text-gray-500 text-xs py-4">
+        <i data-lucide="flag" class="w-6 h-6 mb-1 opacity-40"></i>
+        <span>No laps recorded yet</span>
+      </div>
+
+      <div id="sw-laps-container" class="flex-1 overflow-y-auto space-y-2 pr-1">
+        <!-- Lap rows dynamically injected -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: FONT SELECTOR (Matching Screenshot 1)                              -->
+  <!-- ========================================================================= -->
+  <div id="modal-font" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] flex flex-col animate-in fade-in slide-in-from-bottom duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="type" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100">Digit Font Style</h2>
+        </div>
+        <button data-close-modal="font" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-2.5 pr-1">
+        <!-- 1. Stencil / Military (From Screenshot 1) -->
+        <button data-font="stencil" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Military Stencil</div>
+            <div class="font-stencil text-2xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 2. Retro Pixel Matrix (VT323) -->
+        <button data-font="pixel" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">8-Bit Pixel Matrix</div>
+            <div class="font-pixel text-3xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 3. 7-Segment LCD Clock (Share Tech Mono) -->
+        <button data-font="segment" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">7-Segment Monospace LCD</div>
+            <div class="font-segment text-2xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 4. Sci-Fi Futuristic (Orbitron) -->
+        <button data-font="orbitron" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Sci-Fi Orbitron LED</div>
+            <div class="font-orbitron text-xl font-black text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 5. Heavy Sport Display (Chakra Petch) -->
+        <button data-font="sport" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Sport Chunky Display</div>
+            <div class="font-sport text-2xl font-bold text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 6. Athletic Gym Timer (Bebas Neue) -->
+        <button data-font="bebas" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Athletic Bold Timer</div>
+            <div class="font-bebas text-3xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 7. Street Brush / Marker (Permanent Marker) -->
+        <button data-font="marker" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Handwritten Marker</div>
+            <div class="font-marker text-xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 8. Clean Modern Heavy (Montserrat) -->
+        <button data-font="modern" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Modern Minimalist Heavy</div>
+            <div class="font-modern text-2xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: COLOR THEME PALETTE                                                -->
+  <!-- ========================================================================= -->
+  <div id="modal-theme" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="palette" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100">OLED Color Themes</h2>
+        </div>
+        <button data-close-modal="theme" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-4 gap-3">
+        <!-- Cyan -->
+        <button data-theme="cyan" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#00e5ff] shadow-[0_0_15px_rgba(0,229,255,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Cyan</span>
+        </button>
+
+        <!-- Amber Gold -->
+        <button data-theme="amber" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#ffb703] shadow-[0_0_15px_rgba(255,183,3,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Amber</span>
+        </button>
+
+        <!-- Neon Lime -->
+        <button data-theme="lime" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#39ff14] shadow-[0_0_15px_rgba(57,255,20,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Lime</span>
+        </button>
+
+        <!-- Cyber Purple -->
+        <button data-theme="purple" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#d946ef] shadow-[0_0_15px_rgba(217,70,239,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Purple</span>
+        </button>
+
+        <!-- Crimson -->
+        <button data-theme="crimson" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#ff0055] shadow-[0_0_15px_rgba(255,0,85,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Crimson</span>
+        </button>
+
+        <!-- Sunset Orange -->
+        <button data-theme="orange" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#ff6b00] shadow-[0_0_15px_rgba(255,107,0,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Orange</span>
+        </button>
+
+        <!-- Sakura Pink -->
+        <button data-theme="pink" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#ff2a8d] shadow-[0_0_15px_rgba(255,42,141,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Pink</span>
+        </button>
+
+        <!-- Ice White -->
+        <button data-theme="white" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#f8fafc] shadow-[0_0_15px_rgba(248,250,252,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">White</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: SETTINGS (Matching Screenshots 2 & 3)                             -->
+  <!-- ========================================================================= -->
+  <div id="modal-settings" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="sliders" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100">Settings</h2>
+        </div>
+        <button data-close-modal="settings" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs text-gray-300">
+        <!-- Section: Timer Running -->
+        <div>
+          <div class="text-theme font-bold mb-2 uppercase tracking-wider text-[11px]">Timer Running</div>
+          <div class="space-y-2.5 bg-neutral-800/60 p-3 rounded-2xl border border-white/5">
+            <!-- Keep screen on -->
+            <label class="flex items-center justify-between cursor-pointer">
+              <div class="flex items-center gap-2">
+                <i data-lucide="eye" class="w-4 h-4 text-theme"></i>
+                <div>
+                  <div class="text-gray-100 font-medium">Keep the screen on</div>
+                  <div class="text-[10px] text-gray-400">Keep screen awake while timer is running</div>
+                </div>
+              </div>
+              <input type="checkbox" id="setting-wakelock" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+            </label>
+
+            <!-- Speak Events -->
+            <label class="flex items-center justify-between cursor-pointer pt-2 border-t border-white/5">
+              <div class="flex items-center gap-2">
+                <i data-lucide="volume-2" class="w-4 h-4 text-theme"></i>
+                <div>
+                  <div class="text-gray-100 font-medium">Speak Events</div>
+                  <div class="text-[10px] text-gray-400">Announce start, pause, resume, and reset</div>
+                </div>
+              </div>
+              <input type="checkbox" id="setting-speak-events" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+            </label>
+
+            <!-- Metronome Ticks -->
+            <label class="flex items-center justify-between cursor-pointer pt-2 border-t border-white/5">
+              <div class="flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-theme"></i>
+                <div>
+                  <div class="text-gray-100 font-medium">Metronome Tick</div>
+                  <div class="text-[10px] text-gray-400">Subtle click sound every second</div>
+                </div>
+              </div>
+              <input type="checkbox" id="setting-metronome" class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+            </label>
+          </div>
+        </div>
+
+        <!-- Section: Voice & Speech Engine -->
+        <div>
+          <div class="text-theme font-bold mb-2 uppercase tracking-wider text-[11px]">Speech & Voice Engine</div>
+          <div class="space-y-3 bg-neutral-800/60 p-3 rounded-2xl border border-white/5">
+            <!-- Voice selection dropdown -->
+            <div>
+              <label class="block text-gray-200 font-medium mb-1">Voice Audio Output</label>
+              <select id="setting-voice-select" class="w-full bg-black/60 border border-white/10 text-gray-200 rounded-xl px-3 py-2 outline-none focus:border-theme text-xs truncate">
+                <option>Loading device voices...</option>
+              </select>
+            </div>
+
+            <!-- Speech Speed Slider -->
+            <div>
+              <div class="flex justify-between text-gray-200 mb-1">
+                <span>Speaking Rate / Speed</span>
+                <span id="setting-speech-rate-val" class="font-mono text-theme">1.0x</span>
+              </div>
+              <input type="range" id="setting-speech-rate" min="0.6" max="1.8" step="0.1" value="1.0" class="w-full accent-cyan-400 cursor-pointer">
+            </div>
+
+            <!-- Speech Pitch Slider -->
+            <div>
+              <div class="flex justify-between text-gray-200 mb-1">
+                <span>Voice Pitch</span>
+                <span id="setting-speech-pitch-val" class="font-mono text-theme">1.0x</span>
+              </div>
+              <input type="range" id="setting-speech-pitch" min="0.6" max="1.4" step="0.1" value="1.0" class="w-full accent-cyan-400 cursor-pointer">
+            </div>
+
+            <!-- Test Voice Button -->
+            <button id="btn-test-voice" class="w-full py-2 rounded-xl glass-panel text-theme font-semibold hover:border-theme transition flex items-center justify-center gap-1.5 active:scale-98">
+              <i data-lucide="play-circle" class="w-4 h-4"></i>
+              <span>Test Voice Output</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section: Timer Expired -->
+        <div>
+          <div class="text-theme font-bold mb-2 uppercase tracking-wider text-[11px]">Timer Expired</div>
+          <div class="space-y-2.5 bg-neutral-800/60 p-3 rounded-2xl border border-white/5">
+            <!-- Timer Expired Sound -->
+            <div>
+              <label class="block text-gray-200 font-medium mb-1">Completion Sound</label>
+              <select id="setting-expiry-sound" class="w-full bg-black/60 border border-white/10 text-gray-200 rounded-xl px-3 py-2 outline-none focus:border-theme text-xs">
+                <option value="whistle">Referee Whistle 📢</option>
+                <option value="bell">Boxing Ring Bell 🥊</option>
+                <option value="alarm">Digital Sports Alarm 🚨</option>
+                <option value="chime">Gentle Marimba Chime ✨</option>
+                <option value="none">Mute / Voice Only 🔇</option>
+              </select>
+            </div>
+
+            <!-- Custom Speaking Phrase -->
+            <div>
+              <label class="block text-gray-200 font-medium mb-1">Speaking Text</label>
+              <input type="text" id="setting-expiry-text" value="Timer has expired!" class="w-full bg-black/60 border border-white/10 text-gray-200 rounded-xl px-3 py-2 outline-none focus:border-theme text-xs">
+            </div>
+          </div>
+        </div>
+
+        <!-- Open on phone quick helper -->
+        <button data-open-modal="share" class="w-full py-2.5 rounded-2xl bg-white/10 text-gray-200 hover:text-white flex items-center justify-center gap-2 font-medium">
+          <i data-lucide="smartphone" class="w-4 h-4 text-theme"></i>
+          <span>Open on Phone via QR Code</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: TIME KEYPAD INPUT                                                 -->
+  <!-- ========================================================================= -->
+  <div id="modal-keypad" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-sm bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 animate-in fade-in slide-in-from-bottom duration-200">
+      <div class="flex items-center justify-between pb-2 mb-2">
+        <h3 class="text-sm font-bold text-gray-200">Set Timer Duration</h3>
+        <button data-close-modal="keypad" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Keypad Display -->
+      <div class="p-4 rounded-2xl bg-black/60 border border-white/10 text-center font-stencil text-3xl font-bold tracking-widest mb-4">
+        <div id="keypad-display-digits" class="flex justify-center items-center gap-1">
+          <span class="text-gray-500">00</span><span class="text-xs text-gray-500 font-sans">h</span>
+          <span class="text-gray-500">00</span><span class="text-xs text-gray-500 font-sans">m</span>
+          <span class="text-gray-500">00</span><span class="text-xs text-gray-500 font-sans">s</span>
+        </div>
+      </div>
+
+      <!-- Keypad Digits Grid -->
+      <div class="grid grid-cols-3 gap-2 mb-4">
+        <button data-keypad-val="1" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">1</button>
+        <button data-keypad-val="2" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">2</button>
+        <button data-keypad-val="3" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">3</button>
+        <button data-keypad-val="4" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">4</button>
+        <button data-keypad-val="5" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">5</button>
+        <button data-keypad-val="6" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">6</button>
+        <button data-keypad-val="7" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">7</button>
+        <button data-keypad-val="8" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">8</button>
+        <button data-keypad-val="9" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">9</button>
+        <button id="keypad-clear-btn" class="py-3.5 rounded-2xl glass-panel text-sm font-semibold text-gray-400 hover:text-white transition active:scale-95">C</button>
+        <button data-keypad-val="0" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">0</button>
+        <button id="keypad-backspace-btn" class="py-3.5 rounded-2xl glass-panel text-sm font-semibold text-gray-400 hover:text-white transition active:scale-95 flex items-center justify-center">
+          <i data-lucide="delete" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <button id="keypad-set-btn" class="w-full py-3.5 rounded-2xl bg-theme text-black font-bold text-base glow-box transition active:scale-98">
+        Set Timer
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: SHARE & QR CODE / OPEN ON PHONE                                   -->
+  <!-- ========================================================================= -->
+  <div id="modal-share" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="smartphone" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100">Open on Phone / Share</h2>
+        </div>
+        <button data-close-modal="share" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="text-center space-y-3">
+        <p class="text-xs text-gray-300">Scan this QR code with your phone camera to open and use instantly:</p>
+        <div id="qr-code-box" class="py-2 flex flex-col items-center">
+          <!-- QR code image injected here -->
+        </div>
+
+        <textarea id="share-text-area" rows="3" readonly class="w-full bg-black/60 border border-white/10 text-gray-300 rounded-xl p-2.5 text-xs font-mono"></textarea>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btn-copy-share" class="py-2.5 rounded-xl glass-panel text-xs font-bold text-theme hover:border-theme transition flex items-center justify-center gap-1.5">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+            <span>Copy Text</span>
+          </button>
+          <button id="btn-native-share" class="py-2.5 rounded-xl bg-theme text-black text-xs font-bold transition flex items-center justify-center gap-1.5">
+            <i data-lucide="share-2" class="w-4 h-4"></i>
+            <span>Share Sheet</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- PRE-START COUNTDOWN OVERLAY                                               -->
+  <!-- ========================================================================= -->
+  <div id="precount-overlay" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex flex-col items-center justify-center select-none">
+    <div class="text-sm font-semibold tracking-widest text-gray-400 uppercase mb-4">Get Ready</div>
+    <div id="precount-number" class="text-9xl font-stencil text-theme font-black glow-text">
+      3
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  
+  
+  
+  
+<script>
+/* === audio.js === */
+/**
+ * Speaking Timer & Stopwatch — Audio & Speech Synthesis Engine
+ * Provides synthesized sound effects via Web Audio API (no external MP3 assets required)
+ * and rich multi-language voice announcements via Web Speech API.
+ */
+
+class SoundEngine {
+  constructor() {
+    this.audioCtx = null;
+    this.isMuted = false;
+    this.volume = 0.85;
+    this.speechSynthesis = window.speechSynthesis;
+    this.voices = [];
+    this.selectedVoice = null;
+    this._userPickedVoice = null; // Voice name explicitly chosen by the user
+    this.speechRate = 1.0;
+    this.speechPitch = 1.0;
+    this.speechVolume = 1.0;
+    this.speakEvents = true;
+
+    this.initAudioContext = this.initAudioContext.bind(this);
+
+    // Try immediately — works on Firefox & Safari
+    this.loadVoices();
+
+    if (this.speechSynthesis) {
+      // onvoiceschanged works on Chrome desktop & iOS Chrome
+      this.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+
+      // Android Chrome fallback: poll until voices appear (onvoiceschanged can silently never fire)
+      if (this.voices.length === 0) {
+        let attempts = 0;
+        const poll = setInterval(() => {
+          this.loadVoices();
+          attempts++;
+          if (this.voices.length > 0 || attempts > 40) clearInterval(poll);
+        }, 250);
+      }
+    }
+
+    // Unlock audio on first user gesture
+    window.addEventListener('click', this.initAudioContext, { once: true });
+    window.addEventListener('touchstart', this.initAudioContext, { once: true });
+  }
+
+  initAudioContext() {
+    if (!this.audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        this.audioCtx = new AudioContextClass();
+      }
+    }
+    if (this.audioCtx && this.audioCtx.state === 'suspended') {
+      this.audioCtx.resume();
+    }
+  }
+
+  loadVoices() {
+    if (!this.speechSynthesis) return;
+    const fresh = this.speechSynthesis.getVoices();
+    if (fresh.length === 0) return; // Not ready yet — polling fallback will retry
+    this.voices = fresh;
+
+    // Default to an English voice (only if no voice was explicitly chosen by the user)
+    if (!this._userPickedVoice) {
+      const preferred =
+        this.voices.find(v => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel')) && v.lang.startsWith('en'))
+        || this.voices.find(v => v.lang.startsWith('en'))
+        || this.voices[0];
+      this.selectedVoice = preferred;
+    } else {
+      // Re-resolve by name — voice objects are recreated on each getVoices() call on Android
+      const match = this.voices.find(v => v.name === this._userPickedVoice);
+      if (match) {
+        this.selectedVoice = match;
+        this._userPickedLang = match.lang; // Keep lang in sync
+      }
+    }
+
+    // Notify the UI to refresh the dropdown (hook set by app.js after DOM ready)
+    if (typeof this.onVoicesLoaded === 'function') this.onVoicesLoaded(this.voices);
+  }
+
+  setMute(mute) {
+    this.isMuted = mute;
+    if (mute && this.speechSynthesis) {
+      this.speechSynthesis.cancel();
+    }
+  }
+
+  // --- Web Audio Synthesizer Effects ---
+
+  /**
+   * Referee Whistle with realistic dual-frequency modulation
+   */
+  playWhistle() {
+    if (this.isMuted) return;
+    this.initAudioContext();
+    if (!this.audioCtx) return;
+
+    const ctx = this.audioCtx;
+    const now = ctx.currentTime;
+
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    // Dual frequencies for whistle resonance
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(2600, now);
+    osc1.frequency.exponentialRampToValueAtTime(2950, now + 0.15);
+    osc1.frequency.exponentialRampToValueAtTime(2600, now + 0.35);
+
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(2850, now);
+    osc2.frequency.exponentialRampToValueAtTime(3200, now + 0.15);
+    osc2.frequency.exponentialRampToValueAtTime(2850, now + 0.35);
+
+    // Whistle tremolo
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(30, now); // 30Hz flutter
+    lfoGain.gain.setValueAtTime(150, now);
+    lfo.connect(osc1.frequency);
+    lfo.connect(osc2.frequency);
+
+    gainNode.gain.setValueAtTime(0.01, now);
+    gainNode.gain.linearRampToValueAtTime(0.4 * this.volume, now + 0.05);
+    gainNode.gain.setValueAtTime(0.4 * this.volume, now + 0.3);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    lfo.start(now);
+    osc1.start(now);
+    osc2.start(now);
+
+    lfo.stop(now + 0.45);
+    osc1.stop(now + 0.45);
+    osc2.stop(now + 0.45);
+  }
+
+  /**
+   * Boxing Ring Bell / Gong
+   */
+  playBell() {
+    if (this.isMuted) return;
+    this.initAudioContext();
+    if (!this.audioCtx) return;
+
+    const ctx = this.audioCtx;
+    const now = ctx.currentTime;
+
+    const frequencies = [800, 1100, 1600, 2400];
+    frequencies.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = i === 0 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0.3 / (i + 1) * this.volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 1.8);
+    });
+  }
+
+  /**
+   * Digital Beep (for button taps, intervals, or countdowns)
+   */
+  playBeep(freq = 880, duration = 0.1, type = 'sine') {
+    if (this.isMuted) return;
+    this.initAudioContext();
+    if (!this.audioCtx) return;
+
+    const ctx = this.audioCtx;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, now);
+
+    gain.gain.setValueAtTime(0.25 * this.volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + duration);
+  }
+
+  /**
+   * Double beep for start / pause
+   */
+  playDoubleBeep(high = true) {
+    const f1 = high ? 880 : 660;
+    const f2 = high ? 1320 : 440;
+    this.playBeep(f1, 0.08);
+    setTimeout(() => this.playBeep(f2, 0.12), 100);
+  }
+
+  /**
+   * Radar Ping
+   */
+  playRadar() {
+    if (this.isMuted) return;
+    this.initAudioContext();
+    if (!this.audioCtx) return;
+
+    const ctx = this.audioCtx;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1400, now);
+    osc.frequency.exponentialRampToValueAtTime(400, now + 0.6);
+
+    gain.gain.setValueAtTime(0.3 * this.volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.6);
+  }
+
+  /**
+   * Gentle Marimba Chime
+   */
+  playChime() {
+    if (this.isMuted) return;
+    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+    notes.forEach((freq, index) => {
+      setTimeout(() => {
+        this.playBeep(freq, 0.25, 'sine');
+      }, index * 90);
+    });
+  }
+
+  /**
+   * Metronome Click
+   */
+  playClick() {
+    if (this.isMuted) return;
+    this.initAudioContext();
+    if (!this.audioCtx) return;
+
+    const ctx = this.audioCtx;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(1200, now);
+
+    gain.gain.setValueAtTime(0.12 * this.volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.03);
+  }
+
+  /**
+   * Multi-beep Alarm on Expiration
+   */
+  playAlarmPattern() {
+    if (this.isMuted) return;
+    let count = 0;
+    const interval = setInterval(() => {
+      this.playBeep(960, 0.12, 'sawtooth');
+      count++;
+      if (count >= 6) {
+        clearInterval(interval);
+      }
+    }, 180);
+  }
+
+  /**
+   * Normalize a lang tag to BCP 47 hyphen format.
+   * Android voices often report "en_AU" but utterance.lang must be "en-AU".
+   */
+  _normLang(lang) {
+    if (!lang) return lang;
+    return lang.replace(/_/g, '-');
+  }
+
+  /**
+   * Speaks the provided text via Web Speech API.
+   * Hardened for Android Chrome / Samsung quirks:
+   *  - Always cancel + delay to un-stall Android TTS queue
+   *  - Re-fetch voices live at speak-time (Android recreates objects each call)
+   *  - Normalise lang codes underscore→hyphen (BCP 47 required)
+   *  - Falls back to lang-only matching if voice object is rejected
+   */
+  speak(text, priority = false) {
+    if (this.isMuted || !this.speechSynthesis || !text) return;
+
+    // Android Chrome: synthesis queue stalls silently (especially after screen off).
+    // Always cancel before queuing — safe on all browsers.
+    this.speechSynthesis.cancel();
+
+    // 150ms delay after cancel is required on Samsung Android to prevent dropped utterance.
+    setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(text);
+
+      // Re-fetch voices fresh at speak-time: Android recreates voice objects on each call.
+      const liveVoices = this.speechSynthesis.getVoices();
+
+      // Determine the target name and lang from user choice or current default
+      const targetName = this._userPickedVoice || (this.selectedVoice && this.selectedVoice.name);
+      const targetLang = this._userPickedLang || (this.selectedVoice && this.selectedVoice.lang);
+
+      if (targetName && liveVoices.length > 0) {
+        // Primary: match by exact name (works on desktop & iOS)
+        const byName = liveVoices.find(v => v.name === targetName);
+        if (byName) {
+          utterance.voice = byName;
+          utterance.lang = this._normLang(byName.lang);
+        } else if (targetLang) {
+          // Fallback: Android often ignores voice object — match by normalised lang instead
+          const normTarget = this._normLang(targetLang);
+          const byLang = liveVoices.find(v => this._normLang(v.lang) === normTarget);
+          if (byLang) {
+            utterance.voice = byLang;
+          }
+          // Always set lang so Android TTS engine routes to the right language
+          utterance.lang = normTarget;
+        }
+      } else if (this.selectedVoice) {
+        utterance.voice = this.selectedVoice;
+        utterance.lang = this._normLang(this.selectedVoice.lang);
+      }
+
+      utterance.rate = this.speechRate;
+      utterance.pitch = this.speechPitch;
+      utterance.volume = this.speechVolume;
+
+      try {
+        this.speechSynthesis.speak(utterance);
+      } catch (e) {
+        console.warn('Speech synthesis error:', e);
+      }
+    }, 50);
+  }
+
+  /**
+   * Formats seconds into natural speaking text (e.g. 90 -> "1 minute 30 seconds")
+   */
+  formatSecondsForSpeech(totalSeconds, isRemaining = true) {
+    const s = Math.round(totalSeconds);
+    if (s <= 0) return 'Time is up!';
+
+    const hours = Math.floor(s / 3600);
+    const minutes = Math.floor((s % 3600) / 60);
+    const seconds = s % 60;
+
+    const parts = [];
+    if (hours > 0) {
+      parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+    }
+    if (minutes > 0) {
+      parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+    }
+    if (seconds > 0 || parts.length === 0) {
+      parts.push(`${seconds} ${seconds === 1 ? 'second' : 'seconds'}`);
+    }
+
+    const phrase = parts.join(' ');
+    return isRemaining ? `${phrase} remaining` : `${phrase} elapsed`;
+  }
+}
+
+// Global instance
+window.soundEngine = new SoundEngine();
+
+/* === timer.js === */
+/**
+ * Speaking Timer & Stopwatch — Timer Engine
+ * High-precision countdown timer with voice announcements, interval triggers, and presets.
+ */
+
+class SpeakingTimer {
+  constructor() {
+    this.totalDurationMs = 60000; // Default 1 minute
+    this.remainingMs = 60000;
+    this.status = 'idle'; // 'idle' | 'precount' | 'running' | 'paused' | 'completed'
+
+    this.preCountdownSec = 0; // 0, 3, 5, 10
+    this.currentPreCount = 0;
+
+    this.intervalSpeakingEnabled = true;
+    this.intervalSec = 10; // e.g. 10 seconds
+    this.lastSpokenInterval = null;
+
+    this.finalCountdownEnabled = true; // 5, 4, 3, 2, 1
+    this.lastSpokenCountdown = null;
+
+    this.vibrateEnabled = true;
+    this.soundEnabled = true;
+    this.metronomeTick = false;
+    this.expirySound = 'whistle'; // 'whistle' | 'bell' | 'alarm' | 'chime' | 'none'
+    this.expirySpeechText = 'Timer has expired!';
+
+    this.startTime = null;
+    this.expectedEndTime = null;
+    this.pauseRemaining = null;
+    this.animFrameId = null;
+
+    // Presets
+    this.presets = this.loadPresets();
+
+    // Callbacks for UI updates
+    this.onTick = null;
+    this.onStateChange = null;
+    this.onPreCountTick = null;
+    this.onComplete = null;
+  }
+
+  loadPresets() {
+    const saved = localStorage.getItem('speaking_timer_presets');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse presets', e);
+      }
+    }
+    return [
+      { id: 'p1', name: '⚡ HIIT Work', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
+      { id: 'p2', name: '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
+      { id: 'p3', name: '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
+      { id: 'p4', name: '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
+      { id: 'p5', name: '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
+      { id: 'p6', name: '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
+    ];
+  }
+
+  savePresets() {
+    localStorage.setItem('speaking_timer_presets', JSON.stringify(this.presets));
+  }
+
+  addPreset(name, durationSec, intervalSec = 10) {
+    const newPreset = {
+      id: 'p_' + Date.now(),
+      name,
+      durationSec,
+      intervalSec,
+      color: 'var(--primary)'
+    };
+    this.presets.push(newPreset);
+    this.savePresets();
+    return newPreset;
+  }
+
+  deletePreset(id) {
+    this.presets = this.presets.filter(p => p.id !== id);
+    this.savePresets();
+  }
+
+  setTime(hours, minutes, seconds) {
+    if (this.status === 'running' || this.status === 'precount') return;
+    const totalSec = (hours * 3600) + (minutes * 60) + seconds;
+    this.totalDurationMs = Math.max(1000, totalSec * 1000);
+    this.remainingMs = this.totalDurationMs;
+    this.status = 'idle';
+    this.lastSpokenInterval = null;
+    this.lastSpokenCountdown = null;
+    this.notifyTick();
+    this.notifyState();
+  }
+
+  addTime(secondsDelta) {
+    if (this.status === 'running' || this.status === 'precount') {
+      // Adjust ongoing timer
+      this.remainingMs = Math.max(1000, this.remainingMs + (secondsDelta * 1000));
+      this.totalDurationMs = Math.max(this.totalDurationMs, this.remainingMs);
+      this.expectedEndTime += (secondsDelta * 1000);
+    } else {
+      const currentSec = Math.floor(this.totalDurationMs / 1000);
+      const newSec = Math.max(5, currentSec + secondsDelta);
+      this.totalDurationMs = newSec * 1000;
+      this.remainingMs = this.totalDurationMs;
+    }
+    this.notifyTick();
+  }
+
+  start() {
+    if (this.status === 'running' || this.status === 'precount') return;
+
+    if (this.preCountdownSec > 0 && this.status === 'idle') {
+      this.startPreCountdown();
+      return;
+    }
+
+    this.runTimer();
+  }
+
+  startPreCountdown() {
+    this.status = 'precount';
+    this.currentPreCount = this.preCountdownSec;
+    this.notifyState();
+
+    const doStep = () => {
+      if (this.status !== 'precount') return;
+
+      if (this.currentPreCount > 0) {
+        if (this.onPreCountTick) this.onPreCountTick(this.currentPreCount);
+
+        // Audio & Speech
+        if (window.soundEngine) {
+          window.soundEngine.playBeep(700, 0.1);
+          window.soundEngine.speak(String(this.currentPreCount), true);
+        }
+        if (this.vibrateEnabled && navigator.vibrate) {
+          navigator.vibrate(80);
+        }
+
+        this.currentPreCount--;
+        setTimeout(doStep, 1000);
+      } else {
+        // Pre-countdown finished -> GO!
+        if (this.onPreCountTick) this.onPreCountTick('GO!');
+        if (window.soundEngine) {
+          window.soundEngine.playWhistle();
+          window.soundEngine.speak('Go!', true);
+        }
+        if (this.vibrateEnabled && navigator.vibrate) {
+          navigator.vibrate([150, 50, 150]);
+        }
+        setTimeout(() => {
+          if (this.status === 'precount') {
+            this.runTimer();
+          }
+        }, 500);
+      }
+    };
+
+    doStep();
+  }
+
+  runTimer() {
+    this.status = 'running';
+    const now = performance.now();
+    this.startTime = now;
+    this.expectedEndTime = now + this.remainingMs;
+    this.lastSpokenInterval = null;
+    this.lastSpokenCountdown = null;
+
+    if (window.soundEngine && window.soundEngine.speakEvents && this.preCountdownSec === 0) {
+      window.soundEngine.playDoubleBeep(true);
+    }
+
+    this.notifyState();
+    this.loop();
+  }
+
+  pause() {
+    if (this.status !== 'running' && this.status !== 'precount') return;
+
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
+
+    if (this.status === 'precount') {
+      this.status = 'idle';
+      this.notifyState();
+      return;
+    }
+
+    this.status = 'paused';
+    const now = performance.now();
+    this.remainingMs = Math.max(0, this.expectedEndTime - now);
+
+    if (window.soundEngine && window.soundEngine.speakEvents) {
+      window.soundEngine.playDoubleBeep(false);
+      window.soundEngine.speak('Timer paused');
+    }
+
+    this.notifyTick();
+    this.notifyState();
+  }
+
+  resume() {
+    if (this.status !== 'paused') return;
+    this.runTimer();
+  }
+
+  reset() {
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
+    this.status = 'idle';
+    this.remainingMs = this.totalDurationMs;
+    this.lastSpokenInterval = null;
+    this.lastSpokenCountdown = null;
+
+    if (window.soundEngine && window.soundEngine.speakEvents) {
+      window.soundEngine.playBeep(440, 0.08);
+    }
+
+    this.notifyTick();
+    this.notifyState();
+  }
+
+  loop() {
+    if (this.status !== 'running') return;
+
+    const now = performance.now();
+    this.remainingMs = Math.max(0, this.expectedEndTime - now);
+    const remainingSeconds = Math.ceil(this.remainingMs / 1000);
+
+    // 1. Final 5 seconds countdown trigger (5, 4, 3, 2, 1)
+    if (this.finalCountdownEnabled && remainingSeconds <= 5 && remainingSeconds >= 1) {
+      if (this.lastSpokenCountdown !== remainingSeconds) {
+        this.lastSpokenCountdown = remainingSeconds;
+        if (window.soundEngine) {
+          window.soundEngine.playBeep(880, 0.08);
+          window.soundEngine.speak(String(remainingSeconds), true);
+        }
+        if (this.vibrateEnabled && navigator.vibrate) {
+          navigator.vibrate(100);
+        }
+      }
+    }
+
+    // 2. Interval announcements (e.g. every 10s, 30s, 1m)
+    if (
+      this.intervalSpeakingEnabled &&
+      remainingSeconds > 5 &&
+      this.intervalSec > 0 &&
+      remainingSeconds % this.intervalSec === 0 &&
+      this.lastSpokenInterval !== remainingSeconds
+    ) {
+      this.lastSpokenInterval = remainingSeconds;
+      if (window.soundEngine) {
+        if (this.soundEnabled) window.soundEngine.playBeep(600, 0.1);
+        const speech = window.soundEngine.formatSecondsForSpeech(remainingSeconds, true);
+        window.soundEngine.speak(speech);
+      }
+      if (this.vibrateEnabled && navigator.vibrate) {
+        navigator.vibrate(120);
+      }
+    }
+
+    // 3. Optional Metronome Click
+    if (this.metronomeTick && remainingSeconds > 5) {
+      const wholeSec = Math.floor(remainingSeconds);
+      if (this.lastTickSec !== wholeSec) {
+        this.lastTickSec = wholeSec;
+        if (window.soundEngine) window.soundEngine.playClick();
+      }
+    }
+
+    // 4. Expiration check
+    if (this.remainingMs <= 0) {
+      this.complete();
+      return;
+    }
+
+    this.notifyTick();
+    this.animFrameId = requestAnimationFrame(() => this.loop());
+  }
+
+  complete() {
+    this.status = 'completed';
+    this.remainingMs = 0;
+    this.notifyTick();
+    this.notifyState();
+
+    // Play Expiry Sound
+    if (window.soundEngine) {
+      if (this.expirySound === 'whistle') {
+        window.soundEngine.playWhistle();
+      } else if (this.expirySound === 'bell') {
+        window.soundEngine.playBell();
+      } else if (this.expirySound === 'alarm') {
+        window.soundEngine.playAlarmPattern();
+      } else if (this.expirySound === 'chime') {
+        window.soundEngine.playChime();
+      }
+
+      // Voice Announcement
+      if (this.expirySpeechText) {
+        setTimeout(() => {
+          window.soundEngine.speak(this.expirySpeechText, true);
+        }, 400);
+      }
+    }
+
+    // Vibration
+    if (this.vibrateEnabled && navigator.vibrate) {
+      navigator.vibrate([300, 100, 300, 100, 500]);
+    }
+
+    if (this.onComplete) {
+      this.onComplete();
+    }
+  }
+
+  getProgress() {
+    if (this.totalDurationMs <= 0) return 0;
+    return Math.min(1, Math.max(0, 1 - (this.remainingMs / this.totalDurationMs)));
+  }
+
+  getTimeComponents() {
+    const totalSec = Math.ceil(this.remainingMs / 1000);
+    const hours = Math.floor(totalSec / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+    return { hours, minutes, seconds, totalSec };
+  }
+
+  notifyTick() {
+    if (this.onTick) this.onTick(this.getTimeComponents(), this.getProgress());
+  }
+
+  notifyState() {
+    if (this.onStateChange) this.onStateChange(this.status);
+  }
+}
+
+window.speakingTimer = new SpeakingTimer();
+
+/* === stopwatch.js === */
+/**
+ * Speaking Timer & Stopwatch — Stopwatch Engine
+ * High-precision millisecond stopwatch with lap tracking, analytics, and voice announcements.
+ */
+
+class SpeakingStopwatch {
+  constructor() {
+    this.status = 'idle'; // 'idle' | 'running' | 'paused'
+    this.elapsedMs = 0;
+    this.startTime = 0;
+    this.pausedElapsed = 0;
+    this.animFrameId = null;
+
+    // Laps array: [{ id, lapNumber, splitMs, totalMs, isFastest, isSlowest }]
+    this.laps = [];
+    this.lastLapTotalMs = 0;
+
+    // Interval voice settings
+    this.intervalSpeakingEnabled = true;
+    this.intervalSec = 10;
+    this.lastSpokenInterval = null;
+
+    this.speakLapTime = true;
+    this.speakLapTotal = false;
+    this.vibrateEnabled = true;
+    this.soundEnabled = true;
+
+    // Callbacks
+    this.onTick = null;
+    this.onStateChange = null;
+    this.onLapAdded = null;
+  }
+
+  start() {
+    if (this.status === 'running') return;
+
+    this.status = 'running';
+    const now = performance.now();
+    this.startTime = now - this.pausedElapsed;
+
+    if (window.soundEngine && window.soundEngine.speakEvents) {
+      window.soundEngine.playDoubleBeep(true);
+      if (this.pausedElapsed === 0) {
+        window.soundEngine.speak('Stopwatch started');
+      } else {
+        window.soundEngine.speak('Resumed');
+      }
+    }
+
+    this.notifyState();
+    this.loop();
+  }
+
+  pause() {
+    if (this.status !== 'running') return;
+
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
+
+    this.status = 'paused';
+    this.pausedElapsed = performance.now() - this.startTime;
+    this.elapsedMs = this.pausedElapsed;
+
+    if (window.soundEngine && window.soundEngine.speakEvents) {
+      window.soundEngine.playDoubleBeep(false);
+      window.soundEngine.speak('Paused');
+    }
+
+    this.notifyTick();
+    this.notifyState();
+  }
+
+  reset() {
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
+
+    this.status = 'idle';
+    this.elapsedMs = 0;
+    this.startTime = 0;
+    this.pausedElapsed = 0;
+    this.laps = [];
+    this.lastLapTotalMs = 0;
+    this.lastSpokenInterval = null;
+
+    if (window.soundEngine && window.soundEngine.speakEvents) {
+      window.soundEngine.playBeep(440, 0.08);
+    }
+
+    this.notifyTick();
+    this.notifyState();
+    if (this.onLapAdded) this.onLapAdded(this.laps);
+  }
+
+  lap() {
+    if (this.status !== 'running') return;
+
+    const currentTotalMs = this.elapsedMs;
+    const splitMs = currentTotalMs - this.lastLapTotalMs;
+    this.lastLapTotalMs = currentTotalMs;
+
+    const lapNumber = this.laps.length + 1;
+    const lapItem = {
+      id: 'lap_' + lapNumber,
+      lapNumber,
+      splitMs,
+      totalMs: currentTotalMs,
+      isFastest: false,
+      isSlowest: false,
+    };
+
+    this.laps.unshift(lapItem); // Newest on top
+    this.calculateLapHighlights();
+
+    // Haptics & Audio
+    if (this.vibrateEnabled && navigator.vibrate) {
+      navigator.vibrate(80);
+    }
+    if (window.soundEngine) {
+      if (this.soundEnabled) window.soundEngine.playBeep(1200, 0.08);
+
+      let speechParts = [];
+      if (this.speakLapTime) {
+        const splitSec = (splitMs / 1000).toFixed(1);
+        speechParts.push(`Lap ${lapNumber}, ${splitSec} seconds`);
+      }
+      if (this.speakLapTotal) {
+        const totalSec = Math.round(currentTotalMs / 1000);
+        speechParts.push(`Total time ${window.soundEngine.formatSecondsForSpeech(totalSec, false)}`);
+      }
+      if (speechParts.length > 0) {
+        window.soundEngine.speak(speechParts.join('. '));
+      }
+    }
+
+    if (this.onLapAdded) this.onLapAdded(this.laps);
+  }
+
+  calculateLapHighlights() {
+    if (this.laps.length < 2) {
+      this.laps.forEach(l => { l.isFastest = false; l.isSlowest = false; });
+      return;
+    }
+
+    let minSplit = Infinity;
+    let maxSplit = -Infinity;
+
+    this.laps.forEach(l => {
+      if (l.splitMs < minSplit) minSplit = l.splitMs;
+      if (l.splitMs > maxSplit) maxSplit = l.splitMs;
+    });
+
+    this.laps.forEach(l => {
+      l.isFastest = (l.splitMs === minSplit);
+      l.isSlowest = (l.splitMs === maxSplit && minSplit !== maxSplit);
+    });
+  }
+
+  loop() {
+    if (this.status !== 'running') return;
+
+    const now = performance.now();
+    this.elapsedMs = now - this.startTime;
+
+    const wholeSeconds = Math.floor(this.elapsedMs / 1000);
+
+    // Interval Voice Trigger (e.g. every 5s, 10s, 30s)
+    if (
+      this.intervalSpeakingEnabled &&
+      this.intervalSec > 0 &&
+      wholeSeconds > 0 &&
+      wholeSeconds % this.intervalSec === 0 &&
+      this.lastSpokenInterval !== wholeSeconds
+    ) {
+      this.lastSpokenInterval = wholeSeconds;
+      if (window.soundEngine) {
+        if (this.soundEnabled) window.soundEngine.playBeep(750, 0.08);
+        const speech = window.soundEngine.formatSecondsForSpeech(wholeSeconds, false);
+        window.soundEngine.speak(speech);
+      }
+      if (this.vibrateEnabled && navigator.vibrate) {
+        navigator.vibrate(100);
+      }
+    }
+
+    this.notifyTick();
+    this.animFrameId = requestAnimationFrame(() => this.loop());
+  }
+
+  getTimeComponents() {
+    const totalMs = Math.floor(this.elapsedMs);
+    const ms = Math.floor((totalMs % 1000) / 10); // 2-digit centiseconds (00-99)
+    const totalSec = Math.floor(totalMs / 1000);
+    const hours = Math.floor(totalSec / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+    return { hours, minutes, seconds, ms, totalMs };
+  }
+
+  formatMs(msValue) {
+    const totalSec = Math.floor(msValue / 1000);
+    const cs = Math.floor((msValue % 1000) / 10);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    const h = Math.floor(totalSec / 3600);
+
+    const pad = (n) => String(n).padStart(2, '0');
+    if (h > 0) {
+      return `${pad(h)}:${pad(m)}:${pad(s)}.${pad(cs)}`;
+    }
+    return `${pad(m)}:${pad(s)}.${pad(cs)}`;
+  }
+
+  getShareSummary() {
+    if (this.laps.length === 0) {
+      return `⏱️ Stopwatch: ${this.formatMs(this.elapsedMs)}`;
+    }
+    let text = `⏱️ Stopwatch Workout Summary\nTotal Time: ${this.formatMs(this.elapsedMs)}\nTotal Laps: ${this.laps.length}\n\n`;
+    // Laps in chronological order
+    const ordered = [...this.laps].reverse();
+    ordered.forEach(l => {
+      const tag = l.isFastest ? ' 🏆 (Fastest)' : l.isSlowest ? ' 🐢 (Slowest)' : '';
+      text += `Lap ${l.lapNumber}: ${this.formatMs(l.splitMs)} (Total: ${this.formatMs(l.totalMs)})${tag}\n`;
+    });
+    return text;
+  }
+
+  notifyTick() {
+    if (this.onTick) this.onTick(this.getTimeComponents());
+  }
+
+  notifyState() {
+    if (this.onStateChange) this.onStateChange(this.status);
+  }
+}
+
+window.speakingStopwatch = new SpeakingStopwatch();
+
+/* === app.js === */
+/**
+ * Speaking Timer & Stopwatch — Main Application Controller
+ * Handles UI interactions, Screen Wake Lock API, Theme/Font switching,
+ * Modal dialogues, QR generation, and PWA registration.
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const timer = window.speakingTimer;
+  const stopwatch = window.speakingStopwatch;
+  const sound = window.soundEngine;
+
+  // App State
+  const state = {
+    activeTab: 'timer', // 'timer' | 'stopwatch'
+    theme: localStorage.getItem('app_theme') || 'cyan',
+    font: localStorage.getItem('app_font') || 'stencil',
+    keepScreenOn: JSON.parse(localStorage.getItem('app_wakelock') ?? 'true'),
+    wakeLockSentinel: null,
+  };
+
+  // Direct Crisp SVG Templates for instant, bug-free icon updates
+  const SVG_ICONS = {
+    play: `<svg class="w-8 h-8 fill-current translate-x-0.5" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>`,
+    pause: `<svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1.5"></rect><rect x="14" y="4" width="4" height="16" rx="1.5"></rect></svg>`,
+    stop: `<svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg>`,
+    restart: `<svg class="w-8 h-8 fill-none stroke-current stroke-[2.5]" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>`
+  };
+
+  // --- Theme & Font Setup ---
+  function applyTheme(themeName) {
+    state.theme = themeName;
+    document.documentElement.setAttribute('data-theme', themeName);
+    localStorage.setItem('app_theme', themeName);
+
+    // Update meta theme-color for mobile status bar
+    const metaThemeColor = document.getElementById('meta-theme-color');
+    const colorMap = {
+      cyan: '#00e5ff',
+      amber: '#ffb703',
+      lime: '#39ff14',
+      purple: '#d946ef',
+      crimson: '#ff0055',
+      orange: '#ff6b00',
+      pink: '#ff2a8d',
+      white: '#f8fafc'
+    };
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', colorMap[themeName] || '#08090d');
+    }
+
+    // Update checkmark in theme modal
+    document.querySelectorAll('.theme-option').forEach(opt => {
+      const isSelected = opt.dataset.theme === themeName;
+      opt.classList.toggle('ring-2', isSelected);
+      opt.classList.toggle('ring-white', isSelected);
+      const check = opt.querySelector('.theme-check');
+      if (check) check.classList.toggle('hidden', !isSelected);
+    });
+  }
+
+  function applyFont(fontName) {
+    state.font = fontName;
+    const fontClass = `font-${fontName}`;
+    localStorage.setItem('app_font', fontName);
+
+    const digitDisplays = document.querySelectorAll('.digit-display, .font-target');
+    const fontClasses = ['font-orbitron', 'font-segment', 'font-pixel', 'font-stencil', 'font-sport', 'font-marker', 'font-bebas', 'font-modern'];
+
+    digitDisplays.forEach(el => {
+      fontClasses.forEach(cls => el.classList.remove(cls));
+      el.classList.add(fontClass);
+    });
+
+    // Update checkmark in font modal
+    document.querySelectorAll('.font-option').forEach(opt => {
+      const isSelected = opt.dataset.font === fontName;
+      opt.classList.toggle('border-theme', isSelected);
+      opt.classList.toggle('bg-white/10', isSelected);
+      const check = opt.querySelector('.font-check');
+      if (check) check.classList.toggle('hidden', !isSelected);
+    });
+  }
+
+  applyTheme(state.theme);
+  applyFont(state.font);
+
+  // --- Screen Wake Lock API ---
+  async function requestWakeLock() {
+    if (!state.keepScreenOn || !('wakeLock' in navigator)) return;
+    try {
+      if (!state.wakeLockSentinel) {
+        state.wakeLockSentinel = await navigator.wakeLock.request('screen');
+        state.wakeLockSentinel.addEventListener('release', () => {
+          state.wakeLockSentinel = null;
+        });
+      }
+    } catch (err) {
+      console.warn('Wake Lock request error:', err);
+    }
+  }
+
+  function releaseWakeLock() {
+    if (state.wakeLockSentinel) {
+      state.wakeLockSentinel.release().catch(() => {});
+      state.wakeLockSentinel = null;
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      if (timer.status === 'running' || stopwatch.status === 'running') {
+        requestWakeLock();
+      }
+    }
+  });
+
+  // --- Tab Navigation (Timer vs Stopwatch) ---
+  const tabTimerBtn = document.getElementById('tab-timer-btn');
+  const tabStopwatchBtn = document.getElementById('tab-stopwatch-btn');
+  const tabIndicator = document.getElementById('tab-indicator');
+  const timerSection = document.getElementById('timer-section');
+  const stopwatchSection = document.getElementById('stopwatch-section');
+
+  function switchTab(tab) {
+    state.activeTab = tab;
+    if (tab === 'timer') {
+      timerSection.classList.remove('hidden');
+      stopwatchSection.classList.add('hidden');
+      tabIndicator.style.transform = 'translateX(0%)';
+      tabTimerBtn.classList.add('text-theme', 'font-bold');
+      tabTimerBtn.classList.remove('text-gray-400');
+      tabStopwatchBtn.classList.remove('text-theme', 'font-bold');
+      tabStopwatchBtn.classList.add('text-gray-400');
+    } else {
+      timerSection.classList.add('hidden');
+      stopwatchSection.classList.remove('hidden');
+      tabIndicator.style.transform = 'translateX(100%)';
+      tabStopwatchBtn.classList.add('text-theme', 'font-bold');
+      tabStopwatchBtn.classList.remove('text-gray-400');
+      tabTimerBtn.classList.remove('text-theme', 'font-bold');
+      tabTimerBtn.classList.add('text-gray-400');
+    }
+  }
+
+  tabTimerBtn.addEventListener('click', () => switchTab('timer'));
+  tabStopwatchBtn.addEventListener('click', () => switchTab('stopwatch'));
+
+  // --- Timer UI Bindings ---
+  const timerHoursEl = document.getElementById('timer-hours');
+  const timerMinutesEl = document.getElementById('timer-minutes');
+  const timerSecondsEl = document.getElementById('timer-seconds');
+  const timerProgressBar = document.getElementById('timer-progress-bar');
+  const timerPlayBtn = document.getElementById('timer-play-btn');
+  const timerPlayIcon = document.getElementById('timer-play-icon');
+  const timerResetBtn = document.getElementById('timer-reset-btn');
+  const presetsContainer = document.getElementById('presets-container');
+
+  // Quick settings toggles for timer
+  const timerIntervalToggle = document.getElementById('timer-interval-toggle');
+  const timerIntervalSelect = document.getElementById('timer-interval-select');
+  const timerSpeakingToggle = document.getElementById('timer-speaking-toggle');
+  const timerCountdownToggle = document.getElementById('timer-countdown-toggle');
+  const timerSoundToggle = document.getElementById('timer-sound-toggle');
+  const timerVibrateToggle = document.getElementById('timer-vibrate-toggle');
+  const timerPrecountSelect = document.getElementById('timer-precount-select');
+
+  function updateTimerDisplay(components, progress = 0) {
+    const pad = (n) => String(n).padStart(2, '0');
+    timerHoursEl.textContent = pad(components.hours);
+    timerMinutesEl.textContent = pad(components.minutes);
+    timerSecondsEl.textContent = pad(components.seconds);
+
+    if (timerProgressBar) {
+      timerProgressBar.style.width = `${Math.min(100, Math.max(0, (1 - progress) * 100))}%`;
+    }
+  }
+
+  // Timer Status Badge Elements
+  const timerStatusBadge = document.getElementById('timer-status-badge');
+  const timerStatusDot = document.getElementById('timer-status-dot');
+  const timerStatusText = document.getElementById('timer-status-text');
+
+  function updateTimerStateUI(status) {
+    // Reset any state classes
+    timerPlayBtn.classList.remove('btn-running', 'btn-paused', 'bg-emerald-400', 'bg-amber-400', 'bg-rose-500', 'bg-theme', 'text-black', 'text-white');
+
+    if (status === 'running') {
+      timerPlayBtn.classList.add('btn-running', 'bg-emerald-400', 'text-black');
+      timerPlayBtn.innerHTML = SVG_ICONS.pause;
+
+      if (timerStatusBadge) {
+        timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.3)]';
+        timerStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse-dot';
+        timerStatusText.textContent = 'RUNNING';
+      }
+      requestWakeLock();
+    } else if (status === 'paused') {
+      timerPlayBtn.classList.add('btn-paused', 'bg-amber-400', 'text-black');
+      timerPlayBtn.innerHTML = SVG_ICONS.pause; // Show pause symbol when paused
+
+      if (timerStatusBadge) {
+        timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)]';
+        timerStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
+        timerStatusText.textContent = 'PAUSED';
+      }
+      releaseWakeLock();
+    } else if (status === 'completed') {
+      timerPlayBtn.classList.add('bg-rose-500', 'text-white');
+      timerPlayBtn.innerHTML = SVG_ICONS.stop; // Stop symbol when timer completed
+
+      if (timerStatusBadge) {
+        timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-rose-500/20 border border-rose-500/40 text-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.3)]';
+        timerStatusDot.className = 'w-2 h-2 rounded-full bg-rose-400';
+        timerStatusText.textContent = "TIME'S UP!";
+      }
+      releaseWakeLock();
+    } else if (status === 'precount') {
+      timerPlayBtn.classList.add('btn-running', 'bg-amber-400', 'text-black');
+      timerPlayBtn.innerHTML = SVG_ICONS.pause;
+
+      if (timerStatusBadge) {
+        timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400';
+        timerStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
+        timerStatusText.textContent = 'GET READY';
+      }
+    } else {
+      // Idle / Stopped / Reset
+      timerPlayBtn.classList.add('bg-theme', 'text-black');
+      timerPlayBtn.innerHTML = SVG_ICONS.play;
+
+      if (timerStatusBadge) {
+        timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-400';
+        timerStatusDot.className = 'w-1.5 h-1.5 rounded-full bg-gray-400';
+        timerStatusText.textContent = 'READY';
+      }
+      releaseWakeLock();
+    }
+  }
+
+  timer.onTick = (components, progress) => updateTimerDisplay(components, progress);
+  timer.onStateChange = (status) => updateTimerStateUI(status);
+
+  // Pre-start countdown overlay
+  const precountOverlay = document.getElementById('precount-overlay');
+  const precountNumber = document.getElementById('precount-number');
+
+  timer.onPreCountTick = (value) => {
+    precountOverlay.classList.remove('hidden');
+    precountNumber.textContent = value;
+    precountNumber.classList.remove('animate-count-pop');
+    void precountNumber.offsetWidth; // Force reflow
+    precountNumber.classList.add('animate-count-pop');
+
+    if (value === 'GO!') {
+      setTimeout(() => {
+        precountOverlay.classList.add('hidden');
+      }, 700);
+    }
+  };
+
+  // Initial timer display
+  updateTimerDisplay(timer.getTimeComponents(), 0);
+
+  // Play / Pause click
+  timerPlayBtn.addEventListener('click', () => {
+    sound.initAudioContext();
+    if (timer.status === 'running') {
+      timer.pause();
+    } else if (timer.status === 'paused') {
+      timer.resume();
+    } else if (timer.status === 'completed') {
+      timer.reset();
+      timer.start();
+    } else {
+      timer.start();
+    }
+  });
+
+  timerResetBtn.addEventListener('click', () => {
+    timer.reset();
+  });
+
+  // Quick Add Time Buttons
+  document.querySelectorAll('[data-add-time]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const delta = parseInt(btn.dataset.addTime, 10);
+      timer.addTime(delta);
+      if (sound.soundEnabled) sound.playBeep(900, 0.05);
+      if (navigator.vibrate) navigator.vibrate(30);
+    });
+  });
+
+  document.getElementById('timer-clear-btn')?.addEventListener('click', () => {
+    timer.setTime(0, 0, 0);
+  });
+
+  // Timer Quick Options sync
+  if (timerIntervalToggle) {
+    timerIntervalToggle.checked = timer.intervalSpeakingEnabled;
+    timerIntervalToggle.addEventListener('change', (e) => {
+      timer.intervalSpeakingEnabled = e.target.checked;
+    });
+  }
+
+  if (timerIntervalSelect) {
+    timerIntervalSelect.value = String(timer.intervalSec);
+    timerIntervalSelect.addEventListener('change', (e) => {
+      timer.intervalSec = parseInt(e.target.value, 10);
+    });
+  }
+
+  if (timerSpeakingToggle) {
+    timerSpeakingToggle.checked = sound.speechSynthesis !== null;
+    timerSpeakingToggle.addEventListener('change', (e) => {
+      sound.setMute(!e.target.checked);
+    });
+  }
+
+  if (timerCountdownToggle) {
+    timerCountdownToggle.checked = timer.finalCountdownEnabled;
+    timerCountdownToggle.addEventListener('change', (e) => {
+      timer.finalCountdownEnabled = e.target.checked;
+    });
+  }
+
+  if (timerSoundToggle) {
+    timerSoundToggle.checked = timer.soundEnabled;
+    timerSoundToggle.addEventListener('change', (e) => {
+      timer.soundEnabled = e.target.checked;
+    });
+  }
+
+  if (timerVibrateToggle) {
+    timerVibrateToggle.checked = timer.vibrateEnabled;
+    timerVibrateToggle.addEventListener('change', (e) => {
+      timer.vibrateEnabled = e.target.checked;
+    });
+  }
+
+  if (timerPrecountSelect) {
+    timerPrecountSelect.value = String(timer.preCountdownSec);
+    timerPrecountSelect.addEventListener('change', (e) => {
+      timer.preCountdownSec = parseInt(e.target.value, 10);
+    });
+  }
+
+  // Presets Rendering (2 buttons per row, full text visibility)
+  function renderPresets() {
+    if (!presetsContainer) return;
+    presetsContainer.innerHTML = '';
+
+    timer.presets.forEach(p => {
+      const chip = document.createElement('button');
+      chip.className = 'group relative flex items-center justify-between p-3 sm:py-3.5 sm:px-3.5 rounded-2xl glass-panel hover:border-theme transition active:scale-95 text-left border border-white/10 shadow-md';
+      const colorVal = p.color || 'var(--primary)';
+      chip.innerHTML = `
+        <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-1.5">
+          <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: ${colorVal}; box-shadow: 0 0 8px ${colorVal}"></span>
+          <span class="font-semibold text-gray-100 text-xs sm:text-sm leading-tight">${p.name}</span>
+        </div>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <span class="text-xs font-mono font-bold text-gray-200 bg-black/50 border border-white/10 px-2 py-1 rounded-lg">${formatSecShort(p.durationSec)}</span>
+          <span class="delete-preset-btn text-gray-500 hover:text-red-400 p-1 text-base leading-none transition" data-preset-id="${p.id}" title="Delete preset">&times;</span>
+        </div>
+      `;
+
+      chip.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-preset-btn')) {
+          e.stopPropagation();
+          timer.deletePreset(p.id);
+          renderPresets();
+          return;
+        }
+        const hours = Math.floor(p.durationSec / 3600);
+        const minutes = Math.floor((p.durationSec % 3600) / 60);
+        const seconds = p.durationSec % 60;
+        timer.setTime(hours, minutes, seconds);
+        if (p.intervalSec) {
+          timer.intervalSec = p.intervalSec;
+          if (timerIntervalSelect) timerIntervalSelect.value = String(p.intervalSec);
+        }
+        if (sound.soundEnabled) sound.playBeep(1100, 0.06);
+      });
+
+      presetsContainer.appendChild(chip);
+    });
+  }
+
+  function formatSecShort(s) {
+    if (s < 60) return `${s}s`;
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return sec > 0 ? `${m}m ${sec}s` : `${m}m`;
+  }
+
+  renderPresets();
+
+  // Add Custom Preset Button
+  document.getElementById('add-preset-btn')?.addEventListener('click', () => {
+    const comp = timer.getTimeComponents();
+    const duration = comp.totalSec;
+    if (duration <= 0) {
+      alert('Please set a timer duration first before saving as a preset.');
+      return;
+    }
+    const name = prompt('Enter a name for this preset:', `Workout (${formatSecShort(duration)})`);
+    if (name && name.trim()) {
+      timer.addPreset(name.trim(), duration, timer.intervalSec);
+      renderPresets();
+    }
+  });
+
+  // --- Stopwatch UI Bindings ---
+  const swTimeEl = document.getElementById('sw-time');
+  const swMsEl = document.getElementById('sw-ms');
+  const swPlayBtn = document.getElementById('sw-play-btn');
+  const swPlayIcon = document.getElementById('sw-play-icon');
+  const swResetBtn = document.getElementById('sw-reset-btn');
+  const swLapBtn = document.getElementById('sw-lap-btn');
+  const swLapsContainer = document.getElementById('sw-laps-container');
+  const swLapsEmpty = document.getElementById('sw-laps-empty');
+  const swLapStats = document.getElementById('sw-lap-stats');
+  const swFastestLapEl = document.getElementById('sw-fastest-lap');
+  const swSlowestLapEl = document.getElementById('sw-slowest-lap');
+  const swTotalLapsEl = document.getElementById('sw-total-laps');
+
+  // Quick toggles for stopwatch
+  const swIntervalToggle = document.getElementById('sw-interval-toggle');
+  const swIntervalSelect = document.getElementById('sw-interval-select');
+  const swSpeakingToggle = document.getElementById('sw-speaking-toggle');
+  const swSpeakLapToggle = document.getElementById('sw-speak-lap-toggle');
+  const swSpeakTotalToggle = document.getElementById('sw-speak-total-toggle');
+  const swVibrateToggle = document.getElementById('sw-vibrate-toggle');
+
+  function updateStopwatchDisplay(comp) {
+    const pad = (n) => String(n).padStart(2, '0');
+    if (comp.hours > 0) {
+      swTimeEl.textContent = `${pad(comp.hours)}:${pad(comp.minutes)}:${pad(comp.seconds)}`;
+    } else {
+      swTimeEl.textContent = `${pad(comp.minutes)}:${pad(comp.seconds)}`;
+    }
+    swMsEl.textContent = `.${pad(comp.ms)}`;
+  }
+
+  // Stopwatch Status Badge Elements
+  const swStatusBadge = document.getElementById('sw-status-badge');
+  const swStatusDot = document.getElementById('sw-status-dot');
+  const swStatusText = document.getElementById('sw-status-text');
+
+  function updateStopwatchStateUI(status) {
+    swPlayBtn.classList.remove('btn-running', 'btn-paused', 'bg-emerald-400', 'bg-amber-400', 'bg-theme', 'text-black', 'text-white');
+
+    if (status === 'running') {
+      swPlayBtn.classList.add('btn-running', 'bg-emerald-400', 'text-black');
+      swPlayBtn.innerHTML = SVG_ICONS.pause;
+      swLapBtn.disabled = false;
+      swLapBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+      if (swStatusBadge) {
+        swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.3)]';
+        swStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse-dot';
+        swStatusText.textContent = 'RUNNING';
+      }
+      requestWakeLock();
+    } else if (status === 'paused') {
+      swPlayBtn.classList.add('btn-paused', 'bg-amber-400', 'text-black');
+      swPlayBtn.innerHTML = SVG_ICONS.pause; // Show pause symbol when paused
+      swLapBtn.disabled = true;
+      swLapBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      if (swStatusBadge) {
+        swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)]';
+        swStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
+        swStatusText.textContent = 'PAUSED';
+      }
+      releaseWakeLock();
+    } else {
+      // Idle / Reset
+      swPlayBtn.classList.add('bg-theme', 'text-black');
+      swPlayBtn.innerHTML = SVG_ICONS.play;
+      swLapBtn.disabled = true;
+      swLapBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      if (swStatusBadge) {
+        swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-400';
+        swStatusDot.className = 'w-1.5 h-1.5 rounded-full bg-gray-400';
+        swStatusText.textContent = 'READY';
+      }
+      releaseWakeLock();
+    }
+  }
+
+  function renderLaps(laps) {
+    if (!swLapsContainer) return;
+
+    if (laps.length === 0) {
+      if (swLapsEmpty) swLapsEmpty.classList.remove('hidden');
+      if (swLapStats) swLapStats.classList.add('hidden');
+      swLapsContainer.innerHTML = '';
+      return;
+    }
+
+    if (swLapsEmpty) swLapsEmpty.classList.add('hidden');
+    if (swLapStats) swLapStats.classList.remove('hidden');
+
+    // Stats
+    const fastest = laps.find(l => l.isFastest);
+    const slowest = laps.find(l => l.isSlowest);
+    if (swFastestLapEl && fastest) swFastestLapEl.textContent = stopwatch.formatMs(fastest.splitMs);
+    if (swSlowestLapEl && slowest) swSlowestLapEl.textContent = stopwatch.formatMs(slowest.splitMs);
+    if (swTotalLapsEl) swTotalLapsEl.textContent = String(laps.length);
+
+    swLapsContainer.innerHTML = laps.map(lap => {
+      let badge = '';
+      let borderClass = 'border-white/5';
+      if (lap.isFastest) {
+        badge = '<span class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Fastest</span>';
+        borderClass = 'border-emerald-500/30 bg-emerald-500/5';
+      } else if (lap.isSlowest) {
+        badge = '<span class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-rose-500/20 text-rose-400 border border-rose-500/30">Slowest</span>';
+        borderClass = 'border-rose-500/30 bg-rose-500/5';
+      }
+
+      return `
+        <div class="flex items-center justify-between p-3 rounded-xl glass-panel border ${borderClass} text-sm">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-gray-400 text-xs w-8">#${lap.lapNumber}</span>
+            ${badge}
+          </div>
+          <div class="text-right">
+            <div class="font-mono font-bold text-base text-gray-100">${stopwatch.formatMs(lap.splitMs)}</div>
+            <div class="font-mono text-[11px] text-gray-400">Total: ${stopwatch.formatMs(lap.totalMs)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  stopwatch.onTick = (comp) => updateStopwatchDisplay(comp);
+  stopwatch.onStateChange = (status) => updateStopwatchStateUI(status);
+  stopwatch.onLapAdded = (laps) => renderLaps(laps);
+
+  swPlayBtn.addEventListener('click', () => {
+    sound.initAudioContext();
+    if (stopwatch.status === 'running') {
+      stopwatch.pause();
+    } else {
+      stopwatch.start();
+    }
+  });
+
+  swResetBtn.addEventListener('click', () => {
+    stopwatch.reset();
+  });
+
+  swLapBtn.addEventListener('click', () => {
+    stopwatch.lap();
+  });
+
+  // Stopwatch Quick Toggles sync
+  if (swIntervalToggle) {
+    swIntervalToggle.checked = stopwatch.intervalSpeakingEnabled;
+    swIntervalToggle.addEventListener('change', (e) => {
+      stopwatch.intervalSpeakingEnabled = e.target.checked;
+    });
+  }
+
+  if (swIntervalSelect) {
+    swIntervalSelect.value = String(stopwatch.intervalSec);
+    swIntervalSelect.addEventListener('change', (e) => {
+      stopwatch.intervalSec = parseInt(e.target.value, 10);
+    });
+  }
+
+  if (swSpeakingToggle) {
+    swSpeakingToggle.checked = !sound.isMuted;
+    swSpeakingToggle.addEventListener('change', (e) => {
+      sound.setMute(!e.target.checked);
+    });
+  }
+
+  if (swSpeakLapToggle) {
+    swSpeakLapToggle.checked = stopwatch.speakLapTime;
+    swSpeakLapToggle.addEventListener('change', (e) => {
+      stopwatch.speakLapTime = e.target.checked;
+    });
+  }
+
+  if (swSpeakTotalToggle) {
+    swSpeakTotalToggle.checked = stopwatch.speakLapTotal;
+    swSpeakTotalToggle.addEventListener('change', (e) => {
+      stopwatch.speakLapTotal = e.target.checked;
+    });
+  }
+
+  if (swVibrateToggle) {
+    swVibrateToggle.checked = stopwatch.vibrateEnabled;
+    swVibrateToggle.addEventListener('change', (e) => {
+      stopwatch.vibrateEnabled = e.target.checked;
+    });
+  }
+
+  // --- Modals Management ---
+  const modals = {
+    theme: document.getElementById('modal-theme'),
+    font: document.getElementById('modal-font'),
+    settings: document.getElementById('modal-settings'),
+    keypad: document.getElementById('modal-keypad'),
+    share: document.getElementById('modal-share'),
+  };
+
+  function openModal(name) {
+    if (modals[name]) {
+      modals[name].classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeModal(name) {
+    if (modals[name]) {
+      modals[name].classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+  }
+
+  document.querySelectorAll('[data-open-modal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modalName = btn.dataset.openModal;
+      if (modalName === 'settings') populateSettingsUI();
+      if (modalName === 'share') generateShareContent();
+      openModal(modalName);
+    });
+  });
+
+  document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modalName = btn.dataset.closeModal;
+      closeModal(modalName);
+    });
+  });
+
+  // Close modals on clicking backdrop
+  Object.values(modals).forEach(modal => {
+    if (!modal) return;
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+
+  // Theme option clicks
+  document.querySelectorAll('.theme-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const theme = opt.dataset.theme;
+      applyTheme(theme);
+      if (sound.soundEnabled) sound.playBeep(1000, 0.05);
+    });
+  });
+
+  // Font option clicks
+  document.querySelectorAll('.font-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const font = opt.dataset.font;
+      applyFont(font);
+      if (sound.soundEnabled) sound.playBeep(1000, 0.05);
+    });
+  });
+
+  // --- Settings Modal UI & Voices Sync ---
+  const voiceSelect = document.getElementById('setting-voice-select');
+  const speechRateSlider = document.getElementById('setting-speech-rate');
+  const speechRateVal = document.getElementById('setting-speech-rate-val');
+  const speechPitchSlider = document.getElementById('setting-speech-pitch');
+  const speechPitchVal = document.getElementById('setting-speech-pitch-val');
+  const testVoiceBtn = document.getElementById('btn-test-voice');
+  const wakeLockToggle = document.getElementById('setting-wakelock');
+  const speakEventsToggle = document.getElementById('setting-speak-events');
+  const expirySoundSelect = document.getElementById('setting-expiry-sound');
+  const expiryTextEl = document.getElementById('setting-expiry-text');
+  const metronomeToggle = document.getElementById('setting-metronome');
+
+  function populateVoiceDropdown(voices) {
+    if (!voiceSelect) return;
+    const currentName = sound.selectedVoice ? sound.selectedVoice.name : null;
+    voiceSelect.innerHTML = voices.map((v, i) => {
+      const isSelected = currentName && currentName === v.name;
+      // Use index as value — most reliable across all browsers/platforms
+      return `<option value="${i}" ${isSelected ? 'selected' : ''}>${v.name} (${v.lang})</option>`;
+    }).join('');
+  }
+
+  // Hook so loadVoices() can refresh the dropdown live if voices load asynchronously
+  sound.onVoicesLoaded = (voices) => populateVoiceDropdown(voices);
+
+  function populateSettingsUI() {
+    // Always get the freshest voice list available
+    if (voiceSelect && sound.speechSynthesis) {
+      const freshVoices = sound.speechSynthesis.getVoices();
+      if (freshVoices.length > 0) sound.voices = freshVoices;
+      populateVoiceDropdown(sound.voices);
+    }
+
+    if (wakeLockToggle) wakeLockToggle.checked = state.keepScreenOn;
+    if (speakEventsToggle) speakEventsToggle.checked = sound.speakEvents;
+    if (speechRateSlider) {
+      speechRateSlider.value = sound.speechRate;
+      if (speechRateVal) speechRateVal.textContent = `${sound.speechRate}x`;
+    }
+    if (speechPitchSlider) {
+      speechPitchSlider.value = sound.speechPitch;
+      if (speechPitchVal) speechPitchVal.textContent = `${sound.speechPitch}x`;
+    }
+    if (expirySoundSelect) expirySoundSelect.value = timer.expirySound;
+    if (expiryTextEl) expiryTextEl.value = timer.expirySpeechText;
+    if (metronomeToggle) metronomeToggle.checked = timer.metronomeTick;
+  }
+
+  if (voiceSelect) {
+    voiceSelect.addEventListener('change', (e) => {
+      // Index into the current voices array — always reliable
+      const idx = parseInt(e.target.value, 10);
+      const picked = sound.voices[idx];
+      if (picked) {
+        sound.selectedVoice = picked;
+        sound._userPickedVoice = picked.name;
+        sound._userPickedLang = picked.lang; // Store lang for Android lang-based fallback
+      }
+    });
+  }
+
+  if (speechRateSlider) {
+    speechRateSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      sound.speechRate = val;
+      if (speechRateVal) speechRateVal.textContent = `${val.toFixed(1)}x`;
+    });
+  }
+
+  if (speechPitchSlider) {
+    speechPitchSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      sound.speechPitch = val;
+      if (speechPitchVal) speechPitchVal.textContent = `${val.toFixed(1)}x`;
+    });
+  }
+
+  if (testVoiceBtn) {
+    testVoiceBtn.addEventListener('click', () => {
+      sound.initAudioContext();
+      sound.speak('This is a test of your speaking timer voice. Ready, set, go!', true);
+    });
+  }
+
+  if (wakeLockToggle) {
+    wakeLockToggle.addEventListener('change', (e) => {
+      state.keepScreenOn = e.target.checked;
+      localStorage.setItem('app_wakelock', JSON.stringify(e.target.checked));
+      if (!state.keepScreenOn) {
+        releaseWakeLock();
+      } else if (timer.status === 'running' || stopwatch.status === 'running') {
+        requestWakeLock();
+      }
+    });
+  }
+
+  if (speakEventsToggle) {
+    speakEventsToggle.addEventListener('change', (e) => {
+      sound.speakEvents = e.target.checked;
+    });
+  }
+
+  if (expirySoundSelect) {
+    expirySoundSelect.addEventListener('change', (e) => {
+      timer.expirySound = e.target.value;
+      if (e.target.value === 'whistle') sound.playWhistle();
+      else if (e.target.value === 'bell') sound.playBell();
+      else if (e.target.value === 'alarm') sound.playAlarmPattern();
+      else if (e.target.value === 'chime') sound.playChime();
+    });
+  }
+
+  if (expiryTextEl) {
+    expiryTextEl.addEventListener('input', (e) => {
+      timer.expirySpeechText = e.target.value.trim();
+    });
+  }
+
+  if (metronomeToggle) {
+    metronomeToggle.addEventListener('change', (e) => {
+      timer.metronomeTick = e.target.checked;
+    });
+  }
+
+  // --- Keypad Modal for Custom Timer Input ---
+  let keypadBuffer = ''; // e.g. "013000" -> 01h 30m 00s
+
+  const keypadDigitsEl = document.getElementById('keypad-display-digits');
+
+  function updateKeypadDisplay() {
+    const padded = keypadBuffer.padStart(6, '0');
+    const hh = padded.slice(0, 2);
+    const mm = padded.slice(2, 4);
+    const ss = padded.slice(4, 6);
+    if (keypadDigitsEl) {
+      keypadDigitsEl.innerHTML = `
+        <span class="${hh !== '00' ? 'text-theme' : 'text-gray-500'}">${hh}</span><span class="text-xs text-gray-500 font-sans">h</span>
+        <span class="${mm !== '00' || hh !== '00' ? 'text-theme' : 'text-gray-500'}">${mm}</span><span class="text-xs text-gray-500 font-sans">m</span>
+        <span class="${ss !== '00' || mm !== '00' || hh !== '00' ? 'text-theme' : 'text-gray-500'}">${ss}</span><span class="text-xs text-gray-500 font-sans">s</span>
+      `;
+    }
+  }
+
+  document.querySelectorAll('[data-keypad-val]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.dataset.keypadVal;
+      if (keypadBuffer.length < 6) {
+        if (keypadBuffer === '' && val === '0') return; // no leading zero
+        keypadBuffer += val;
+        updateKeypadDisplay();
+        if (sound.soundEnabled) sound.playBeep(1200, 0.04);
+      }
+    });
+  });
+
+  document.getElementById('keypad-backspace-btn')?.addEventListener('click', () => {
+    keypadBuffer = keypadBuffer.slice(0, -1);
+    updateKeypadDisplay();
+    if (sound.soundEnabled) sound.playBeep(800, 0.04);
+  });
+
+  document.getElementById('keypad-clear-btn')?.addEventListener('click', () => {
+    keypadBuffer = '';
+    updateKeypadDisplay();
+  });
+
+  document.getElementById('keypad-set-btn')?.addEventListener('click', () => {
+    const padded = keypadBuffer.padStart(6, '0');
+    const hh = parseInt(padded.slice(0, 2), 10);
+    const mm = parseInt(padded.slice(2, 4), 10);
+    const ss = parseInt(padded.slice(4, 6), 10);
+    timer.setTime(hh, mm, ss);
+    keypadBuffer = '';
+    closeModal('keypad');
+  });
+
+  document.getElementById('open-keypad-btn')?.addEventListener('click', () => {
+    keypadBuffer = '';
+    updateKeypadDisplay();
+    openModal('keypad');
+  });
+
+  // --- Share & QR Code Modal ---
+  function generateShareContent() {
+    const shareTextEl = document.getElementById('share-text-area');
+    const isStopwatch = state.activeTab === 'stopwatch';
+    const text = isStopwatch ? stopwatch.getShareSummary() : `⏳ Timer set for ${timer.getTimeComponents().totalSec} seconds on Speaking Timer`;
+    if (shareTextEl) shareTextEl.value = text;
+
+    // Generate QR code for current URL (works seamlessly when opened locally or hosted)
+    const qrContainer = document.getElementById('qr-code-box');
+    if (qrContainer) {
+      const url = window.location.href;
+      qrContainer.innerHTML = `
+        <div class="p-3 bg-white rounded-xl inline-block shadow-lg">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=000000" 
+               alt="QR Code" 
+               class="w-36 h-36 mx-auto rounded"
+               onerror="this.parentElement.innerHTML='<div class=\\'text-xs text-black p-4\\'>${url}</div>'" />
+        </div>
+        <p class="text-xs text-gray-400 mt-2 font-mono break-all">${url}</p>
+      `;
+    }
+  }
+
+  document.getElementById('btn-copy-share')?.addEventListener('click', () => {
+    const shareTextEl = document.getElementById('share-text-area');
+    if (shareTextEl) {
+      navigator.clipboard.writeText(shareTextEl.value).then(() => {
+        alert('Copied to clipboard!');
+      });
+    }
+  });
+
+  document.getElementById('btn-native-share')?.addEventListener('click', () => {
+    const shareTextEl = document.getElementById('share-text-area');
+    if (navigator.share && shareTextEl) {
+      navigator.share({
+        title: 'Speaking Timer & Stopwatch',
+        text: shareTextEl.value,
+      }).catch(() => {});
+    } else {
+      document.getElementById('btn-copy-share')?.click();
+    }
+  });
+
+  // Fullscreen toggle button
+  document.getElementById('btn-fullscreen')?.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  });
+
+  // Global Mute Toggle in Header
+  const headerMuteBtn = document.getElementById('btn-header-mute');
+  const headerMuteIcon = document.getElementById('header-mute-icon');
+
+  function updateMuteButtonUI() {
+    if (sound.isMuted) {
+      headerMuteIcon.setAttribute('data-lucide', 'volume-x');
+      headerMuteBtn.classList.add('text-rose-400');
+    } else {
+      headerMuteIcon.setAttribute('data-lucide', 'volume-2');
+      headerMuteBtn.classList.remove('text-rose-400');
+    }
+    lucide.createIcons();
+  }
+
+  headerMuteBtn?.addEventListener('click', () => {
+    sound.setMute(!sound.isMuted);
+    updateMuteButtonUI();
+    if (timerSpeakingToggle) timerSpeakingToggle.checked = !sound.isMuted;
+    if (swSpeakingToggle) swSpeakingToggle.checked = !sound.isMuted;
+  });
+
+  // Register PWA Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => {
+        console.log('Service Worker registration skipped or unavailable:', err);
+      });
+    });
+  }
+
+  // Initialize Lucide icons
+  lucide.createIcons();
+});
+
+</script>
+</body>
+</html>

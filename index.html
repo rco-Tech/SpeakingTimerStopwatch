@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" id="meta-theme-color" content="#00e5ff">
+  <meta name="description" content="Speaking Timer & Stopwatch — High-precision voice announcements, customizable LED fonts, and OLED neon themes.">
+  <title>Speaking Timer & Stopwatch</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2308090d' stroke='%2300e5ff' stroke-width='4'/><text x='50' y='65' font-size='45' text-anchor='middle' fill='%2300e5ff' font-family='sans-serif' font-weight='bold'>⏱️</text></svg>">
+
+  <!-- Google Fonts: 8 Distinct Typography Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=Montserrat:wght@800;900&family=Orbitron:wght@600;800;900&family=Permanent+Marker&family=Share+Tech+Mono&family=Bebas+Neue&family=VT323&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            theme: 'var(--primary)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="flex flex-col justify-between max-w-lg mx-auto px-4 safe-pt safe-pb antialiased">
+
+  <!-- Top Navigation Header -->
+  <header class="pt-2 pb-3">
+    <!-- Top Action Icons Bar -->
+    <div class="flex items-center justify-between mb-3 px-1">
+      <div class="flex items-center gap-2">
+        <button id="btn-open-menu" data-open-modal="settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <span class="text-sm font-semibold tracking-wide text-gray-200">Voice Timer</span>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <!-- Global Mute Toggle -->
+        <button id="btn-header-mute" title="Mute/Unmute Speech & Audio" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i id="header-mute-icon" data-lucide="volume-2" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Theme Palette -->
+        <button id="btn-open-theme" data-open-modal="theme" title="Color Themes" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="palette" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Font Selector -->
+        <button id="btn-open-font" data-open-modal="font" title="Display Fonts" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95 font-mono font-bold text-sm">
+          <span class="w-5 h-5 flex items-center justify-center">A</span>
+        </button>
+
+        <!-- Fullscreen -->
+        <button id="btn-fullscreen" title="Fullscreen Mode" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="maximize" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Settings Gear -->
+        <button id="btn-open-settings" data-open-modal="settings" title="Settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="settings" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Segment Switcher (Timer / Stopwatch) -->
+    <div class="relative p-1 rounded-2xl glass-panel flex items-center">
+      <div id="tab-indicator" class="tab-indicator absolute top-1 left-1 bottom-1 w-[calc(50%-4px)] bg-white/10 border border-white/10 rounded-xl"></div>
+      
+      <button id="tab-timer-btn" class="relative z-10 flex-1 py-2.5 flex items-center justify-center gap-2 text-sm text-theme font-bold transition">
+        <i data-lucide="hourglass" class="w-4 h-4"></i>
+        <span>Timer</span>
+      </button>
+
+      <button id="tab-stopwatch-btn" class="relative z-10 flex-1 py-2.5 flex items-center justify-center gap-2 text-sm text-gray-400 font-medium transition">
+        <i data-lucide="timer" class="w-4 h-4"></i>
+        <span>Stopwatch</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: TIMER VIEW                                                  -->
+  <!-- ========================================================================= -->
+  <main id="timer-section" class="flex-1 flex flex-col justify-between py-2 space-y-3.5">
+    
+    <!-- Big Digital Display Card -->
+    <div class="relative flex flex-col items-center justify-center py-5 px-4 rounded-3xl glass-panel-elevated border border-white/10 shadow-2xl overflow-hidden group">
+      <!-- Ambient Glow Behind Digits -->
+      <div class="absolute inset-0 bg-radial from-transparent to-transparent pointer-events-none opacity-40"></div>
+
+      <!-- Status Indicator Badge (READY / RUNNING / PAUSED / TIME'S UP) -->
+      <div id="timer-status-badge" class="mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-400">
+        <span id="timer-status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+        <span id="timer-status-text">READY</span>
+      </div>
+
+      <!-- Main Digits (HH : MM : SS) -->
+      <div id="open-keypad-btn" title="Tap to set exact time" class="cursor-pointer select-none flex items-baseline justify-center gap-1 sm:gap-2 digit-display font-stencil text-6xl sm:text-7xl font-extrabold tracking-tight active:scale-98 transition">
+        <div class="flex flex-col items-center">
+          <span id="timer-hours">00</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">h</span>
+        </div>
+        <span class="opacity-75 text-5xl sm:text-6xl self-center -mt-3">:</span>
+        <div class="flex flex-col items-center">
+          <span id="timer-minutes">01</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">m</span>
+        </div>
+        <span class="opacity-75 text-5xl sm:text-6xl self-center -mt-3">:</span>
+        <div class="flex flex-col items-center">
+          <span id="timer-seconds">00</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">s</span>
+        </div>
+      </div>
+
+      <!-- Linear Progress Bar -->
+      <div class="w-full h-1.5 bg-white/10 rounded-full mt-4 overflow-hidden">
+        <div id="timer-progress-bar" class="h-full bg-theme transition-all duration-300 rounded-full" style="width: 100%;"></div>
+      </div>
+
+      <!-- Edit Time Hint -->
+      <div class="mt-2 text-[11px] text-gray-400 flex items-center gap-1">
+        <i data-lucide="edit-3" class="w-3 h-3"></i>
+        <span>Tap digits to customize duration</span>
+      </div>
+    </div>
+
+    <!-- MAIN CONTROLS: DIRECTLY UNDER THE CLOCK -->
+    <div class="flex items-center justify-between px-2 pt-1 pb-1">
+      <button id="timer-reset-btn" class="px-5 py-3 rounded-2xl glass-panel text-sm font-semibold text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 flex items-center gap-1.5 shadow-md">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        <span>Reset</span>
+      </button>
+
+      <!-- Giant Floating Glowing Action Button -->
+      <button id="timer-play-btn" aria-label="Play/Pause" class="w-20 h-20 rounded-full bg-theme text-black font-extrabold flex items-center justify-center glow-box transition active:scale-90 hover:brightness-110 shadow-2xl">
+        <svg class="w-8 h-8 fill-current translate-x-0.5" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+      </button>
+
+      <button id="timer-clear-btn" class="px-5 py-3 rounded-2xl glass-panel text-sm font-semibold text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 flex items-center gap-1.5 shadow-md">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+        <span>Clear</span>
+      </button>
+    </div>
+
+    <!-- Quick Add Time Buttons -->
+    <div class="grid grid-cols-5 gap-1.5">
+      <button data-add-time="10" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+10s</button>
+      <button data-add-time="30" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+30s</button>
+      <button data-add-time="60" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+1m</button>
+      <button data-add-time="300" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+5m</button>
+      <button data-add-time="600" class="py-2 px-1 rounded-xl glass-panel text-xs font-semibold text-gray-200 hover:border-theme hover:text-theme transition active:scale-95">+10m</button>
+    </div>
+
+    <!-- Quick Settings & Voice Bar -->
+    <div class="p-3 rounded-2xl glass-panel space-y-2.5">
+      <!-- Top row: Pre-countdown & Interval -->
+      <div class="flex items-center justify-between text-xs gap-2">
+        <div class="flex items-center gap-1.5">
+          <span class="text-gray-300">Countdown before starting:</span>
+          <select id="timer-precount-select" class="bg-black/50 border border-white/10 text-theme text-xs rounded-lg px-2 py-1 outline-none focus:border-theme">
+            <option value="0">Off (0s)</option>
+            <option value="3">3s</option>
+            <option value="5">5s</option>
+            <option value="10">10s</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <label class="flex items-center gap-1 cursor-pointer select-none">
+            <input type="checkbox" id="timer-sound-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+            <i data-lucide="whistle" class="w-3.5 h-3.5 text-gray-300"></i>
+          </label>
+        </div>
+      </div>
+
+      <!-- Second row: Interval Checkbox & Speaking Checkbox -->
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-white/5">
+        <!-- Interval Speaking -->
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="timer-interval-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+          <span class="text-gray-200">Interval</span>
+          <select id="timer-interval-select" class="bg-black/50 border border-white/10 text-theme text-xs rounded-lg px-1.5 py-0.5 outline-none focus:border-theme ml-auto">
+            <option value="5">5s</option>
+            <option value="10" selected>10s</option>
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+            <option value="60">1m</option>
+            <option value="120">2m</option>
+            <option value="300">5m</option>
+          </select>
+        </label>
+
+        <!-- Speaking Voice Toggle -->
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="timer-speaking-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+          <span class="text-gray-200">Speaking</span>
+          <i data-lucide="mic" class="w-3.5 h-3.5 text-theme ml-auto"></i>
+        </label>
+      </div>
+
+      <!-- Third row: Countdown & Vibration -->
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-white/5">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="timer-countdown-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+          <span class="text-gray-300">5s Countdown</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="timer-vibrate-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+          <span class="text-gray-300">Vibration</span>
+          <i data-lucide="smartphone-nfc" class="w-3.5 h-3.5 text-gray-400 ml-auto"></i>
+        </label>
+      </div>
+    </div>
+
+    <!-- Presets Section -->
+    <div class="space-y-1.5">
+      <div class="flex items-center justify-between text-xs px-1 text-gray-400">
+        <span class="font-medium">Quick Presets</span>
+        <button id="add-preset-btn" class="text-theme hover:underline flex items-center gap-1 font-semibold">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+          <span>Save Current</span>
+        </button>
+      </div>
+      <div id="presets-container" class="grid grid-cols-2 gap-2.5">
+        <!-- Preset cards dynamically injected (2 per row) -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: STOPWATCH VIEW                                              -->
+  <!-- ========================================================================= -->
+  <main id="stopwatch-section" class="hidden flex-1 flex flex-col justify-between py-2 space-y-3.5">
+    
+    <!-- Big Stopwatch Display Card -->
+    <div class="relative flex flex-col items-center justify-center py-5 px-4 rounded-3xl glass-panel-elevated border border-white/10 shadow-2xl overflow-hidden">
+      <!-- Status Indicator Badge (READY / RUNNING / PAUSED) -->
+      <div id="sw-status-badge" class="mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-400">
+        <span id="sw-status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+        <span id="sw-status-text">READY</span>
+      </div>
+
+      <div class="flex items-baseline justify-center digit-display font-stencil font-extrabold tracking-tight">
+        <span id="sw-time" class="text-6xl sm:text-7xl">00:00</span>
+        <span id="sw-ms" class="text-3xl sm:text-4xl text-theme opacity-80 font-mono ml-1">.00</span>
+      </div>
+      <div class="mt-2 text-[11px] text-gray-400 font-mono tracking-wider">
+        MINUTES : SECONDS . CENTISECONDS
+      </div>
+    </div>
+
+    <!-- MAIN CONTROLS: DIRECTLY UNDER STOPWATCH CLOCK -->
+    <div class="flex items-center justify-between px-2 pt-1 pb-1">
+      <button id="sw-reset-btn" class="px-4 py-3 rounded-2xl glass-panel text-sm font-semibold text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 shadow-md">
+        Reset
+      </button>
+
+      <!-- Giant Floating Glowing Action Button -->
+      <button id="sw-play-btn" aria-label="Play/Pause" class="w-20 h-20 rounded-full bg-theme text-black font-extrabold flex items-center justify-center glow-box transition active:scale-90 hover:brightness-110 shadow-2xl">
+        <svg class="w-8 h-8 fill-current translate-x-0.5" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+      </button>
+
+      <button id="sw-lap-btn" disabled class="px-4 py-3 rounded-2xl glass-panel text-sm font-semibold text-theme hover:border-theme transition active:scale-95 opacity-50 cursor-not-allowed shadow-md">
+        Lap
+      </button>
+
+      <button data-open-modal="share" class="p-3 rounded-2xl glass-panel text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 shadow-md" title="Share Laps">
+        <i data-lucide="share-2" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Stopwatch Quick Options Bar -->
+    <div class="p-3 rounded-2xl glass-panel space-y-2.5">
+      <!-- Row 1: Interval Speaking & Speak Lap Time -->
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-interval-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-200">Interval</span>
+          <select id="sw-interval-select" class="bg-black/50 border border-white/10 text-theme text-xs rounded-lg px-1.5 py-0.5 outline-none focus:border-theme ml-auto">
+            <option value="5" selected>5s</option>
+            <option value="10">10s</option>
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+            <option value="60">1m</option>
+          </select>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-speaking-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-200">Speaking</span>
+          <i data-lucide="mic" class="w-3.5 h-3.5 text-theme ml-auto"></i>
+        </label>
+      </div>
+
+      <!-- Row 2: Speak Lap & Speak Total -->
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-white/5">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-speak-lap-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-300">Speak Lap Time</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-speak-total-toggle" class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-300">Speak Lap Total</span>
+        </label>
+      </div>
+
+      <!-- Row 3: Vibration -->
+      <div class="flex items-center justify-between text-xs pt-1 border-t border-white/5">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="sw-vibrate-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
+          <span class="text-gray-300">Vibrate on Lap & Interval</span>
+        </label>
+        <i data-lucide="smartphone-nfc" class="w-3.5 h-3.5 text-gray-400"></i>
+      </div>
+    </div>
+
+    <!-- Laps Analytics & List Card -->
+    <div class="flex-1 rounded-2xl glass-panel p-3 flex flex-col min-h-[150px] max-h-[220px]">
+      <!-- Stats summary banner -->
+      <div id="sw-lap-stats" class="hidden grid grid-cols-3 gap-2 pb-2 mb-2 border-b border-white/10 text-center text-xs">
+        <div>
+          <div class="text-[10px] text-gray-400">Fastest</div>
+          <div id="sw-fastest-lap" class="font-mono font-bold text-emerald-400">-</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-gray-400">Slowest</div>
+          <div id="sw-slowest-lap" class="font-mono font-bold text-rose-400">-</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-gray-400">Total Laps</div>
+          <div id="sw-total-laps" class="font-mono font-bold text-gray-200">0</div>
+        </div>
+      </div>
+
+      <!-- Scrollable Lap Items -->
+      <div id="sw-laps-empty" class="flex-1 flex flex-col items-center justify-center text-gray-500 text-xs py-4">
+        <i data-lucide="flag" class="w-6 h-6 mb-1 opacity-40"></i>
+        <span>No laps recorded yet</span>
+      </div>
+
+      <div id="sw-laps-container" class="flex-1 overflow-y-auto space-y-2 pr-1">
+        <!-- Lap rows dynamically injected -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: FONT SELECTOR (Matching Screenshot 1)                              -->
+  <!-- ========================================================================= -->
+  <div id="modal-font" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] flex flex-col animate-in fade-in slide-in-from-bottom duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="type" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100">Digit Font Style</h2>
+        </div>
+        <button data-close-modal="font" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-2.5 pr-1">
+        <!-- 1. Stencil / Military (From Screenshot 1) -->
+        <button data-font="stencil" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Military Stencil</div>
+            <div class="font-stencil text-2xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 2. Retro Pixel Matrix (VT323) -->
+        <button data-font="pixel" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">8-Bit Pixel Matrix</div>
+            <div class="font-pixel text-3xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 3. 7-Segment LCD Clock (Share Tech Mono) -->
+        <button data-font="segment" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">7-Segment Monospace LCD</div>
+            <div class="font-segment text-2xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 4. Sci-Fi Futuristic (Orbitron) -->
+        <button data-font="orbitron" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Sci-Fi Orbitron LED</div>
+            <div class="font-orbitron text-xl font-black text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 5. Heavy Sport Display (Chakra Petch) -->
+        <button data-font="sport" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Sport Chunky Display</div>
+            <div class="font-sport text-2xl font-bold text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 6. Athletic Gym Timer (Bebas Neue) -->
+        <button data-font="bebas" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Athletic Bold Timer</div>
+            <div class="font-bebas text-3xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 7. Street Brush / Marker (Permanent Marker) -->
+        <button data-font="marker" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Handwritten Marker</div>
+            <div class="font-marker text-xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- 8. Clean Modern Heavy (Montserrat) -->
+        <button data-font="modern" class="font-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="text-left">
+            <div class="text-xs text-gray-400 mb-1">Modern Minimalist Heavy</div>
+            <div class="font-modern text-2xl text-theme">1234567890</div>
+          </div>
+          <i data-lucide="check" class="font-check hidden w-5 h-5 text-theme"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: COLOR THEME PALETTE                                                -->
+  <!-- ========================================================================= -->
+  <div id="modal-theme" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="palette" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100">OLED Color Themes</h2>
+        </div>
+        <button data-close-modal="theme" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-4 gap-3">
+        <!-- Cyan -->
+        <button data-theme="cyan" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#00e5ff] shadow-[0_0_15px_rgba(0,229,255,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Cyan</span>
+        </button>
+
+        <!-- Amber Gold -->
+        <button data-theme="amber" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#ffb703] shadow-[0_0_15px_rgba(255,183,3,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Amber</span>
+        </button>
+
+        <!-- Neon Lime -->
+        <button data-theme="lime" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#39ff14] shadow-[0_0_15px_rgba(57,255,20,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Lime</span>
+        </button>
+
+        <!-- Cyber Purple -->
+        <button data-theme="purple" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#d946ef] shadow-[0_0_15px_rgba(217,70,239,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Purple</span>
+        </button>
+
+        <!-- Crimson -->
+        <button data-theme="crimson" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#ff0055] shadow-[0_0_15px_rgba(255,0,85,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Crimson</span>
+        </button>
+
+        <!-- Sunset Orange -->
+        <button data-theme="orange" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#ff6b00] shadow-[0_0_15px_rgba(255,107,0,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Orange</span>
+        </button>
+
+        <!-- Sakura Pink -->
+        <button data-theme="pink" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#ff2a8d] shadow-[0_0_15px_rgba(255,42,141,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">Pink</span>
+        </button>
+
+        <!-- Ice White -->
+        <button data-theme="white" class="theme-option flex flex-col items-center gap-2 p-3 rounded-2xl bg-neutral-800/80 border border-white/10 transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-[#f8fafc] shadow-[0_0_15px_rgba(248,250,252,0.6)] flex items-center justify-center">
+            <i data-lucide="check" class="theme-check hidden w-5 h-5 text-black"></i>
+          </div>
+          <span class="text-xs text-gray-300 font-medium">White</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: SETTINGS (Matching Screenshots 2 & 3)                             -->
+  <!-- ========================================================================= -->
+  <div id="modal-settings" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="sliders" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100">Settings</h2>
+        </div>
+        <button data-close-modal="settings" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs text-gray-300">
+        <!-- Section: Timer Running -->
+        <div>
+          <div class="text-theme font-bold mb-2 uppercase tracking-wider text-[11px]">Timer Running</div>
+          <div class="space-y-2.5 bg-neutral-800/60 p-3 rounded-2xl border border-white/5">
+            <!-- Keep screen on -->
+            <label class="flex items-center justify-between cursor-pointer">
+              <div class="flex items-center gap-2">
+                <i data-lucide="eye" class="w-4 h-4 text-theme"></i>
+                <div>
+                  <div class="text-gray-100 font-medium">Keep the screen on</div>
+                  <div class="text-[10px] text-gray-400">Keep screen awake while timer is running</div>
+                </div>
+              </div>
+              <input type="checkbox" id="setting-wakelock" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+            </label>
+
+            <!-- Speak Events -->
+            <label class="flex items-center justify-between cursor-pointer pt-2 border-t border-white/5">
+              <div class="flex items-center gap-2">
+                <i data-lucide="volume-2" class="w-4 h-4 text-theme"></i>
+                <div>
+                  <div class="text-gray-100 font-medium">Speak Events</div>
+                  <div class="text-[10px] text-gray-400">Announce start, pause, resume, and reset</div>
+                </div>
+              </div>
+              <input type="checkbox" id="setting-speak-events" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+            </label>
+
+            <!-- Metronome Ticks -->
+            <label class="flex items-center justify-between cursor-pointer pt-2 border-t border-white/5">
+              <div class="flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-theme"></i>
+                <div>
+                  <div class="text-gray-100 font-medium">Metronome Tick</div>
+                  <div class="text-[10px] text-gray-400">Subtle click sound every second</div>
+                </div>
+              </div>
+              <input type="checkbox" id="setting-metronome" class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+            </label>
+          </div>
+        </div>
+
+        <!-- Section: Voice & Speech Engine -->
+        <div>
+          <div class="text-theme font-bold mb-2 uppercase tracking-wider text-[11px]">Speech & Voice Engine</div>
+          <div class="space-y-3 bg-neutral-800/60 p-3 rounded-2xl border border-white/5">
+            <!-- Voice selection dropdown -->
+            <div>
+              <label class="block text-gray-200 font-medium mb-1">Voice Audio Output</label>
+              <select id="setting-voice-select" class="w-full bg-black/60 border border-white/10 text-gray-200 rounded-xl px-3 py-2 outline-none focus:border-theme text-xs truncate">
+                <option>Loading device voices...</option>
+              </select>
+            </div>
+
+            <!-- Speech Speed Slider -->
+            <div>
+              <div class="flex justify-between text-gray-200 mb-1">
+                <span>Speaking Rate / Speed</span>
+                <span id="setting-speech-rate-val" class="font-mono text-theme">1.0x</span>
+              </div>
+              <input type="range" id="setting-speech-rate" min="0.6" max="1.8" step="0.1" value="1.0" class="w-full accent-cyan-400 cursor-pointer">
+            </div>
+
+            <!-- Speech Pitch Slider -->
+            <div>
+              <div class="flex justify-between text-gray-200 mb-1">
+                <span>Voice Pitch</span>
+                <span id="setting-speech-pitch-val" class="font-mono text-theme">1.0x</span>
+              </div>
+              <input type="range" id="setting-speech-pitch" min="0.6" max="1.4" step="0.1" value="1.0" class="w-full accent-cyan-400 cursor-pointer">
+            </div>
+
+            <!-- Test Voice Button -->
+            <button id="btn-test-voice" class="w-full py-2 rounded-xl glass-panel text-theme font-semibold hover:border-theme transition flex items-center justify-center gap-1.5 active:scale-98">
+              <i data-lucide="play-circle" class="w-4 h-4"></i>
+              <span>Test Voice Output</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section: Timer Expired -->
+        <div>
+          <div class="text-theme font-bold mb-2 uppercase tracking-wider text-[11px]">Timer Expired</div>
+          <div class="space-y-2.5 bg-neutral-800/60 p-3 rounded-2xl border border-white/5">
+            <!-- Timer Expired Sound -->
+            <div>
+              <label class="block text-gray-200 font-medium mb-1">Completion Sound</label>
+              <select id="setting-expiry-sound" class="w-full bg-black/60 border border-white/10 text-gray-200 rounded-xl px-3 py-2 outline-none focus:border-theme text-xs">
+                <option value="whistle">Referee Whistle 📢</option>
+                <option value="bell">Boxing Ring Bell 🥊</option>
+                <option value="alarm">Digital Sports Alarm 🚨</option>
+                <option value="chime">Gentle Marimba Chime ✨</option>
+                <option value="none">Mute / Voice Only 🔇</option>
+              </select>
+            </div>
+
+            <!-- Custom Speaking Phrase -->
+            <div>
+              <label class="block text-gray-200 font-medium mb-1">Speaking Text</label>
+              <input type="text" id="setting-expiry-text" value="Timer has expired!" class="w-full bg-black/60 border border-white/10 text-gray-200 rounded-xl px-3 py-2 outline-none focus:border-theme text-xs">
+            </div>
+          </div>
+        </div>
+
+        <!-- Open on phone quick helper -->
+        <button data-open-modal="share" class="w-full py-2.5 rounded-2xl bg-white/10 text-gray-200 hover:text-white flex items-center justify-center gap-2 font-medium">
+          <i data-lucide="smartphone" class="w-4 h-4 text-theme"></i>
+          <span>Open on Phone via QR Code</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: TIME KEYPAD INPUT                                                 -->
+  <!-- ========================================================================= -->
+  <div id="modal-keypad" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-sm bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 animate-in fade-in slide-in-from-bottom duration-200">
+      <div class="flex items-center justify-between pb-2 mb-2">
+        <h3 class="text-sm font-bold text-gray-200">Set Timer Duration</h3>
+        <button data-close-modal="keypad" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Keypad Display -->
+      <div class="p-4 rounded-2xl bg-black/60 border border-white/10 text-center font-stencil text-3xl font-bold tracking-widest mb-4">
+        <div id="keypad-display-digits" class="flex justify-center items-center gap-1">
+          <span class="text-gray-500">00</span><span class="text-xs text-gray-500 font-sans">h</span>
+          <span class="text-gray-500">00</span><span class="text-xs text-gray-500 font-sans">m</span>
+          <span class="text-gray-500">00</span><span class="text-xs text-gray-500 font-sans">s</span>
+        </div>
+      </div>
+
+      <!-- Keypad Digits Grid -->
+      <div class="grid grid-cols-3 gap-2 mb-4">
+        <button data-keypad-val="1" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">1</button>
+        <button data-keypad-val="2" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">2</button>
+        <button data-keypad-val="3" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">3</button>
+        <button data-keypad-val="4" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">4</button>
+        <button data-keypad-val="5" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">5</button>
+        <button data-keypad-val="6" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">6</button>
+        <button data-keypad-val="7" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">7</button>
+        <button data-keypad-val="8" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">8</button>
+        <button data-keypad-val="9" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">9</button>
+        <button id="keypad-clear-btn" class="py-3.5 rounded-2xl glass-panel text-sm font-semibold text-gray-400 hover:text-white transition active:scale-95">C</button>
+        <button data-keypad-val="0" class="py-3.5 rounded-2xl glass-panel text-xl font-bold hover:border-theme transition active:scale-95">0</button>
+        <button id="keypad-backspace-btn" class="py-3.5 rounded-2xl glass-panel text-sm font-semibold text-gray-400 hover:text-white transition active:scale-95 flex items-center justify-center">
+          <i data-lucide="delete" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <button id="keypad-set-btn" class="w-full py-3.5 rounded-2xl bg-theme text-black font-bold text-base glow-box transition active:scale-98">
+        Set Timer
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: SHARE & QR CODE / OPEN ON PHONE                                   -->
+  <!-- ========================================================================= -->
+  <div id="modal-share" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="smartphone" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100">Open on Phone / Share</h2>
+        </div>
+        <button data-close-modal="share" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="text-center space-y-3">
+        <p class="text-xs text-gray-300">Scan this QR code with your phone camera to open and use instantly:</p>
+        <div id="qr-code-box" class="py-2 flex flex-col items-center">
+          <!-- QR code image injected here -->
+        </div>
+
+        <textarea id="share-text-area" rows="3" readonly class="w-full bg-black/60 border border-white/10 text-gray-300 rounded-xl p-2.5 text-xs font-mono"></textarea>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btn-copy-share" class="py-2.5 rounded-xl glass-panel text-xs font-bold text-theme hover:border-theme transition flex items-center justify-center gap-1.5">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+            <span>Copy Text</span>
+          </button>
+          <button id="btn-native-share" class="py-2.5 rounded-xl bg-theme text-black text-xs font-bold transition flex items-center justify-center gap-1.5">
+            <i data-lucide="share-2" class="w-4 h-4"></i>
+            <span>Share Sheet</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- PRE-START COUNTDOWN OVERLAY                                               -->
+  <!-- ========================================================================= -->
+  <div id="precount-overlay" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex flex-col items-center justify-center select-none">
+    <div class="text-sm font-semibold tracking-widest text-gray-400 uppercase mb-4">Get Ready</div>
+    <div id="precount-number" class="text-9xl font-stencil text-theme font-black glow-text">
+      3
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/stopwatch.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

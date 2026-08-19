@@ -1,0 +1,10 @@
+﻿# Local server
+*.log
+
+# Editors
+.vscode/
+.idea/
+
+# Windows
+Thumbs.db
+desktop.ini

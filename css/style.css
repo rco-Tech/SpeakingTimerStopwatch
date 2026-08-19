@@ -1,0 +1,244 @@
+/* Speaking Timer & Stopwatch — Custom OLED & Glassmorphism Styles */
+
+:root {
+  /* Default Theme: Electric Cyan */
+  --primary: #00e5ff;
+  --primary-glow: rgba(0, 229, 255, 0.45);
+  --primary-glow-subtle: rgba(0, 229, 255, 0.15);
+  --primary-rgb: 0, 229, 255;
+  --bg-color: #08090d;
+  --panel-bg: rgba(18, 20, 28, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text-dim: #94a3b8;
+  --digit-off: rgba(255, 255, 255, 0.05);
+}
+
+/* Theme definitions */
+[data-theme="cyan"] {
+  --primary: #00e5ff;
+  --primary-glow: rgba(0, 229, 255, 0.45);
+  --primary-glow-subtle: rgba(0, 229, 255, 0.15);
+  --primary-rgb: 0, 229, 255;
+}
+
+[data-theme="amber"] {
+  --primary: #ffb703;
+  --primary-glow: rgba(255, 183, 3, 0.45);
+  --primary-glow-subtle: rgba(255, 183, 3, 0.15);
+  --primary-rgb: 255, 183, 3;
+}
+
+[data-theme="lime"] {
+  --primary: #39ff14;
+  --primary-glow: rgba(57, 255, 20, 0.45);
+  --primary-glow-subtle: rgba(57, 255, 20, 0.15);
+  --primary-rgb: 57, 255, 20;
+}
+
+[data-theme="purple"] {
+  --primary: #d946ef;
+  --primary-glow: rgba(217, 70, 239, 0.45);
+  --primary-glow-subtle: rgba(217, 70, 239, 0.15);
+  --primary-rgb: 217, 70, 239;
+}
+
+[data-theme="crimson"] {
+  --primary: #ff0055;
+  --primary-glow: rgba(255, 0, 85, 0.45);
+  --primary-glow-subtle: rgba(255, 0, 85, 0.15);
+  --primary-rgb: 255, 0, 85;
+}
+
+[data-theme="orange"] {
+  --primary: #ff6b00;
+  --primary-glow: rgba(255, 107, 0, 0.45);
+  --primary-glow-subtle: rgba(255, 107, 0, 0.15);
+  --primary-rgb: 255, 107, 0;
+}
+
+[data-theme="pink"] {
+  --primary: #ff2a8d;
+  --primary-glow: rgba(255, 42, 141, 0.45);
+  --primary-glow-subtle: rgba(255, 42, 141, 0.15);
+  --primary-rgb: 255, 42, 141;
+}
+
+[data-theme="white"] {
+  --primary: #f8fafc;
+  --primary-glow: rgba(248, 250, 252, 0.4);
+  --primary-glow-subtle: rgba(248, 250, 252, 0.15);
+  --primary-rgb: 248, 250, 252;
+}
+
+/* Font Families */
+.font-orbitron { font-family: 'Orbitron', monospace, sans-serif; }
+.font-segment { font-family: 'Share Tech Mono', monospace, sans-serif; }
+.font-pixel { font-family: 'VT323', monospace, monospace; }
+.font-stencil { font-family: 'Black Ops One', cursive, sans-serif; }
+.font-sport { font-family: 'Chakra Petch', sans-serif; }
+.font-marker { font-family: 'Permanent Marker', cursive, sans-serif; }
+.font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+.font-modern { font-family: 'Montserrat', sans-serif; font-weight: 800; }
+
+/* Background radial gradient glow */
+body {
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(circle at 50% 15%, var(--primary-glow-subtle) 0%, transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(20, 24, 38, 0.5) 0%, transparent 50%);
+  color: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+}
+
+.glass-panel-elevated {
+  background: rgba(24, 27, 38, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* Dynamic Primary Color Helpers */
+.text-theme {
+  color: var(--primary);
+}
+
+.bg-theme {
+  background-color: var(--primary);
+}
+
+.border-theme {
+  border-color: var(--primary);
+}
+
+.glow-text {
+  text-shadow: 0 0 16px var(--primary-glow), 0 0 32px var(--primary-glow-subtle);
+}
+
+.glow-box {
+  box-shadow: 0 0 25px var(--primary-glow);
+}
+
+.glow-box-subtle {
+  box-shadow: 0 0 15px var(--primary-glow-subtle);
+}
+
+/* Big digit display */
+.digit-display {
+  color: var(--primary);
+  text-shadow: 0 0 20px var(--primary-glow), 0 0 40px var(--primary-glow-subtle);
+  line-height: 1;
+}
+
+/* Pulsing Start & Running Buttons */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 18px rgba(52, 211, 153, 0);
+  }
+  100% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+
+@keyframes pulse-amber {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 18px rgba(251, 191, 36, 0);
+  }
+  100% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
+
+.btn-running {
+  animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.btn-paused {
+  animation: pulse-amber 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+/* Pre-start Countdown Flash */
+@keyframes count-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-count-pop {
+  animation: count-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Safe areas for mobile devices */
+.safe-pb {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+.safe-pt {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* Transitions */
+.tab-indicator {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile Toggle Switch */
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+.toggle-checkbox:checked + .toggle-label {
+  background-color: var(--primary-glow-subtle);
+  border-color: var(--primary);
+}
