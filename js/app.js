@@ -683,6 +683,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function populateVoiceDropdown(voices) {
     if (!voiceSelect) return;
+    // If the platform exposes no text-to-speech voices (e.g. some Android webviews),
+    // don't leave the dropdown stuck on "Loading device voices..."
+    if (!voices || voices.length === 0) {
+      voiceSelect.innerHTML = '<option value="">No voice found on this device (text-to-speech unavailable)</option>';
+      return;
+    }
     const currentName = sound.selectedVoice ? sound.selectedVoice.name : null;
     voiceSelect.innerHTML = voices.map((v, i) => {
       const isSelected = currentName && currentName === v.name;
@@ -696,10 +702,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function populateSettingsUI() {
     // Always get the freshest voice list available
-    if (voiceSelect && sound.speechSynthesis) {
-      const freshVoices = sound.speechSynthesis.getVoices();
-      if (freshVoices.length > 0) sound.voices = freshVoices;
-      populateVoiceDropdown(sound.voices);
+    if (voiceSelect) {
+      if (sound.speechSynthesis) {
+        const freshVoices = sound.speechSynthesis.getVoices();
+        if (freshVoices.length > 0) sound.voices = freshVoices;
+        populateVoiceDropdown(sound.voices);
+      } else {
+        // speechSynthesis not exposed by this platform/WebView — show a clear note
+        populateVoiceDropdown([]);
+      }
     }
 
     if (wakeLockToggle) wakeLockToggle.checked = state.keepScreenOn;
