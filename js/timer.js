@@ -269,7 +269,8 @@ class SpeakingTimer {
     }
 
     // 3. Optional Metronome Click
-    if (this.metronomeTick && remainingSeconds > 5) {
+    // Ticks every whole second for the whole run, so a metronome feel is maintained to the very end.
+    if (this.metronomeTick && remainingSeconds >= 1) {
       const wholeSec = Math.floor(remainingSeconds);
       if (this.lastTickSec !== wholeSec) {
         this.lastTickSec = wholeSec;

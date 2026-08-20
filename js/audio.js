@@ -259,20 +259,21 @@ class SoundEngine {
 
     const ctx = this.audioCtx;
     const now = ctx.currentTime;
+
+    // A clearer click: higher back-edge (transient) shortens the attack,
+    // plus a lower body so it's audible on typical phone speakers.
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-
     osc.type = 'square';
-    osc.frequency.setValueAtTime(1200, now);
+    osc.frequency.setValueAtTime(1600, now);
 
-    gain.gain.setValueAtTime(0.12 * this.volume, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+    gain.gain.setValueAtTime(0.22 * this.volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
-
     osc.start(now);
-    osc.stop(now + 0.03);
+    osc.stop(now + 0.055);
   }
 
   /**
