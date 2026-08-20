@@ -77,8 +77,8 @@ $gitignore = "# Local server`n*.log`n`n# Editors`n.vscode/`n.idea/`n`n# Windows`
 # Update manifest for GitHub Pages subdirectory
 $manifestPath = "$root\manifest.webmanifest"
 $manifest = [System.IO.File]::ReadAllText($manifestPath) | ConvertFrom-Json
-$manifest | Add-Member -MemberType NoteProperty -Name 'scope'    -Value '/speaking-timer-stopwatch/' -Force
-$manifest | Add-Member -MemberType NoteProperty -Name 'start_url'-Value '/speaking-timer-stopwatch/' -Force
+$manifest | Add-Member -MemberType NoteProperty -Name 'scope'    -Value '/SpeakingTimerStopwatch/' -Force
+$manifest | Add-Member -MemberType NoteProperty -Name 'start_url'-Value '/SpeakingTimerStopwatch/' -Force
 $manifestJson = $manifest | ConvertTo-Json -Depth 5
 [System.IO.File]::WriteAllText($manifestPath, $manifestJson, [System.Text.Encoding]::UTF8)
 Write-Host "[OK] manifest.webmanifest updated for GitHub Pages" -ForegroundColor Green
@@ -98,8 +98,8 @@ Write-Host "[OK] Initial commit created" -ForegroundColor Green
 # Set remote
 $remoteExists = (git remote 2>$null) -contains 'origin'
 if (-not $remoteExists) {
-    git remote add origin "https://github.com/rco-Tech/speaking-timer-stopwatch.git"
-    Write-Host "[OK] Remote 'origin' added: rco-Tech/speaking-timer-stopwatch" -ForegroundColor Green
+    git remote add origin "https://github.com/rco-Tech/SpeakingTimerStopwatch.git"
+    Write-Host "[OK] Remote 'origin' added: rco-Tech/SpeakingTimerStopwatch" -ForegroundColor Green
 }
 
 Write-Host ""
@@ -108,7 +108,7 @@ Write-Host " Next Steps - Push to GitHub and Enable Pages" -ForegroundColor Whit
 Write-Host "=======================================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host " 1. Create repo at https://github.com/new" -ForegroundColor Yellow
-Write-Host "    Name:   speaking-timer-stopwatch" -ForegroundColor White
+Write-Host "    Name:   SpeakingTimerStopwatch" -ForegroundColor White
 Write-Host "    Owner:  rco-Tech" -ForegroundColor White
 Write-Host "    Visibility: Public" -ForegroundColor White
 Write-Host "    (do NOT add README, .gitignore, or license)" -ForegroundColor DarkGray
@@ -120,7 +120,7 @@ Write-Host " 3. Enable GitHub Pages:" -ForegroundColor Yellow
 Write-Host "    Repo -> Settings -> Pages -> Source: main / (root) -> Save" -ForegroundColor White
 Write-Host ""
 Write-Host " 4. Your live PWA URL (ready in ~60s):" -ForegroundColor Yellow
-Write-Host "    https://rco-tech.github.io/speaking-timer-stopwatch/" -ForegroundColor Cyan
+Write-Host "    https://rco-tech.github.io/SpeakingTimerStopwatch/" -ForegroundColor Cyan
 Write-Host ""
 Write-Host " 5. On Android: open that URL in Chrome, menu -> Add to Home Screen" -ForegroundColor Yellow
 Write-Host "    The app installs and works FULLY OFFLINE!" -ForegroundColor Green
