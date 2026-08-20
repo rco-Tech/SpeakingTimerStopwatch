@@ -1,19 +1,16 @@
-﻿{
-    "name":  "Speaking Timer \u0026 Stopwatch",
-    "short_name":  "VoiceTimer",
-    "description":  "A beautiful, speaking timer and stopwatch with OLED dark themes, customizable LED digital fonts, and voice announcements.",
-    "display":  "standalone",
-    "background_color":  "#08090d",
-    "theme_color":  "#00e5ff",
-    "orientation":  "portrait-primary",
-    "icons":  [
-                  {
-                      "src":  "data:image/svg+xml,\u003csvg xmlns=\u0027http://www.w3.org/2000/svg\u0027 viewBox=\u00270 0 512 512\u0027\u003e\u003crect width=\u0027512\u0027 height=\u0027512\u0027 rx=\u0027128\u0027 fill=\u0027%2308090d\u0027/\u003e\u003ccircle cx=\u0027256\u0027 cy=\u0027256\u0027 r=\u0027200\u0027 fill=\u0027none\u0027 stroke=\u0027%2300e5ff\u0027 stroke-width=\u002724\u0027/\u003e\u003cline x1=\u0027256\u0027 y1=\u0027256\u0027 x2=\u0027256\u0027 y2=\u0027120\u0027 stroke=\u0027%2300e5ff\u0027 stroke-width=\u002724\u0027 stroke-linecap=\u0027round\u0027/\u003e\u003cline x1=\u0027256\u0027 y1=\u0027256\u0027 x2=\u0027340\u0027 y2=\u0027256\u0027 stroke=\u0027%2300e5ff\u0027 stroke-width=\u002724\u0027 stroke-linecap=\u0027round\u0027/\u003e\u003ccircle cx=\u0027256\u0027 cy=\u0027256\u0027 r=\u002720\u0027 fill=\u0027%2300e5ff\u0027/\u003e\u003c/svg\u003e",
-                      "sizes":  "512x512",
-                      "type":  "image/svg+xml",
-                      "purpose":  "any maskable"
-                  }
-              ],
-    "scope":  "/speaking-timer-stopwatch/",
-    "start_url":  "/speaking-timer-stopwatch/"
+{
+    "name": "Speaking Timer & Stopwatch",
+    "short_name": "VoiceTimer",
+    "description": "A beautiful, speaking timer and stopwatch with OLED dark themes, customizable LED digital fonts, and voice announcements.",
+    "display": "standalone",
+    "background_color": "#08090d",
+    "theme_color": "#00e5ff",
+    "orientation": "portrait-primary",
+    "icons": [
+        { "src": "icons/icon-192.png",  "sizes": "192x192",        "type": "image/png", "purpose": "any" },
+        { "src": "icons/icon-512.png",  "sizes": "512x512",        "type": "image/png", "purpose": "any" },
+        { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "scope": "/speaking-timer-stopwatch/",
+    "start_url": "/speaking-timer-stopwatch/"
 }
