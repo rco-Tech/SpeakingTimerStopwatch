@@ -22,11 +22,17 @@ $html = $html -replace '<script\s+src="js/audio\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/timer\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/stopwatch\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/app\.js"\s*></script>', ''
-$html = $html -replace '<link\s+rel="manifest"[^>]*>', ''
+# (the source <link rel="manifest"> is replaced by an inline data-URI manifest later)
 
 # --- Inline CSS before </head> ---
 $cssBlock = "<style>`n" + $css + "`n</style>"
-$html = $html.Replace('</head>', $cssBlock + "`n</head>")
+
+# Inline PWA manifest (data URI) so the standalone file is a self-contained installable PWA
+$manifestRaw = [System.IO.File]::ReadAllText("$root\manifest.webmanifest", [System.Text.Encoding]::UTF8)
+$manifestCompact = ($manifestRaw -replace "`r?`n", "" -replace "\s+", " ").Trim()
+$manifestLink = '<link rel="manifest" href="data:application/manifest+json,' + [System.Uri]::EscapeDataString($manifestCompact) + '">'
+
+$html = $html.Replace('</head>', $cssBlock + "`n" + $manifestLink + "`n</head>")
 
 # --- Inline JS before </body> ---
 $jsBlock = "<script>`n" +
@@ -46,6 +52,17 @@ $sizeKB = [math]::Round((Get-Item $outFile).Length / 1KB, 1)
 
 Write-Host "[OK] Standalone file: dist\voice-timer.html ($sizeKB KB)" -ForegroundColor Green
 Write-Host "     Copy to Android phone, open in Chrome - works offline!" -ForegroundColor DarkGray
+
+# --- Deploy companion PWA files so the dist folder is a complete, offline-capable deployment ---
+foreach ($f in @("sw.js", "manifest.webmanifest")) {
+    if (Test-Path "$root\$f") { Copy-Item "$root\$f" "$distDir\$f" -Force }
+}
+$iconsSrc = "$root\icons"
+if (Test-Path $iconsSrc) {
+    if (!(Test-Path "$distDir\icons")) { New-Item -ItemType Directory -Path "$distDir\icons" | Out-Null }
+    Copy-Item "$iconsSrc\*" "$distDir\icons\" -Force -Recurse
+}
+Write-Host "[OK] Deployed sw.js, manifest.webmanifest and icons into $distDir" -ForegroundColor Green
 
 # ============================================================
 # Git / GitHub Setup

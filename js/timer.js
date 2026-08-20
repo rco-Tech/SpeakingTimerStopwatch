@@ -21,9 +21,10 @@ class SpeakingTimer {
 
     this.vibrateEnabled = true;
     this.soundEnabled = true;
-    this.metronomeTick = false;
-    this.expirySound = 'whistle'; // 'whistle' | 'bell' | 'alarm' | 'chime' | 'none'
-    this.expirySpeechText = 'Timer has expired!';
+    // Metronome on by default; persists across sessions (localStorage)
+    this.metronomeTick = localStorage.getItem('timer_metronome') !== 'false';
+    this.expirySound = localStorage.getItem('timer_expiry_sound') || 'whistle'; // 'whistle' | 'bell' | 'alarm' | 'chime' | 'none'
+    this.expirySpeechText = localStorage.getItem('timer_expiry_text') || 'Timer has expired!';
 
     this.startTime = null;
     this.expectedEndTime = null;

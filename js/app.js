@@ -737,6 +737,9 @@ document.addEventListener('DOMContentLoaded', () => {
         sound.selectedVoice = picked;
         sound._userPickedVoice = picked.name;
         sound._userPickedLang = picked.lang; // Store lang for Android lang-based fallback
+        // Persist chosen voice + language so it survives app restarts (Android voice reset fix)
+        localStorage.setItem('sound_voice_name', picked.name);
+        localStorage.setItem('sound_voice_lang', picked.lang);
       }
     });
   }
@@ -745,6 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
     speechRateSlider.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
       sound.speechRate = val;
+      localStorage.setItem('sound_rate', String(val));
       if (speechRateVal) speechRateVal.textContent = `${val.toFixed(1)}x`;
     });
   }
@@ -753,6 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
     speechPitchSlider.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
       sound.speechPitch = val;
+      localStorage.setItem('sound_pitch', String(val));
       if (speechPitchVal) speechPitchVal.textContent = `${val.toFixed(1)}x`;
     });
   }
@@ -779,12 +784,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (speakEventsToggle) {
     speakEventsToggle.addEventListener('change', (e) => {
       sound.speakEvents = e.target.checked;
+      localStorage.setItem('sound_speak_events', String(e.target.checked));
     });
   }
 
   if (expirySoundSelect) {
     expirySoundSelect.addEventListener('change', (e) => {
       timer.expirySound = e.target.value;
+      localStorage.setItem('timer_expiry_sound', timer.expirySound);
       if (e.target.value === 'whistle') sound.playWhistle();
       else if (e.target.value === 'bell') sound.playBell();
       else if (e.target.value === 'alarm') sound.playAlarmPattern();
@@ -795,12 +802,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (expiryTextEl) {
     expiryTextEl.addEventListener('input', (e) => {
       timer.expirySpeechText = e.target.value.trim();
+      localStorage.setItem('timer_expiry_text', timer.expirySpeechText);
     });
   }
 
   if (metronomeToggle) {
     metronomeToggle.addEventListener('change', (e) => {
       timer.metronomeTick = e.target.checked;
+      localStorage.setItem('timer_metronome', String(timer.metronomeTick));
     });
   }
 
@@ -930,15 +939,18 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   }
 
+  updateMuteButtonUI(); // Reflect persisted mute state on startup
+
   headerMuteBtn?.addEventListener('click', () => {
     sound.setMute(!sound.isMuted);
+    localStorage.setItem('sound_muted', String(sound.isMuted));
     updateMuteButtonUI();
     if (timerSpeakingToggle) timerSpeakingToggle.checked = !sound.isMuted;
     if (swSpeakingToggle) swSpeakingToggle.checked = !sound.isMuted;
   });
 
-  // Register PWA Service Worker
-  if ('serviceWorker' in navigator) {
+  // Register PWA Service Worker (only over http/https — skip file:// and blob://)
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(err => {
         console.log('Service Worker registration skipped or unavailable:', err);

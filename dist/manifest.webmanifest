@@ -1,0 +1,16 @@
+{
+    "name": "Speaking Timer & Stopwatch",
+    "short_name": "VoiceTimer",
+    "description": "A beautiful, speaking timer and stopwatch with OLED dark themes, customizable LED digital fonts, and voice announcements.",
+    "display": "standalone",
+    "background_color": "#08090d",
+    "theme_color": "#00e5ff",
+    "orientation": "portrait-primary",
+    "icons": [
+        { "src": "icons/icon-192.png",  "sizes": "192x192",        "type": "image/png", "purpose": "any" },
+        { "src": "icons/icon-512.png",  "sizes": "512x512",        "type": "image/png", "purpose": "any" },
+        { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "scope": "/SpeakingTimerStopwatch/",
+    "start_url": "/SpeakingTimerStopwatch/"
+}

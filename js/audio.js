@@ -18,6 +18,25 @@ class SoundEngine {
     this.speechVolume = 1.0;
     this.speakEvents = true;
 
+    // Restore preferences persisted between sessions:
+    // voice/language (fixes voice resetting on Android), rate, pitch, events & mute.
+    try {
+      const vName = localStorage.getItem('sound_voice_name');
+      const vLang = localStorage.getItem('sound_voice_lang');
+      const rate   = localStorage.getItem('sound_rate');
+      const pitch  = localStorage.getItem('sound_pitch');
+      const events = localStorage.getItem('sound_speak_events');
+      const mute   = localStorage.getItem('sound_muted');
+      if (vName) this._userPickedVoice = vName;
+      if (vLang) this._userPickedLang = vLang;
+      if (rate)  this.speechRate = parseFloat(rate) || 1.0;
+      if (pitch) this.speechPitch = parseFloat(pitch) || 1.0;
+      if (events !== null) this.speakEvents = events === 'true';
+      if (mute !== null) this.isMuted = mute === 'true';
+    } catch (e) {
+      console.warn('Failed to load speech settings', e);
+    }
+
     this.initAudioContext = this.initAudioContext.bind(this);
 
     // Try immediately — works on Firefox & Safari

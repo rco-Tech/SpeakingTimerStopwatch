@@ -10,7 +10,7 @@
   <title>Speaking Timer & Stopwatch</title>
 
   <!-- PWA Manifest -->
-  
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2308090d' stroke='%2300e5ff' stroke-width='4'/><text x='50' y='65' font-size='45' text-anchor='middle' fill='%2300e5ff' font-family='sans-serif' font-weight='bold'>⏱️</text></svg>">
 
   <!-- Google Fonts: 8 Distinct Typography Styles -->
@@ -285,6 +285,7 @@ body {
 }
 
 </style>
+<link rel="manifest" href="data:application/manifest+json,%7B%20%22name%22%3A%20%22Speaking%20Timer%20%26%20Stopwatch%22%2C%20%22short_name%22%3A%20%22VoiceTimer%22%2C%20%22description%22%3A%20%22A%20beautiful%2C%20speaking%20timer%20and%20stopwatch%20with%20OLED%20dark%20themes%2C%20customizable%20LED%20digital%20fonts%2C%20and%20voice%20announcements.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22background_color%22%3A%20%22%2308090d%22%2C%20%22theme_color%22%3A%20%22%2300e5ff%22%2C%20%22orientation%22%3A%20%22portrait-primary%22%2C%20%22icons%22%3A%20%5B%20%7B%20%22src%22%3A%20%22icons%2Ficon-192.png%22%2C%20%22sizes%22%3A%20%22192x192%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22any%22%20%7D%2C%20%7B%20%22src%22%3A%20%22icons%2Ficon-512.png%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22any%22%20%7D%2C%20%7B%20%22src%22%3A%20%22icons%2Ficon-maskable-512.png%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22maskable%22%20%7D%20%5D%2C%20%22scope%22%3A%20%22%2FSpeakingTimerStopwatch%2F%22%2C%20%22start_url%22%3A%20%22%2FSpeakingTimerStopwatch%2F%22%7D">
 </head>
 <body class="flex flex-col justify-between max-w-lg mx-auto px-4 safe-pt safe-pb antialiased">
 
@@ -840,7 +841,7 @@ body {
                   <div class="text-[10px] text-gray-400">Subtle click sound every second</div>
                 </div>
               </div>
-              <input type="checkbox" id="setting-metronome" class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+              <input type="checkbox" id="setting-metronome" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
             </label>
           </div>
         </div>
@@ -1035,6 +1036,25 @@ class SoundEngine {
     this.speechPitch = 1.0;
     this.speechVolume = 1.0;
     this.speakEvents = true;
+
+    // Restore preferences persisted between sessions:
+    // voice/language (fixes voice resetting on Android), rate, pitch, events & mute.
+    try {
+      const vName = localStorage.getItem('sound_voice_name');
+      const vLang = localStorage.getItem('sound_voice_lang');
+      const rate   = localStorage.getItem('sound_rate');
+      const pitch  = localStorage.getItem('sound_pitch');
+      const events = localStorage.getItem('sound_speak_events');
+      const mute   = localStorage.getItem('sound_muted');
+      if (vName) this._userPickedVoice = vName;
+      if (vLang) this._userPickedLang = vLang;
+      if (rate)  this.speechRate = parseFloat(rate) || 1.0;
+      if (pitch) this.speechPitch = parseFloat(pitch) || 1.0;
+      if (events !== null) this.speakEvents = events === 'true';
+      if (mute !== null) this.isMuted = mute === 'true';
+    } catch (e) {
+      console.warn('Failed to load speech settings', e);
+    }
 
     this.initAudioContext = this.initAudioContext.bind(this);
 
@@ -1277,20 +1297,21 @@ class SoundEngine {
 
     const ctx = this.audioCtx;
     const now = ctx.currentTime;
+
+    // A clearer click: higher back-edge (transient) shortens the attack,
+    // plus a lower body so it's audible on typical phone speakers.
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-
     osc.type = 'square';
-    osc.frequency.setValueAtTime(1200, now);
+    osc.frequency.setValueAtTime(1600, now);
 
-    gain.gain.setValueAtTime(0.12 * this.volume, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+    gain.gain.setValueAtTime(0.22 * this.volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
-
     osc.start(now);
-    osc.stop(now + 0.03);
+    osc.stop(now + 0.055);
   }
 
   /**
@@ -1430,9 +1451,10 @@ class SpeakingTimer {
 
     this.vibrateEnabled = true;
     this.soundEnabled = true;
-    this.metronomeTick = false;
-    this.expirySound = 'whistle'; // 'whistle' | 'bell' | 'alarm' | 'chime' | 'none'
-    this.expirySpeechText = 'Timer has expired!';
+    // Metronome on by default; persists across sessions (localStorage)
+    this.metronomeTick = localStorage.getItem('timer_metronome') !== 'false';
+    this.expirySound = localStorage.getItem('timer_expiry_sound') || 'whistle'; // 'whistle' | 'bell' | 'alarm' | 'chime' | 'none'
+    this.expirySpeechText = localStorage.getItem('timer_expiry_text') || 'Timer has expired!';
 
     this.startTime = null;
     this.expectedEndTime = null;
@@ -1678,7 +1700,8 @@ class SpeakingTimer {
     }
 
     // 3. Optional Metronome Click
-    if (this.metronomeTick && remainingSeconds > 5) {
+    // Ticks every whole second for the whole run, so a metronome feel is maintained to the very end.
+    if (this.metronomeTick && remainingSeconds >= 1) {
       const wholeSec = Math.floor(remainingSeconds);
       if (this.lastTickSec !== wholeSec) {
         this.lastTickSec = wholeSec;
@@ -2684,6 +2707,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function populateVoiceDropdown(voices) {
     if (!voiceSelect) return;
+    // If the platform exposes no text-to-speech voices (e.g. some Android webviews),
+    // don't leave the dropdown stuck on "Loading device voices..."
+    if (!voices || voices.length === 0) {
+      voiceSelect.innerHTML = '<option value="">No voice found on this device (text-to-speech unavailable)</option>';
+      return;
+    }
     const currentName = sound.selectedVoice ? sound.selectedVoice.name : null;
     voiceSelect.innerHTML = voices.map((v, i) => {
       const isSelected = currentName && currentName === v.name;
@@ -2697,10 +2726,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function populateSettingsUI() {
     // Always get the freshest voice list available
-    if (voiceSelect && sound.speechSynthesis) {
-      const freshVoices = sound.speechSynthesis.getVoices();
-      if (freshVoices.length > 0) sound.voices = freshVoices;
-      populateVoiceDropdown(sound.voices);
+    if (voiceSelect) {
+      if (sound.speechSynthesis) {
+        const freshVoices = sound.speechSynthesis.getVoices();
+        if (freshVoices.length > 0) sound.voices = freshVoices;
+        populateVoiceDropdown(sound.voices);
+      } else {
+        // speechSynthesis not exposed by this platform/WebView — show a clear note
+        populateVoiceDropdown([]);
+      }
     }
 
     if (wakeLockToggle) wakeLockToggle.checked = state.keepScreenOn;
@@ -2727,6 +2761,9 @@ document.addEventListener('DOMContentLoaded', () => {
         sound.selectedVoice = picked;
         sound._userPickedVoice = picked.name;
         sound._userPickedLang = picked.lang; // Store lang for Android lang-based fallback
+        // Persist chosen voice + language so it survives app restarts (Android voice reset fix)
+        localStorage.setItem('sound_voice_name', picked.name);
+        localStorage.setItem('sound_voice_lang', picked.lang);
       }
     });
   }
@@ -2735,6 +2772,7 @@ document.addEventListener('DOMContentLoaded', () => {
     speechRateSlider.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
       sound.speechRate = val;
+      localStorage.setItem('sound_rate', String(val));
       if (speechRateVal) speechRateVal.textContent = `${val.toFixed(1)}x`;
     });
   }
@@ -2743,6 +2781,7 @@ document.addEventListener('DOMContentLoaded', () => {
     speechPitchSlider.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
       sound.speechPitch = val;
+      localStorage.setItem('sound_pitch', String(val));
       if (speechPitchVal) speechPitchVal.textContent = `${val.toFixed(1)}x`;
     });
   }
@@ -2769,12 +2808,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (speakEventsToggle) {
     speakEventsToggle.addEventListener('change', (e) => {
       sound.speakEvents = e.target.checked;
+      localStorage.setItem('sound_speak_events', String(e.target.checked));
     });
   }
 
   if (expirySoundSelect) {
     expirySoundSelect.addEventListener('change', (e) => {
       timer.expirySound = e.target.value;
+      localStorage.setItem('timer_expiry_sound', timer.expirySound);
       if (e.target.value === 'whistle') sound.playWhistle();
       else if (e.target.value === 'bell') sound.playBell();
       else if (e.target.value === 'alarm') sound.playAlarmPattern();
@@ -2785,12 +2826,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (expiryTextEl) {
     expiryTextEl.addEventListener('input', (e) => {
       timer.expirySpeechText = e.target.value.trim();
+      localStorage.setItem('timer_expiry_text', timer.expirySpeechText);
     });
   }
 
   if (metronomeToggle) {
     metronomeToggle.addEventListener('change', (e) => {
       timer.metronomeTick = e.target.checked;
+      localStorage.setItem('timer_metronome', String(timer.metronomeTick));
     });
   }
 
@@ -2920,15 +2963,18 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   }
 
+  updateMuteButtonUI(); // Reflect persisted mute state on startup
+
   headerMuteBtn?.addEventListener('click', () => {
     sound.setMute(!sound.isMuted);
+    localStorage.setItem('sound_muted', String(sound.isMuted));
     updateMuteButtonUI();
     if (timerSpeakingToggle) timerSpeakingToggle.checked = !sound.isMuted;
     if (swSpeakingToggle) swSpeakingToggle.checked = !sound.isMuted;
   });
 
-  // Register PWA Service Worker
-  if ('serviceWorker' in navigator) {
+  // Register PWA Service Worker (only over http/https — skip file:// and blob://)
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(err => {
         console.log('Service Worker registration skipped or unavailable:', err);
