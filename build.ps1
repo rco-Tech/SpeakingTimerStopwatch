@@ -22,7 +22,40 @@ $html = $html -replace '<script\s+src="js/audio\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/timer\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/stopwatch\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/app\.js"\s*></script>', ''
-# (the source <link rel="manifest"> is replaced by an inline data-URI manifest later)
+# Strip the source manifest link; a self-contained data-URI manifest is inserted later
+$html = $html -replace '<link\s+rel="manifest"\s+href="manifest\.webmanifest"[^>]*/?>', ''
+
+# --- Bundle CDN assets (vendor/) so the output is fully offline-capable ---
+$vendorDir = "$root\vendor"
+if (Test-Path "$vendorDir\tailwind.js") {
+    $twJs = [System.IO.File]::ReadAllText("$vendorDir\tailwind.js", [System.Text.Encoding]::UTF8)
+    # Use literal String.Replace — PowerShell -replace would interpret the '$' sequences
+    # inside the minified JS as regex backreferences and corrupt/duplicate the doc.
+    $html = $html.Replace('<script src="https://cdn.tailwindcss.com"></script>', ("<script>" + $twJs + "</script>"))
+    Write-Host "[OK] Inlined Tailwind CDN" -ForegroundColor Green
+} else {
+    Write-Warning "vendor\tailwind.js not found - Tailwind will NOT be bundled (run fetch-vendor.ps1)."
+}
+
+if (Test-Path "$vendorDir\lucide.js") {
+    $luJs = [System.IO.File]::ReadAllText("$vendorDir\lucide.js", [System.Text.Encoding]::UTF8)
+    $html = $html.Replace('<script src="https://unpkg.com/lucide@latest"></script>', ("<script>" + $luJs + "</script>"))
+    Write-Host "[OK] Inlined Lucide CDN" -ForegroundColor Green
+} else {
+    Write-Warning "vendor\lucide.js not found - Lucide will NOT be bundled (run fetch-vendor.ps1)."
+}
+
+if (Test-Path "$vendorDir\fonts.css") {
+    $fontsCss = [System.IO.File]::ReadAllText("$vendorDir\fonts.css", [System.Text.Encoding]::UTF8)
+    # Remove Google Fonts <link> and its <link rel="preconnect"> entries (replacement has no '$', safe with -replace)
+    $html = $html -replace '<link[^>]*fonts\.googleapis\.com[^>]*/?>', ''
+    $html = $html -replace '<link\s+rel="preconnect"\s+href="https://fonts\.(googleapis|gstatic)\.com"[^>]*/?\s*>', ''
+    # Inline fonts as <style> right before </head> (collected with the main CSS below)
+    $html = $html.Replace('</head>', "`n<style>`n" + $fontsCss + "`n</style>`n</head>")
+    Write-Host "[OK] Inlined Google Fonts (embedded woff2)" -ForegroundColor Green
+} else {
+    Write-Warning "vendor\fonts.css not found - fonts will NOT be bundled (run fetch-vendor.ps1)."
+}
 
 # --- Inline CSS before </head> ---
 $cssBlock = "<style>`n" + $css + "`n</style>"
