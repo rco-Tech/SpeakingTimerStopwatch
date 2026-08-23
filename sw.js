@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'speaking-timer-v2';
+const CACHE_NAME = 'speaking-timer-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -7,7 +7,10 @@ const ASSETS = [
   './js/timer.js',
   './js/stopwatch.js',
   './js/app.js',
-  './manifest.webmanifest'
+  './manifest.webmanifest',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
