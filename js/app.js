@@ -511,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (swHoursEl) swHoursEl.textContent = pad(comp.hours);
     if (swMinutesEl) swMinutesEl.textContent = pad(comp.minutes);
     if (swSecondsEl) swSecondsEl.textContent = pad(comp.seconds);
-    if (swMsEl) swMsEl.textContent = `.${pad(comp.ms)}`;
+    if (swMsEl) swMsEl.textContent = pad(comp.ms);
   }
 
   // Stopwatch Status Badge Elements

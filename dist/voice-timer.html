@@ -1044,26 +1044,32 @@ body {
     width: auto !important;
   }
 
-  #open-keypad-btn,
-  .sw-display-digits {
+  #open-keypad-btn {
     font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
     line-height: 1 !important;
     gap: 0.4rem !important;
   }
 
-  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]),
-  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not([data-i18n]) {
+  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]) {
     font-size: clamp(2.5rem, 16vh, 6.5rem) !important;
   }
 
-  #open-keypad-btn span[data-i18n],
-  .sw-display-digits span[data-i18n] {
+  #open-keypad-btn span[data-i18n] {
     font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
   }
 
-  .sw-ms-badge {
-    margin-top: 0.75rem !important;
-    font-size: clamp(0.75rem, 3vh, 1rem) !important;
+  .sw-display-digits {
+    font-size: clamp(2.75rem, 18vh, 7rem) !important;
+    line-height: 1 !important;
+    gap: 0.35rem !important;
+  }
+
+  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not(#sw-ms) {
+    font-size: clamp(2rem, 13vh, 5rem) !important;
+  }
+
+  .sw-display-digits #sw-ms {
+    font-size: clamp(1.8rem, 12vh, 4.5rem) !important;
   }
 
   /* Linear Progress Bar in Landscape */
@@ -1369,28 +1375,27 @@ body {
         <span id="sw-status-text" data-i18n="st.ready">READY</span>
       </div>
 
-      <!-- Main Stopwatch Digits (HH : MM : SS) -->
-      <div class="sw-display-digits flex items-baseline justify-center gap-1 sm:gap-2 digit-display font-stencil text-6xl sm:text-7xl font-extrabold tracking-tight tabular-nums select-none">
+      <!-- Main Stopwatch Digits (HH : MM : SS . CS) -->
+      <div class="sw-display-digits flex items-baseline justify-center gap-1 sm:gap-2 digit-display font-stencil text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight tabular-nums select-none">
         <div class="flex flex-col items-center">
-          <span id="sw-hours">00</span>
-          <span data-i18n="digits.h" class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">h</span>
+          <span id="sw-hours" class="tabular-nums">00</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">h</span>
         </div>
-        <span class="opacity-75 text-5xl sm:text-6xl self-center -mt-3">:</span>
+        <span class="opacity-75 text-4xl sm:text-5xl self-center -mt-3">:</span>
         <div class="flex flex-col items-center">
-          <span id="sw-minutes">00</span>
-          <span data-i18n="digits.m" class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">m</span>
+          <span id="sw-minutes" class="tabular-nums">00</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">m</span>
         </div>
-        <span class="opacity-75 text-5xl sm:text-6xl self-center -mt-3">:</span>
+        <span class="opacity-75 text-4xl sm:text-5xl self-center -mt-3">:</span>
         <div class="flex flex-col items-center">
-          <span id="sw-seconds">00</span>
-          <span data-i18n="digits.s" class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">s</span>
+          <span id="sw-seconds" class="tabular-nums">00</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">s</span>
         </div>
-      </div>
-
-      <!-- Separated Centiseconds Sub-Badge (Steady, zero horizontal jitter) -->
-      <div class="sw-ms-badge mt-2.5 px-3 py-0.5 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5 text-xs font-mono font-bold text-theme shadow-inner tracking-wider select-none">
-        <span class="text-gray-400 text-[10px] uppercase font-sans font-semibold">MS</span>
-        <span id="sw-ms" class="w-7 text-center tabular-nums">.00</span>
+        <span class="opacity-75 text-3xl sm:text-4xl self-center -mt-2 text-theme">.</span>
+        <div class="flex flex-col items-center">
+          <span id="sw-ms" class="text-3xl sm:text-4xl text-theme font-mono font-bold tabular-nums min-w-[2ch] inline-block text-center">00</span>
+          <span class="text-[11px] font-sans font-medium text-theme/70 -mt-1 tracking-normal">ms</span>
+        </div>
       </div>
     </div>
 
@@ -2126,7 +2131,7 @@ body {
         <div class="pt-2 pb-1 text-center text-xs text-gray-400 space-y-1 border-t border-white/5">
           <div class="flex items-center justify-center gap-2 font-medium">
             <span class="text-gray-300">Speaking Timer & Stopwatch</span>
-            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.25</span>
+            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.26</span>
           </div>
           <div class="text-[11px] text-gray-500">
             <span data-i18n="set.maintainedBy">Maintained by</span> <span class="text-gray-300 font-semibold">rcoTech</span>
@@ -6072,7 +6077,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (swHoursEl) swHoursEl.textContent = pad(comp.hours);
     if (swMinutesEl) swMinutesEl.textContent = pad(comp.minutes);
     if (swSecondsEl) swSecondsEl.textContent = pad(comp.seconds);
-    if (swMsEl) swMsEl.textContent = `.${pad(comp.ms)}`;
+    if (swMsEl) swMsEl.textContent = pad(comp.ms);
   }
 
   // Stopwatch Status Badge Elements
