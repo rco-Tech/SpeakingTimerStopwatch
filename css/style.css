@@ -254,7 +254,7 @@ body {
     height: 100vh !important;
     height: 100dvh !important;
     margin: 0 !important;
-    padding: 0.75rem 2rem !important;
+    padding: 1.25rem 2.5rem !important;
     overflow: hidden !important;
     justify-content: center !important;
     align-items: center !important;
@@ -270,8 +270,15 @@ body {
     display: flex !important;
   }
 
-  #timer-section,
-  #stopwatch-section {
+  /* Guarantee inactive clock is hidden */
+  #timer-section.hidden,
+  #stopwatch-section.hidden {
+    display: none !important;
+  }
+
+  /* Only active clock is displayed */
+  #timer-section:not(.hidden),
+  #stopwatch-section:not(.hidden) {
     width: 100% !important;
     height: 100% !important;
     max-height: 100dvh !important;
@@ -279,12 +286,12 @@ body {
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    gap: 2rem !important;
-    padding: 0.5rem 1.5rem !important;
+    gap: 2.5rem !important;
+    padding: 0.5rem 1rem !important;
     margin: 0 !important;
   }
 
-  /* Hide everything except display card & controls */
+  /* Hide portrait-only elements */
   .timer-quick-add-row,
   .timer-quick-settings-card,
   .timer-presets-card,
@@ -293,6 +300,13 @@ body {
   .sw-laps-card,
   .sw-units-hint {
     display: none !important;
+  }
+
+  /* Show Landscape Tab Switcher */
+  .landscape-tab-switcher {
+    display: flex !important;
+    order: 0 !important;
+    margin-bottom: 0.5rem !important;
   }
 
   /* Giant Digits Card - Left / Main Area */
@@ -315,69 +329,72 @@ body {
   }
 
   #open-keypad-btn {
-    font-size: clamp(4.5rem, 30vh, 16rem) !important;
+    font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
     line-height: 1 !important;
-    gap: 0.5rem !important;
+    gap: 0.4rem !important;
   }
 
-  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds) {
-    font-size: clamp(3.5rem, 24vh, 12rem) !important;
+  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]) {
+    font-size: clamp(2.5rem, 16vh, 6.5rem) !important;
+  }
+
+  #open-keypad-btn span[data-i18n] {
+    font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
   }
 
   #sw-time {
-    font-size: clamp(4.5rem, 30vh, 16rem) !important;
+    font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
     line-height: 1 !important;
   }
 
   #sw-ms {
-    font-size: clamp(2.5rem, 18vh, 9rem) !important;
+    font-size: clamp(1.8rem, 13vh, 5rem) !important;
   }
 
   /* Linear Progress Bar in Landscape */
   .timer-display-card > div:nth-child(3) {
-    max-width: 85% !important;
-    margin-top: 1.25rem !important;
+    max-width: 80% !important;
+    margin-top: 1rem !important;
   }
 
-  /* Controls Column - Right Side of Screen (Stacked vertically 1 under the other) */
+  /* Controls Column - Right Side of Screen */
   .timer-controls-row,
   .sw-controls-row {
-    flex: 0 0 auto !important;
+    flex: 0 0 11rem !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 0.85rem !important;
+    gap: 0.75rem !important;
     padding: 0 !important;
-    width: auto !important;
+    width: 11rem !important;
   }
 
-  /* Play/Pause Button on top */
+  /* Play/Pause Button */
   #timer-play-btn,
   #sw-play-btn {
     order: 1 !important;
-    width: 4.75rem !important;
-    height: 4.75rem !important;
-    margin-bottom: 0.25rem !important;
+    width: 4.5rem !important;
+    height: 4.5rem !important;
   }
 
-  /* Reset Button under Play */
+  /* Reset Button */
   #timer-reset-btn,
   #sw-reset-btn {
     order: 2 !important;
-    min-width: 6.5rem !important;
-    padding: 0.6rem 1.25rem !important;
+    width: 100% !important;
+    padding: 0.6rem 1rem !important;
     font-size: 0.875rem !important;
     border-radius: 1rem !important;
     justify-content: center !important;
   }
 
-  /* Clear / Lap Button under Reset */
+  /* Clear / Lap Button */
   #timer-clear-btn,
   #sw-lap-btn {
     order: 3 !important;
-    min-width: 6.5rem !important;
-    padding: 0.6rem 1.25rem !important;
+    width: 100% !important;
+    padding: 0.6rem 1rem !important;
     font-size: 0.875rem !important;
     border-radius: 1rem !important;
     justify-content: center !important;
@@ -396,7 +413,7 @@ body.landscape-mode {
   height: 100vh !important;
   height: 100dvh !important;
   margin: 0 !important;
-  padding: 0.75rem 2rem !important;
+  padding: 1.25rem 2.5rem !important;
   overflow: hidden !important;
   justify-content: center !important;
   align-items: center !important;
@@ -412,8 +429,13 @@ body.landscape-mode #btn-exit-landscape {
   display: flex !important;
 }
 
-body.landscape-mode #timer-section,
-body.landscape-mode #stopwatch-section {
+body.landscape-mode #timer-section.hidden,
+body.landscape-mode #stopwatch-section.hidden {
+  display: none !important;
+}
+
+body.landscape-mode #timer-section:not(.hidden),
+body.landscape-mode #stopwatch-section:not(.hidden) {
   width: 100% !important;
   height: 100% !important;
   max-height: 100dvh !important;
@@ -421,8 +443,8 @@ body.landscape-mode #stopwatch-section {
   flex-direction: row !important;
   justify-content: space-between !important;
   align-items: center !important;
-  gap: 2rem !important;
-  padding: 0.5rem 1.5rem !important;
+  gap: 2.5rem !important;
+  padding: 0.5rem 1rem !important;
   margin: 0 !important;
 }
 
@@ -434,6 +456,12 @@ body.landscape-mode .sw-quick-settings-card,
 body.landscape-mode .sw-laps-card,
 body.landscape-mode .sw-units-hint {
   display: none !important;
+}
+
+body.landscape-mode .landscape-tab-switcher {
+  display: flex !important;
+  order: 0 !important;
+  margin-bottom: 0.5rem !important;
 }
 
 body.landscape-mode .timer-display-card,
@@ -455,54 +483,57 @@ body.landscape-mode .sw-display-card {
 }
 
 body.landscape-mode #open-keypad-btn {
-  font-size: clamp(4.5rem, 30vh, 16rem) !important;
+  font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
   line-height: 1 !important;
-  gap: 0.5rem !important;
+  gap: 0.4rem !important;
 }
 
-body.landscape-mode #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds) {
-  font-size: clamp(3.5rem, 24vh, 12rem) !important;
+body.landscape-mode #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]) {
+  font-size: clamp(2.5rem, 16vh, 6.5rem) !important;
+}
+
+body.landscape-mode #open-keypad-btn span[data-i18n] {
+  font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
 }
 
 body.landscape-mode #sw-time {
-  font-size: clamp(4.5rem, 30vh, 16rem) !important;
+  font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
   line-height: 1 !important;
 }
 
 body.landscape-mode #sw-ms {
-  font-size: clamp(2.5rem, 18vh, 9rem) !important;
+  font-size: clamp(1.8rem, 13vh, 5rem) !important;
 }
 
 body.landscape-mode .timer-display-card > div:nth-child(3) {
-  max-width: 85% !important;
-  margin-top: 1.25rem !important;
+  max-width: 80% !important;
+  margin-top: 1rem !important;
 }
 
 body.landscape-mode .timer-controls-row,
 body.landscape-mode .sw-controls-row {
-  flex: 0 0 auto !important;
+  flex: 0 0 11rem !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
   align-items: center !important;
-  gap: 0.85rem !important;
+  gap: 0.75rem !important;
   padding: 0 !important;
-  width: auto !important;
+  width: 11rem !important;
 }
 
 body.landscape-mode #timer-play-btn,
 body.landscape-mode #sw-play-btn {
   order: 1 !important;
-  width: 4.75rem !important;
-  height: 4.75rem !important;
-  margin-bottom: 0.25rem !important;
+  width: 4.5rem !important;
+  height: 4.5rem !important;
 }
 
 body.landscape-mode #timer-reset-btn,
 body.landscape-mode #sw-reset-btn {
   order: 2 !important;
-  min-width: 6.5rem !important;
-  padding: 0.6rem 1.25rem !important;
+  width: 100% !important;
+  padding: 0.6rem 1rem !important;
   font-size: 0.875rem !important;
   border-radius: 1rem !important;
   justify-content: center !important;
@@ -511,8 +542,8 @@ body.landscape-mode #sw-reset-btn {
 body.landscape-mode #timer-clear-btn,
 body.landscape-mode #sw-lap-btn {
   order: 3 !important;
-  min-width: 6.5rem !important;
-  padding: 0.6rem 1.25rem !important;
+  width: 100% !important;
+  padding: 0.6rem 1rem !important;
   font-size: 0.875rem !important;
   border-radius: 1rem !important;
   justify-content: center !important;
@@ -521,5 +552,6 @@ body.landscape-mode #sw-lap-btn {
 body.landscape-mode .sw-controls-row > button[data-open-modal="share"] {
   display: none !important;
 }
+
 
 

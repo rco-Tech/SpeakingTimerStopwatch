@@ -134,6 +134,15 @@ document.addEventListener('DOMContentLoaded', () => {
       tabTimerBtn.classList.remove('text-gray-400');
       tabStopwatchBtn.classList.remove('text-theme', 'font-bold');
       tabStopwatchBtn.classList.add('text-gray-400');
+
+      document.querySelectorAll('.btn-landscape-tab-timer').forEach(b => {
+        b.classList.add('text-theme', 'font-bold', 'bg-white/10');
+        b.classList.remove('text-gray-400', 'font-medium');
+      });
+      document.querySelectorAll('.btn-landscape-tab-sw').forEach(b => {
+        b.classList.remove('text-theme', 'font-bold', 'bg-white/10');
+        b.classList.add('text-gray-400', 'font-medium');
+      });
     } else {
       timerSection.classList.add('hidden');
       stopwatchSection.classList.remove('hidden');
@@ -142,11 +151,27 @@ document.addEventListener('DOMContentLoaded', () => {
       tabStopwatchBtn.classList.remove('text-gray-400');
       tabTimerBtn.classList.remove('text-theme', 'font-bold');
       tabTimerBtn.classList.add('text-gray-400');
+
+      document.querySelectorAll('.btn-landscape-tab-sw').forEach(b => {
+        b.classList.add('text-theme', 'font-bold', 'bg-white/10');
+        b.classList.remove('text-gray-400', 'font-medium');
+      });
+      document.querySelectorAll('.btn-landscape-tab-timer').forEach(b => {
+        b.classList.remove('text-theme', 'font-bold', 'bg-white/10');
+        b.classList.add('text-gray-400', 'font-medium');
+      });
     }
   }
 
   tabTimerBtn.addEventListener('click', () => switchTab('timer'));
   tabStopwatchBtn.addEventListener('click', () => switchTab('stopwatch'));
+
+  document.querySelectorAll('.btn-landscape-tab-timer').forEach(b => {
+    b.addEventListener('click', () => switchTab('timer'));
+  });
+  document.querySelectorAll('.btn-landscape-tab-sw').forEach(b => {
+    b.addEventListener('click', () => switchTab('stopwatch'));
+  });
 
   // --- Timer UI Bindings ---
   const timerHoursEl = document.getElementById('timer-hours');

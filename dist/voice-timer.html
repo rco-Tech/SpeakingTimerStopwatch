@@ -970,7 +970,7 @@ body {
     height: 100vh !important;
     height: 100dvh !important;
     margin: 0 !important;
-    padding: 0.75rem 2rem !important;
+    padding: 1.25rem 2.5rem !important;
     overflow: hidden !important;
     justify-content: center !important;
     align-items: center !important;
@@ -986,8 +986,15 @@ body {
     display: flex !important;
   }
 
-  #timer-section,
-  #stopwatch-section {
+  /* Guarantee inactive clock is hidden */
+  #timer-section.hidden,
+  #stopwatch-section.hidden {
+    display: none !important;
+  }
+
+  /* Only active clock is displayed */
+  #timer-section:not(.hidden),
+  #stopwatch-section:not(.hidden) {
     width: 100% !important;
     height: 100% !important;
     max-height: 100dvh !important;
@@ -995,12 +1002,12 @@ body {
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    gap: 2rem !important;
-    padding: 0.5rem 1.5rem !important;
+    gap: 2.5rem !important;
+    padding: 0.5rem 1rem !important;
     margin: 0 !important;
   }
 
-  /* Hide everything except display card & controls */
+  /* Hide portrait-only elements */
   .timer-quick-add-row,
   .timer-quick-settings-card,
   .timer-presets-card,
@@ -1009,6 +1016,13 @@ body {
   .sw-laps-card,
   .sw-units-hint {
     display: none !important;
+  }
+
+  /* Show Landscape Tab Switcher */
+  .landscape-tab-switcher {
+    display: flex !important;
+    order: 0 !important;
+    margin-bottom: 0.5rem !important;
   }
 
   /* Giant Digits Card - Left / Main Area */
@@ -1031,69 +1045,72 @@ body {
   }
 
   #open-keypad-btn {
-    font-size: clamp(4.5rem, 30vh, 16rem) !important;
+    font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
     line-height: 1 !important;
-    gap: 0.5rem !important;
+    gap: 0.4rem !important;
   }
 
-  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds) {
-    font-size: clamp(3.5rem, 24vh, 12rem) !important;
+  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]) {
+    font-size: clamp(2.5rem, 16vh, 6.5rem) !important;
+  }
+
+  #open-keypad-btn span[data-i18n] {
+    font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
   }
 
   #sw-time {
-    font-size: clamp(4.5rem, 30vh, 16rem) !important;
+    font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
     line-height: 1 !important;
   }
 
   #sw-ms {
-    font-size: clamp(2.5rem, 18vh, 9rem) !important;
+    font-size: clamp(1.8rem, 13vh, 5rem) !important;
   }
 
   /* Linear Progress Bar in Landscape */
   .timer-display-card > div:nth-child(3) {
-    max-width: 85% !important;
-    margin-top: 1.25rem !important;
+    max-width: 80% !important;
+    margin-top: 1rem !important;
   }
 
-  /* Controls Column - Right Side of Screen (Stacked vertically 1 under the other) */
+  /* Controls Column - Right Side of Screen */
   .timer-controls-row,
   .sw-controls-row {
-    flex: 0 0 auto !important;
+    flex: 0 0 11rem !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 0.85rem !important;
+    gap: 0.75rem !important;
     padding: 0 !important;
-    width: auto !important;
+    width: 11rem !important;
   }
 
-  /* Play/Pause Button on top */
+  /* Play/Pause Button */
   #timer-play-btn,
   #sw-play-btn {
     order: 1 !important;
-    width: 4.75rem !important;
-    height: 4.75rem !important;
-    margin-bottom: 0.25rem !important;
+    width: 4.5rem !important;
+    height: 4.5rem !important;
   }
 
-  /* Reset Button under Play */
+  /* Reset Button */
   #timer-reset-btn,
   #sw-reset-btn {
     order: 2 !important;
-    min-width: 6.5rem !important;
-    padding: 0.6rem 1.25rem !important;
+    width: 100% !important;
+    padding: 0.6rem 1rem !important;
     font-size: 0.875rem !important;
     border-radius: 1rem !important;
     justify-content: center !important;
   }
 
-  /* Clear / Lap Button under Reset */
+  /* Clear / Lap Button */
   #timer-clear-btn,
   #sw-lap-btn {
     order: 3 !important;
-    min-width: 6.5rem !important;
-    padding: 0.6rem 1.25rem !important;
+    width: 100% !important;
+    padding: 0.6rem 1rem !important;
     font-size: 0.875rem !important;
     border-radius: 1rem !important;
     justify-content: center !important;
@@ -1112,7 +1129,7 @@ body.landscape-mode {
   height: 100vh !important;
   height: 100dvh !important;
   margin: 0 !important;
-  padding: 0.75rem 2rem !important;
+  padding: 1.25rem 2.5rem !important;
   overflow: hidden !important;
   justify-content: center !important;
   align-items: center !important;
@@ -1128,8 +1145,13 @@ body.landscape-mode #btn-exit-landscape {
   display: flex !important;
 }
 
-body.landscape-mode #timer-section,
-body.landscape-mode #stopwatch-section {
+body.landscape-mode #timer-section.hidden,
+body.landscape-mode #stopwatch-section.hidden {
+  display: none !important;
+}
+
+body.landscape-mode #timer-section:not(.hidden),
+body.landscape-mode #stopwatch-section:not(.hidden) {
   width: 100% !important;
   height: 100% !important;
   max-height: 100dvh !important;
@@ -1137,8 +1159,8 @@ body.landscape-mode #stopwatch-section {
   flex-direction: row !important;
   justify-content: space-between !important;
   align-items: center !important;
-  gap: 2rem !important;
-  padding: 0.5rem 1.5rem !important;
+  gap: 2.5rem !important;
+  padding: 0.5rem 1rem !important;
   margin: 0 !important;
 }
 
@@ -1150,6 +1172,12 @@ body.landscape-mode .sw-quick-settings-card,
 body.landscape-mode .sw-laps-card,
 body.landscape-mode .sw-units-hint {
   display: none !important;
+}
+
+body.landscape-mode .landscape-tab-switcher {
+  display: flex !important;
+  order: 0 !important;
+  margin-bottom: 0.5rem !important;
 }
 
 body.landscape-mode .timer-display-card,
@@ -1171,54 +1199,57 @@ body.landscape-mode .sw-display-card {
 }
 
 body.landscape-mode #open-keypad-btn {
-  font-size: clamp(4.5rem, 30vh, 16rem) !important;
+  font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
   line-height: 1 !important;
-  gap: 0.5rem !important;
+  gap: 0.4rem !important;
 }
 
-body.landscape-mode #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds) {
-  font-size: clamp(3.5rem, 24vh, 12rem) !important;
+body.landscape-mode #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]) {
+  font-size: clamp(2.5rem, 16vh, 6.5rem) !important;
+}
+
+body.landscape-mode #open-keypad-btn span[data-i18n] {
+  font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
 }
 
 body.landscape-mode #sw-time {
-  font-size: clamp(4.5rem, 30vh, 16rem) !important;
+  font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
   line-height: 1 !important;
 }
 
 body.landscape-mode #sw-ms {
-  font-size: clamp(2.5rem, 18vh, 9rem) !important;
+  font-size: clamp(1.8rem, 13vh, 5rem) !important;
 }
 
 body.landscape-mode .timer-display-card > div:nth-child(3) {
-  max-width: 85% !important;
-  margin-top: 1.25rem !important;
+  max-width: 80% !important;
+  margin-top: 1rem !important;
 }
 
 body.landscape-mode .timer-controls-row,
 body.landscape-mode .sw-controls-row {
-  flex: 0 0 auto !important;
+  flex: 0 0 11rem !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
   align-items: center !important;
-  gap: 0.85rem !important;
+  gap: 0.75rem !important;
   padding: 0 !important;
-  width: auto !important;
+  width: 11rem !important;
 }
 
 body.landscape-mode #timer-play-btn,
 body.landscape-mode #sw-play-btn {
   order: 1 !important;
-  width: 4.75rem !important;
-  height: 4.75rem !important;
-  margin-bottom: 0.25rem !important;
+  width: 4.5rem !important;
+  height: 4.5rem !important;
 }
 
 body.landscape-mode #timer-reset-btn,
 body.landscape-mode #sw-reset-btn {
   order: 2 !important;
-  min-width: 6.5rem !important;
-  padding: 0.6rem 1.25rem !important;
+  width: 100% !important;
+  padding: 0.6rem 1rem !important;
   font-size: 0.875rem !important;
   border-radius: 1rem !important;
   justify-content: center !important;
@@ -1227,8 +1258,8 @@ body.landscape-mode #sw-reset-btn {
 body.landscape-mode #timer-clear-btn,
 body.landscape-mode #sw-lap-btn {
   order: 3 !important;
-  min-width: 6.5rem !important;
-  padding: 0.6rem 1.25rem !important;
+  width: 100% !important;
+  padding: 0.6rem 1rem !important;
   font-size: 0.875rem !important;
   border-radius: 1rem !important;
   justify-content: center !important;
@@ -1237,6 +1268,7 @@ body.landscape-mode #sw-lap-btn {
 body.landscape-mode .sw-controls-row > button[data-open-modal="share"] {
   display: none !important;
 }
+
 
 
 
@@ -1357,6 +1389,18 @@ body.landscape-mode .sw-controls-row > button[data-open-modal="share"] {
 
     <!-- MAIN CONTROLS: DIRECTLY UNDER THE CLOCK -->
     <div class="timer-controls-row flex items-center justify-between px-2 pt-1 pb-1">
+      <!-- Landscape Mode Tab Switcher -->
+      <div class="landscape-tab-switcher hidden items-center p-1 rounded-2xl glass-panel bg-black/40 border border-white/10 w-full mb-1">
+        <button type="button" class="btn-landscape-tab-timer flex-1 py-1.5 px-2 rounded-xl text-xs font-bold text-theme bg-white/10 flex items-center justify-center gap-1 transition">
+          <i data-lucide="hourglass" class="w-3.5 h-3.5"></i>
+          <span data-i18n="tab.timer">Timer</span>
+        </button>
+        <button type="button" class="btn-landscape-tab-sw flex-1 py-1.5 px-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white flex items-center justify-center gap-1 transition">
+          <i data-lucide="timer" class="w-3.5 h-3.5"></i>
+          <span data-i18n="tab.stopwatch">Stopwatch</span>
+        </button>
+      </div>
+
       <button id="timer-reset-btn" class="px-5 py-3 rounded-2xl glass-panel text-sm font-semibold text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 flex items-center gap-1.5 shadow-md">
         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
         <span data-i18n="btn.reset">Reset</span>
@@ -1483,6 +1527,18 @@ body.landscape-mode .sw-controls-row > button[data-open-modal="share"] {
 
     <!-- MAIN CONTROLS: DIRECTLY UNDER STOPWATCH CLOCK -->
     <div class="sw-controls-row flex items-center justify-between px-2 pt-1 pb-1">
+      <!-- Landscape Mode Tab Switcher -->
+      <div class="landscape-tab-switcher hidden items-center p-1 rounded-2xl glass-panel bg-black/40 border border-white/10 w-full mb-1">
+        <button type="button" class="btn-landscape-tab-timer flex-1 py-1.5 px-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white flex items-center justify-center gap-1 transition">
+          <i data-lucide="hourglass" class="w-3.5 h-3.5"></i>
+          <span data-i18n="tab.timer">Timer</span>
+        </button>
+        <button type="button" class="btn-landscape-tab-sw flex-1 py-1.5 px-2 rounded-xl text-xs font-bold text-theme bg-white/10 flex items-center justify-center gap-1 transition">
+          <i data-lucide="timer" class="w-3.5 h-3.5"></i>
+          <span data-i18n="tab.stopwatch">Stopwatch</span>
+        </button>
+      </div>
+
       <button id="sw-reset-btn" data-i18n="btn.reset" class="px-4 py-3 rounded-2xl glass-panel text-sm font-semibold text-gray-300 hover:text-white hover:border-white/20 transition active:scale-95 shadow-md">
         Reset
       </button>
@@ -2201,7 +2257,7 @@ body.landscape-mode .sw-controls-row > button[data-open-modal="share"] {
         <div class="pt-2 pb-1 text-center text-xs text-gray-400 space-y-1 border-t border-white/5">
           <div class="flex items-center justify-center gap-2 font-medium">
             <span class="text-gray-300">Speaking Timer & Stopwatch</span>
-            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.21</span>
+            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.22</span>
           </div>
           <div class="text-[11px] text-gray-500">
             <span data-i18n="set.maintainedBy">Maintained by</span> <span class="text-gray-300 font-semibold">rcoTech</span>
@@ -5770,6 +5826,15 @@ document.addEventListener('DOMContentLoaded', () => {
       tabTimerBtn.classList.remove('text-gray-400');
       tabStopwatchBtn.classList.remove('text-theme', 'font-bold');
       tabStopwatchBtn.classList.add('text-gray-400');
+
+      document.querySelectorAll('.btn-landscape-tab-timer').forEach(b => {
+        b.classList.add('text-theme', 'font-bold', 'bg-white/10');
+        b.classList.remove('text-gray-400', 'font-medium');
+      });
+      document.querySelectorAll('.btn-landscape-tab-sw').forEach(b => {
+        b.classList.remove('text-theme', 'font-bold', 'bg-white/10');
+        b.classList.add('text-gray-400', 'font-medium');
+      });
     } else {
       timerSection.classList.add('hidden');
       stopwatchSection.classList.remove('hidden');
@@ -5778,11 +5843,27 @@ document.addEventListener('DOMContentLoaded', () => {
       tabStopwatchBtn.classList.remove('text-gray-400');
       tabTimerBtn.classList.remove('text-theme', 'font-bold');
       tabTimerBtn.classList.add('text-gray-400');
+
+      document.querySelectorAll('.btn-landscape-tab-sw').forEach(b => {
+        b.classList.add('text-theme', 'font-bold', 'bg-white/10');
+        b.classList.remove('text-gray-400', 'font-medium');
+      });
+      document.querySelectorAll('.btn-landscape-tab-timer').forEach(b => {
+        b.classList.remove('text-theme', 'font-bold', 'bg-white/10');
+        b.classList.add('text-gray-400', 'font-medium');
+      });
     }
   }
 
   tabTimerBtn.addEventListener('click', () => switchTab('timer'));
   tabStopwatchBtn.addEventListener('click', () => switchTab('stopwatch'));
+
+  document.querySelectorAll('.btn-landscape-tab-timer').forEach(b => {
+    b.addEventListener('click', () => switchTab('timer'));
+  });
+  document.querySelectorAll('.btn-landscape-tab-sw').forEach(b => {
+    b.addEventListener('click', () => switchTab('stopwatch'));
+  });
 
   // --- Timer UI Bindings ---
   const timerHoursEl = document.getElementById('timer-hours');
