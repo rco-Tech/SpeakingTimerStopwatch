@@ -343,17 +343,18 @@ body {
   }
 
   .sw-display-digits {
-    font-size: clamp(2.75rem, 18vh, 7rem) !important;
+    font-size: clamp(1.75rem, 11.5vh, 4rem) !important;
     line-height: 1 !important;
-    gap: 0.35rem !important;
+    gap: clamp(0.15rem, 0.8vw, 0.4rem) !important;
+    max-width: 100% !important;
   }
 
-  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not(#sw-ms) {
-    font-size: clamp(2rem, 13vh, 5rem) !important;
+  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not(#sw-ms):not([class*="text-"]) {
+    font-size: clamp(1.35rem, 9vh, 3rem) !important;
   }
 
-  .sw-display-digits #sw-ms {
-    font-size: clamp(1.8rem, 12vh, 4.5rem) !important;
+  .sw-display-digits span[class*="text-"] {
+    font-size: clamp(0.65rem, 2.8vh, 0.95rem) !important;
   }
 
   /* Linear Progress Bar in Landscape */
