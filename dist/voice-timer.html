@@ -1945,6 +1945,7 @@ body {
     "prompt.presetName": "Enter a name for this preset:",
     "prompt.presetDefault": "Workout",
     "alert.copied": "Copied to clipboard!",
+    "confirm.deletePreset": "Are you sure you want to delete the preset \"{name}\"?",
     // Digit unit letters under displays
     "digits.h": "h", "digits.m": "m", "digits.s": "s",
     // ---- Spoken announcement phrases ----
@@ -2043,6 +2044,7 @@ body {
     "prompt.presetName": "Nombre del preset:",
     "prompt.presetDefault": "Entrenamiento",
     "alert.copied": "¡Copiado al portapapeles!",
+    "confirm.deletePreset": "¿Seguro que deseas eliminar el preset «{name}»?",
     "digits.h": "h", "digits.m": "m", "digits.s": "s",
     "sp.go": "¡Vamos!",
     "sp.timerPaused": "Temporizador en pausa",
@@ -2139,6 +2141,7 @@ body {
     "prompt.presetName": "Name der Vorlage:",
     "prompt.presetDefault": "Workout",
     "alert.copied": "In die Zwischenablage kopiert!",
+    "confirm.deletePreset": "Möchtest du die Vorlage „{name}“ wirklich löschen?",
     "digits.h": "h", "digits.m": "m", "digits.s": "s",
     "sp.go": "Los!",
     "sp.timerPaused": "Timer pausiert",
@@ -2235,6 +2238,7 @@ body {
     "prompt.presetName": "Nom du raccourci :",
     "prompt.presetDefault": "Séance",
     "alert.copied": "Copié dans le presse-papiers !",
+    "confirm.deletePreset": "Voulez-vous vraiment supprimer le raccourci « {name} » ?",
     "digits.h": "h", "digits.m": "m", "digits.s": "s",
     "sp.go": "C'est parti !",
     "sp.timerPaused": "Minuteur en pause",
@@ -2331,6 +2335,7 @@ body {
     "prompt.presetName": "Название набора:",
     "prompt.presetDefault": "Тренировка",
     "alert.copied": "Скопировано в буфер обмена!",
+    "confirm.deletePreset": "Вы уверены, что хотите удалить набор «{name}»?",
     "digits.h": "ч", "digits.m": "м", "digits.s": "с",
     "sp.go": "Старт!",
     "sp.timerPaused": "Таймер на паузе",
@@ -2427,6 +2432,7 @@ body {
     "prompt.presetName": "预设名称：",
     "prompt.presetDefault": "锻炼",
     "alert.copied": "已复制到剪贴板！",
+    "confirm.deletePreset": "确定要删除预设「{name}」吗？",
     "digits.h": "时", "digits.m": "分", "digits.s": "秒",
     "sp.go": "开始！",
     "sp.timerPaused": "计时已暂停",
@@ -2523,6 +2529,7 @@ body {
     "prompt.presetName": "Numele presetului:",
     "prompt.presetDefault": "Antrenament",
     "alert.copied": "Copiat în clipboard!",
+    "confirm.deletePreset": "Sigur dorești să ștergi presetul „{name}”?",
     "digits.h": "h", "digits.m": "m", "digits.s": "s",
     "sp.go": "Start!",
     "sp.timerPaused": "Temporizator în pauză",
@@ -4243,15 +4250,18 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
           <span class="text-xs font-mono font-bold text-gray-200 bg-black/50 border border-white/10 px-2 py-1 rounded-lg">${formatSecShort(p.durationSec)}</span>
-          <span class="delete-preset-btn text-gray-500 hover:text-red-400 p-1 text-base leading-none transition" data-preset-id="${p.id}" title="Delete preset">&times;</span>
+          <span class="delete-preset-btn text-gray-500 hover:text-rose-400 hover:bg-white/10 px-2 py-1 rounded-lg text-sm font-bold leading-none transition" data-preset-id="${p.id}" title="Delete preset">&times;</span>
         </div>
       `;
 
       chip.addEventListener('click', (e) => {
         if (e.target.classList.contains('delete-preset-btn')) {
           e.stopPropagation();
-          timer.deletePreset(p.id);
-          renderPresets();
+          const confirmed = confirm(t('confirm.deletePreset', { name: displayName }));
+          if (confirmed) {
+            timer.deletePreset(p.id);
+            renderPresets();
+          }
           return;
         }
         const hours = Math.floor(p.durationSec / 3600);

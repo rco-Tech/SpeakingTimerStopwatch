@@ -404,15 +404,18 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
           <span class="text-xs font-mono font-bold text-gray-200 bg-black/50 border border-white/10 px-2 py-1 rounded-lg">${formatSecShort(p.durationSec)}</span>
-          <span class="delete-preset-btn text-gray-500 hover:text-red-400 p-1 text-base leading-none transition" data-preset-id="${p.id}" title="Delete preset">&times;</span>
+          <span class="delete-preset-btn text-gray-500 hover:text-rose-400 hover:bg-white/10 px-2 py-1 rounded-lg text-sm font-bold leading-none transition" data-preset-id="${p.id}" title="Delete preset">&times;</span>
         </div>
       `;
 
       chip.addEventListener('click', (e) => {
         if (e.target.classList.contains('delete-preset-btn')) {
           e.stopPropagation();
-          timer.deletePreset(p.id);
-          renderPresets();
+          const confirmed = confirm(t('confirm.deletePreset', { name: displayName }));
+          if (confirmed) {
+            timer.deletePreset(p.id);
+            renderPresets();
+          }
           return;
         }
         const hours = Math.floor(p.durationSec / 3600);
