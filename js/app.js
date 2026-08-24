@@ -378,10 +378,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const chip = document.createElement('button');
       chip.className = 'group relative flex items-center justify-between p-3 sm:py-3.5 sm:px-3.5 rounded-2xl glass-panel hover:border-theme transition active:scale-95 text-left border border-white/10 shadow-md';
       const colorVal = p.color || 'var(--primary)';
+      const displayName = t(p.id) || p.name;
       chip.innerHTML = `
         <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-1.5">
           <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: ${colorVal}; box-shadow: 0 0 8px ${colorVal}"></span>
-          <span class="font-semibold text-gray-100 text-xs sm:text-sm leading-tight">${p.name}</span>
+          <span class="font-semibold text-gray-100 text-xs sm:text-sm leading-tight">${displayName}</span>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
           <span class="text-xs font-mono font-bold text-gray-200 bg-black/50 border border-white/10 px-2 py-1 rounded-lg">${formatSecShort(p.durationSec)}</span>

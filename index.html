@@ -46,10 +46,10 @@
     <!-- Top Action Icons Bar -->
     <div class="flex items-center justify-between mb-3 px-1">
       <div class="flex items-center gap-2">
-        <button id="btn-open-menu" data-open-modal="settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+        <button id="btn-open-menu" data-open-modal="settings" title="Settings" data-i18n-title="tt.settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
-        <span class="text-sm font-semibold tracking-wide text-gray-200">Voice Timer</span>
+        <span class="text-sm font-semibold tracking-wide text-gray-200" data-i18n="app.title">Voice Timer</span>
       </div>
 
       <div class="flex items-center gap-1.5">
@@ -77,11 +77,6 @@
         <button id="btn-fullscreen" title="Fullscreen Mode" data-i18n-title="tt.fullscreen" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
           <i data-lucide="maximize" class="w-5 h-5"></i>
         </button>
-
-        <!-- Settings Gear -->
-        <button id="btn-open-settings" data-open-modal="settings" title="Settings" data-i18n-title="tt.settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
-          <i data-lucide="settings" class="w-5 h-5"></i>
-        </button>
       </div>
     </div>
 
@@ -96,7 +91,7 @@
 
       <button id="tab-stopwatch-btn" class="relative z-10 flex-1 py-2.5 flex items-center justify-center gap-2 text-sm text-gray-400 font-medium transition">
         <i data-lucide="timer" class="w-4 h-4"></i>
-        <span>Stopwatch</span>
+        <span data-i18n="tab.stopwatch">Stopwatch</span>
       </button>
     </div>
   </header>
@@ -230,7 +225,7 @@
 
         <label class="flex items-center gap-2 cursor-pointer select-none">
           <input type="checkbox" id="timer-vibrate-toggle" checked class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
-          <span class="text-gray-300">Vibration</span>
+          <span class="text-gray-300" data-i18n="lbl.vibration">Vibration</span>
           <i data-lucide="smartphone-nfc" class="w-3.5 h-3.5 text-gray-400 ml-auto"></i>
         </label>
       </div>
