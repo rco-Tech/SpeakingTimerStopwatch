@@ -296,10 +296,7 @@ class SpeakingStopwatch {
     const h = Math.floor(totalSec / 3600);
 
     const pad = (n) => String(n).padStart(2, '0');
-    if (h > 0) {
-      return `${pad(h)}:${pad(m)}:${pad(s)}.${pad(cs)}`;
-    }
-    return `${pad(m)}:${pad(s)}.${pad(cs)}`;
+    return `${pad(h)}:${pad(m)}:${pad(s)}.${pad(cs)}`;
   }
 
   getShareSummary() {

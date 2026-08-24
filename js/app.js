@@ -508,10 +508,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateStopwatchDisplay(comp) {
     const pad = (n) => String(n).padStart(2, '0');
-    if (swHoursEl) swHoursEl.textContent = pad(comp.hours);
-    if (swMinutesEl) swMinutesEl.textContent = pad(comp.minutes);
-    if (swSecondsEl) swSecondsEl.textContent = pad(comp.seconds);
-    if (swTenthsEl) swTenthsEl.textContent = String(comp.tenths !== undefined ? comp.tenths : 0);
+    if (swHoursEl) swHoursEl.textContent = pad(comp.hours || 0);
+    if (swMinutesEl) swMinutesEl.textContent = pad(comp.minutes || 0);
+    if (swSecondsEl) swSecondsEl.textContent = pad(comp.seconds || 0);
+
+    let tVal = 0;
+    if (comp.tenths !== undefined) {
+      tVal = comp.tenths;
+    } else if (comp.ms !== undefined) {
+      tVal = Math.floor(comp.ms / 10);
+    } else if (comp.totalMs !== undefined) {
+      tVal = Math.floor((comp.totalMs % 1000) / 100);
+    }
+    if (swTenthsEl) swTenthsEl.textContent = String(Math.abs(tVal) % 10);
   }
 
   // Stopwatch Status Badge Elements

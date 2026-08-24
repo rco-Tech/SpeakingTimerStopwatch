@@ -2132,7 +2132,7 @@ body {
         <div class="pt-2 pb-1 text-center text-xs text-gray-400 space-y-1 border-t border-white/5">
           <div class="flex items-center justify-center gap-2 font-medium">
             <span class="text-gray-300">Speaking Timer & Stopwatch</span>
-            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.29</span>
+            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.30</span>
           </div>
           <div class="text-[11px] text-gray-500">
             <span data-i18n="set.maintainedBy">Maintained by</span> <span class="text-gray-300 font-semibold">rcoTech</span>
@@ -5534,10 +5534,7 @@ class SpeakingStopwatch {
     const h = Math.floor(totalSec / 3600);
 
     const pad = (n) => String(n).padStart(2, '0');
-    if (h > 0) {
-      return `${pad(h)}:${pad(m)}:${pad(s)}.${pad(cs)}`;
-    }
-    return `${pad(m)}:${pad(s)}.${pad(cs)}`;
+    return `${pad(h)}:${pad(m)}:${pad(s)}.${pad(cs)}`;
   }
 
   getShareSummary() {
@@ -6076,10 +6073,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateStopwatchDisplay(comp) {
     const pad = (n) => String(n).padStart(2, '0');
-    if (swHoursEl) swHoursEl.textContent = pad(comp.hours);
-    if (swMinutesEl) swMinutesEl.textContent = pad(comp.minutes);
-    if (swSecondsEl) swSecondsEl.textContent = pad(comp.seconds);
-    if (swTenthsEl) swTenthsEl.textContent = String(comp.tenths !== undefined ? comp.tenths : 0);
+    if (swHoursEl) swHoursEl.textContent = pad(comp.hours || 0);
+    if (swMinutesEl) swMinutesEl.textContent = pad(comp.minutes || 0);
+    if (swSecondsEl) swSecondsEl.textContent = pad(comp.seconds || 0);
+
+    let tVal = 0;
+    if (comp.tenths !== undefined) {
+      tVal = comp.tenths;
+    } else if (comp.ms !== undefined) {
+      tVal = Math.floor(comp.ms / 10);
+    } else if (comp.totalMs !== undefined) {
+      tVal = Math.floor((comp.totalMs % 1000) / 100);
+    }
+    if (swTenthsEl) swTenthsEl.textContent = String(Math.abs(tVal) % 10);
   }
 
   // Stopwatch Status Badge Elements
