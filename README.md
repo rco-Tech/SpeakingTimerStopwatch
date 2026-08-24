@@ -1,106 +1,183 @@
-# ⏱️ Speaking Timer & Stopwatch
+# ⏱️ Speaking Timer & Stopwatch `v1.12`
 
-> ### 🏁 **TL;DR** — A gorgeous, **mobile-first** speaking timer & stopwatch with live voice callouts, OLED neon themes, customizable LED digital fonts, haptics, and wake-lock. No install required — just open `index.html`.
+> ### 🏁 **TL;DR** — A gorgeous, **mobile-first** speaking timer & stopwatch with live voice callouts, live date & time clock, 8 OLED neon themes, 8 customizable LED digital fonts, haptics, wake-lock, and offline PWA capability. No install required — open [`index.html`](index.html) or run standalone!
 
-**Speaking Timer & Stopwatch** is a self-contained web app for workouts, boxing rounds, HIIT, Tabata, Pomodoro focus, and any timed speaking practice. It pairs **real-time TTS voice announcements**, **synthesized alert sounds**, **8 neon themes**, and **8 LED typography styles** into one ultra-sleek OLED dark‑mode interface.
+**Speaking Timer & Stopwatch** is a professional, self-contained web and progressive web application (PWA) designed for fitness training, HIIT, boxing rounds, Tabata intervals, sprint laps, cooking, presentations, and Pomodoro productivity. It combines **real-time text-to-speech voice announcements**, **synthesized audio effects**, **8 OLED neon color palettes**, and **8 digital typography styles** into one ultra-sleek, battery-friendly dark-mode interface.
 
 ---
 
 ## ✨ Key Features
 
-### 🗣️ Voice & Audio Synthesis
-- Configurable spoken announcements — every `5s`, `10s`, `15s`, `30s`, `1m`, `2m`, and more.
-- **7 interface & voice languages** — English, Español, Deutsch, Français, Русский, 中文 (Mandarin), Română. Switchable in **Settings → App & Voice Language**: it translates the whole UI *and* all spoken announcements (voice auto-selected to match).
-- Pre‑start countdown **"3, 2, 1, GO!"** (available on both Timer and Stopwatch) and a final **"5, 4, 3, 2, 1"** countdown.
-- Realistic synthesized effects — **Referee Whistle**, **Boxing Ring Bell**, **Digital Alarm**, **Gentle Marimba Chimes**, and **Metronome Ticks**.
-- Pick any device TTS voice and tune **rate / pitch** with a live “Test Voice” preview.
+### 🗣️ Voice & Speech Engine (7 Languages)
+- **Periodic Spoken Time Announcements**: Spoken countdown callouts at intervals of `5s`, `10s`, `15s`, `30s`, `1m`, `2m`, `5m`.
+- **7 Supported Interface & Voice Languages**:
+  - 🇬🇧 English
+  - 🇪🇸 Español
+  - 🇩🇪 Deutsch
+  - 🇫🇷 Français
+  - 🇷🇺 Русский
+  - 🇨🇳 中文 (Mandarin)
+  - 🇷🇴 Română
+- **Seamless Language Switching**: Instant 1-tap switching via the header 🌐 Globe icon or Settings. All UI text, tooltips, presets, and voice engines re-target automatically.
+- **Pre-Start Countdown**: Spoken *"3, 2, 1, GO!"* with visual overlay on both Timer and Stopwatch.
+- **Final Countdown**: Spoken & audible *"5, 4, 3, 2, 1"* before expiration.
+- **Synthesized Audio Effects**: Referee Whistle, Boxing Ring Bell, Digital Sports Alarm, Gentle Marimba Chimes, and continuous 1-second Metronome Ticks.
+- **Custom Speech Rate & Pitch**: Fine-tune voice speed and pitch with a live "Test Voice" preview.
+
+### 📅 Live Header Clock & Status Bar
+- Dynamic live clock displaying current localized **Day of week, Date, and Time** (e.g. `Monday, 24 Aug · 06:24`).
+- Prominent header navigation bar with quick toggles for Mute, Language, Color Themes, Fonts, Fullscreen, and Settings.
 
 ### 🎨 8 OLED Neon Color Themes
-| Theme | Theme |
-| --- | --- |
-| ⚡ Electric Cyan | 🟢 Matrix Lime |
-| 🟡 Amber Gold | 🟣 Cyberpunk Purple |
-| 🔴 Volcanic Crimson | 🟠 Sunset Orange |
-| 🌸 Sakura Pink | ⚪ Ice White |
+| Theme | Accent Color |
+| :--- | :--- |
+| ⚡ **Electric Cyan** | `#00e5ff` (Cyberpunk Aqua) |
+| 🟢 **Matrix Lime** | `#39ff14` (High-visibility Green) |
+| 🟡 **Amber Gold** | `#ffb703` (Warm OLED Gold) |
+| 🟣 **Cyberpunk Purple** | `#d946ef` (Deep Neon Violet) |
+| 🔴 **Volcanic Crimson** | `#ff0055` (Intense Sport Red) |
+| 🟠 **Sunset Orange** | `#ff6b00` (Energetic Orange) |
+| 🌸 **Sakura Pink** | `#ff2a85` (Vibrant Magenta) |
+| ⚪ **Ice White** | `#ffffff` (Crisp Clean Monochrome) |
 
 ### 🔤 8 Digital Typography Styles
-| Style | Font |
-| --- | --- |
-| Military Stencil | `Black Ops One` |
-| 8‑Bit Pixel | `VT323` |
-| 7‑Segment LCD | `Share Tech Mono` |
-| Orbitron LED | `Orbitron` |
-| Chunky Sport | `Chakra Petch` |
-| Athletic Timer | `Bebas Neue` |
-| Handwritten | `Permanent Marker` |
-| Minimalist Heavy | `Montserrat` |
+| Style | Font Family | Character |
+| :--- | :--- | :--- |
+| **Military Stencil** | `Black Ops One` | Bold, rugged tactical look |
+| **8-Bit Pixel** | `VT323` | Retro arcade scoreboard |
+| **7-Segment LCD** | `Share Tech Mono` | Classic digital stopwatch |
+| **Orbitron LED** | `Orbitron` | Sci-Fi futuristic HUD |
+| **Chunky Sport** | `Chakra Petch` | Modern athletic gym timer |
+| **Athletic Timer** | `Bebas Neue` | Heavy condensed stadium digits |
+| **Handwritten Marker** | `Permanent Marker` | Casual whiteboard timer |
+| **Modern Minimalist** | `Montserrat` | Clean, bold contemporary aesthetic |
+
+*Note: Main digits and millisecond units share the identical font style for a cohesive display.*
 
 ### ⏱️ Millisecond Stopwatch & Lap Analytics
-- High‑precision lap timing with automatic **fastest (green) / slowest (red)** lap detection.
-- Unified digital font typography across main digits and milliseconds.
-- Spoken lap splits and total elapsed times.
-- **Copy · Share** workout lap summaries (clipboard + native/share sheet).
+- Centisecond & millisecond precision with continuous 1-second metronome ticking option.
+- Automatic **fastest (green badge)** and **slowest (red badge)** lap detection.
+- Spoken lap splits and cumulative elapsed time announcements.
+- One-tap **Copy & Share** formatted lap breakdown (clipboard & native share sheet).
 
-### 📱 Phone‑Optimized & PWA Ready
-- **Screen Wake Lock** — keeps your phone awake during workouts & practice.
-- **Haptic vibration** on every tap, interval, and lap.
-- **Touch keypad** for quick digital time entry.
-- **Workout presets** — HIIT, Rest Interval, Plank, Boxing, Coffee/Tea, Pomodoro + custom presets.
+### 📱 Mobile-First, Touch & PWA Ready
+- **Screen Wake Lock**: Prevents phone screens from sleeping during active workouts.
+- **Haptic Vibration**: Tactile feedback on button presses, intervals, and lap splits.
+- **Digital Touch Keypad**: Fast, intuitive time entry modal.
+- **Safeguarded Quick Presets**: Built-in presets (HIIT, Rest, Plank, Boxing, Coffee/Tea, Pomodoro) + custom presets with safe delete confirmation.
+- **Offline Service Worker (`v15`)**: Automatic cache updates on launch.
 
 ---
 
 ## 🚀 Getting Started
 
-### Option A — Run in your browser (desktop / mobile)
-Open **[`index.html`](index.html)** directly in Chrome, Edge, Safari, or Firefox.
+### Option A — Instant Browser Launch (Zero Install)
+Open **[`index.html`](index.html)** in any modern browser (Chrome, Edge, Safari, Firefox).
 
-### Option B — Use it on your phone over Wi-Fi — ideal for workouts/training
-1. In PowerShell, from the project folder:
+### Option B — Run on Mobile over Wi-Fi
+1. In PowerShell from the project folder:
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\serve.ps1
    ```
-2. The terminal prints a local network address (e.g. `http://192.168.1.xxx:8080`).
-3. Open that link on your phone — or scan the built‑in **QR code**.
-4. Tap **“Add to Home Screen”** to install it as a standalone, fullscreen PWA.
+2. Open the printed LAN URL on your phone or scan the QR code.
+3. Tap **"Add to Home Screen"** to install as a fullscreen, offline PWA.
 
-### Option C — Deploy to any static host
-Upload the whole folder to any static host (GitHub Pages, Netlify, Vercel, etc.). It’s pure HTML/CSS/JS with nothing server‑side required.
+### Option C — Standalone Single-File Bundle
+Run `build.ps1` to produce [`dist/voice-timer.html`](dist/voice-timer.html) (self-contained with inlined fonts, CSS, Lucide icons, Tailwind, and JS).
+
+---
+
+## 🏬 App Store Packaging & Publishing Guide
+
+This application is built according to Progressive Web App (PWA) best practices, making it directly packageable for major app stores:
+
+### 1. Google Play Store (Android)
+- **Method**: Trusted Web Activity (TWA) via [PWABuilder](https://www.pwabuilder.com/) or Google's [Bubblewrap CLI](https://github.com/GoogleChromeLabs/bubblewrap).
+- **Steps**:
+  1. Deploy the repository to a secure HTTPS domain (e.g. GitHub Pages).
+  2. Enter the URL into [PWABuilder](https://www.pwabuilder.com/) or run:
+     ```bash
+     npx @bubblewrap/cli init --manifest=https://<your-domain>/manifest.webmanifest
+     npx @bubblewrap/cli build
+     ```
+  3. Sign the generated `.aab` (Android App Bundle) with your Google Play release key and upload to Google Play Console.
+- **Required Permissions**: VIBRATE, WAKE_LOCK (declared automatically in `manifest.webmanifest`).
+
+### 2. Microsoft Store (Windows 10 / 11)
+- **Method**: Windows App Package (MSIX) generated via [PWABuilder](https://www.pwabuilder.com/).
+- **Steps**:
+  1. Generate the Windows package on PWABuilder.
+  2. Submit the resulting `.msixbundle` to the Microsoft Partner Center.
+
+### 3. Apple App Store (iOS / iPadOS / macOS)
+- **Method**: Wrap in a WebKit container using [Capacitor](https://capacitorjs.com/) or distribute as a Safari Progressive Web App (Add to Home Screen).
+- **Capacitor command**:
+  ```bash
+  npx @capacitor/cli create
+  npx cap add ios
+  npx cap open ios
+  ```
+
+---
+
+## 📋 Store Listing Metadata
+
+| Field | Content |
+| :--- | :--- |
+| **App Title** | Speaking Voice Timer & Stopwatch |
+| **Short Description** | Voice-guided interval timer & stopwatch with spoken countdowns, OLED themes & LED fonts. |
+| **Category** | Health & Fitness / Sports / Productivity |
+| **Age Rating** | Everyone (4+) |
+| **Keywords** | voice timer, speaking timer, interval timer, workout timer, HIIT, tabata, boxing timer, stopwatch, lap timer, pomodoro, metronome, fitness timer |
+
+---
+
+## 🔒 Privacy Policy
+
+**Effective Date:** August 2026
+
+**Speaking Timer & Stopwatch** is designed with a strict **privacy-first** architecture:
+1. **Zero Data Collection**: The application does not collect, transmit, store, or sell any personal data, usage analytics, or device identifiers.
+2. **100% Local Execution**: All timers, stopwatches, speech synthesis, sound effects, and user preferences (language, theme, font, custom presets) are processed and stored exclusively on your device using local browser storage (`localStorage`).
+3. **No Third-Party Trackers or Cookies**: There are no tracking scripts, advertising SDKs, or analytics cookies integrated into this application.
+4. **Offline Capability**: The application operates completely offline without requiring an active internet connection after initial download.
+
+---
+
+## ⚠️ Disclaimer
+
+1. **Health & Fitness**: This application is provided as a utility tool for timing, sports training, and interval management. Users should consult a qualified physician before undertaking strenuous physical training or workout routines. Use at your own discretion and physical capacity.
+2. **Speech Synthesis Compatibility**: Voice pronunciation and naturalness depend on the text-to-speech (TTS) engines and voice packs installed on your operating system or browser.
+3. **Trademarks & Attribution**: PayPal and the PayPal logo are registered trademarks of PayPal, Inc. All other product names, trademarks, and registered trademarks are property of their respective owners.
 
 ---
 
 ## 🗂️ Project Structure
 
 ```
-├── index.html            # Main app (single-page UI)
-├── css/style.css         # Themes, typography, animations
+├── index.html            # Main single-page web app
+├── css/style.css         # OLED themes, typography styles, animations
 ├── js/
-│   ├── app.js            # App state & orchestration
-│   ├── audio.js          # Web Audio synth + effects
-│   ├── i18n.js           # UI + voice translations (en/es/de/fr/ru/zh/ro)
-│   ├── timer.js          # Countdown & voice scheduling
-│   └── stopwatch.js      # Lap stopwatch logic
-├── manifest.webmanifest  # PWA manifest (installable app)
-├── sw.js                 # PWA service worker
-├── vendor/               # Downloaded CDN assets (Tailwind, Lucide, fonts)
-├── icons/                # PWA app icons
-├── dist/                 # Pre-built snapshot of the app
-├── fetch-vendor.ps1      # Downloads CDN assets into vendor/ (run first)
-├── build.ps1             # Main build — bundles HTML/CSS/JS into dist/voice-timer.html
-├── _build_dist.ps1       # Alternative lightweight build (same output)
-├── serve.ps1             # One-command LAN server (phone access)
-└── .gitignore
+│   ├── app.js            # App state, DOM wiring, live clock, PWA lifecycle
+│   ├── audio.js          # Web Audio synth + Web Speech voice engine
+│   ├── i18n.js           # 7-language translation dictionaries & pluralization
+│   ├── timer.js          # Countdown logic, voice scheduling & presets
+│   └── stopwatch.js      # Centisecond stopwatch, lap analytics & metronome
+├── manifest.webmanifest  # PWA manifest with theme colors & icons
+├── sw.js                 # Offline Service Worker (Cache v15)
+├── icons/                # High-res PWA app icons & assets
+├── vendor/               # Offline CDN bundles (Tailwind, Lucide, Google Fonts)
+├── dist/                 # Production-ready distribution folder
+├── build.ps1             # Main build script (inlines all code into standalone bundle)
+├── _build_dist.ps1       # Lightweight distribution builder
+├── serve.ps1             # Local LAN HTTP server for testing on mobile devices
+└── README.md             # Documentation, store packaging guide & disclaimers
 ```
 
-> **Note:** Run `fetch-vendor.ps1` once before `build.ps1` so the offline build has the Tailwind, Lucide, and font assets it needs.
+---
 
-## 🛠️ Tech Stack
+## ☕ Support & Maintainer
 
-- **HTML + Tailwind CSS** — responsive, mobile-first UI
-- **Google Fonts** — the 8 LED-style font families
-- **Web Speech API** — device TTS voice announcements (multi-language)
-- **Web Audio API** — synthesized sound effects
-- **PWA manifest + service worker** — installable fullscreen app
-
-## 📄 License
-
-Shared for personal & educational use. Built & maintained by **rco-Tech**.
+- **Developer & Maintainer**: **rcoTech**
+- **Support / Buy Me a Coffee**: [PayPal Support Link](https://www.paypal.com/qrcodes/p2pqrc/ESZLVV5QEGCAY)
+- **License**: Open for personal, educational, and fitness use.

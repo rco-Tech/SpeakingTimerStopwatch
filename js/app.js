@@ -1037,6 +1037,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Live Date & Time in Header
+  const headerDateTimeEl = document.getElementById('header-datetime');
+  function updateHeaderDateTime() {
+    if (!headerDateTimeEl) return;
+    const now = new Date();
+    const lang = (window.AppI18N && AppI18N.lang) ? AppI18N.lang : 'en';
+    const weekday = now.toLocaleDateString(lang, { weekday: 'long' });
+    const day = now.toLocaleDateString(lang, { day: 'numeric', month: 'short' });
+    const time = now.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit', hour12: false });
+    const capWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+    headerDateTimeEl.textContent = `${capWeekday}, ${day} · ${time}`;
+  }
+  updateHeaderDateTime();
+  setInterval(updateHeaderDateTime, 1000);
+
   // Fullscreen toggle button
   document.getElementById('btn-fullscreen')?.addEventListener('click', () => {
     if (!document.fullscreenElement) {

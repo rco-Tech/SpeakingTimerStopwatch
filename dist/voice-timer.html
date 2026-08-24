@@ -967,13 +967,10 @@ body {
   <!-- Top Navigation Header -->
   <header class="pt-2 pb-3">
     <!-- Top Action Icons Bar -->
-    <div class="flex items-center justify-between mb-3 px-1">
-      <div class="flex items-center gap-2">
-        <button id="btn-open-menu" data-open-modal="settings" title="Settings" data-i18n-title="tt.settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
-          <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
-        <span class="text-sm font-semibold tracking-wide text-gray-200" data-i18n="app.title">Voice Timer</span>
-      </div>
+    <div class="flex items-center justify-between mb-2 px-1">
+      <button id="btn-open-menu" data-open-modal="settings" title="Settings" data-i18n-title="tt.settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
 
       <div class="flex items-center gap-1.5">
         <!-- Global Mute Toggle -->
@@ -1001,6 +998,12 @@ body {
           <i data-lucide="maximize" class="w-5 h-5"></i>
         </button>
       </div>
+    </div>
+
+    <!-- Center App Title & Live Clock Row -->
+    <div class="text-center mb-3">
+      <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white font-sans drop-shadow-md" data-i18n="app.title">Voice Timer</h1>
+      <div id="header-datetime" class="text-[11px] sm:text-xs text-gray-400 font-medium tracking-wide mt-0.5">--</div>
     </div>
 
     <!-- Tab Segment Switcher (Timer / Stopwatch) -->
@@ -4944,6 +4947,21 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('btn-copy-share')?.click();
     }
   });
+
+  // Live Date & Time in Header
+  const headerDateTimeEl = document.getElementById('header-datetime');
+  function updateHeaderDateTime() {
+    if (!headerDateTimeEl) return;
+    const now = new Date();
+    const lang = (window.AppI18N && AppI18N.lang) ? AppI18N.lang : 'en';
+    const weekday = now.toLocaleDateString(lang, { weekday: 'long' });
+    const day = now.toLocaleDateString(lang, { day: 'numeric', month: 'short' });
+    const time = now.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit', hour12: false });
+    const capWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+    headerDateTimeEl.textContent = `${capWeekday}, ${day} · ${time}`;
+  }
+  updateHeaderDateTime();
+  setInterval(updateHeaderDateTime, 1000);
 
   // Fullscreen toggle button
   document.getElementById('btn-fullscreen')?.addEventListener('click', () => {
