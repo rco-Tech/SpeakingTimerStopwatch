@@ -280,11 +280,12 @@ class SpeakingStopwatch {
   getTimeComponents() {
     const totalMs = Math.floor(this.elapsedMs);
     const ms = Math.floor((totalMs % 1000) / 10); // 2-digit centiseconds (00-99)
+    const tenths = Math.floor((totalMs % 1000) / 100); // 1-digit tenth of second (0-9)
     const totalSec = Math.floor(totalMs / 1000);
     const hours = Math.floor(totalSec / 3600);
     const minutes = Math.floor((totalSec % 3600) / 60);
     const seconds = totalSec % 60;
-    return { hours, minutes, seconds, ms, totalMs };
+    return { hours, minutes, seconds, ms, tenths, totalMs };
   }
 
   formatMs(msValue) {

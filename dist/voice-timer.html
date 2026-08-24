@@ -1044,21 +1044,33 @@ body {
     width: auto !important;
   }
 
-  #open-keypad-btn,
-  .sw-display-digits {
+  #open-keypad-btn {
     font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
     line-height: 1 !important;
     gap: 0.4rem !important;
   }
 
-  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([class*="text-"]),
-  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not([class*="text-"]) {
+  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([class*="text-"]) {
     font-size: clamp(2.5rem, 16vh, 6.5rem) !important;
   }
 
-  #open-keypad-btn span[class*="text-"],
-  .sw-display-digits span[class*="text-"] {
+  #open-keypad-btn span[class*="text-"] {
     font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
+  }
+
+  .sw-display-digits {
+    font-size: clamp(2.35rem, 15.5vh, 5.8rem) !important;
+    line-height: 1 !important;
+    gap: clamp(0.2rem, 1vw, 0.45rem) !important;
+    max-width: 100% !important;
+  }
+
+  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not(#sw-tenths):not([class*="text-"]) {
+    font-size: clamp(1.8rem, 12vh, 4.5rem) !important;
+  }
+
+  .sw-display-digits span[class*="text-"] {
+    font-size: clamp(0.7rem, 3vh, 1.05rem) !important;
   }
 
   /* Linear Progress Bar in Landscape */
@@ -1364,21 +1376,26 @@ body {
         <span id="sw-status-text" data-i18n="st.ready">READY</span>
       </div>
 
-      <!-- Main Stopwatch Digits (HH : MM : SS) -->
-      <div class="sw-display-digits flex items-baseline justify-center gap-1 sm:gap-2 digit-display font-stencil text-6xl sm:text-7xl font-extrabold tracking-tight select-none">
+      <!-- Main Stopwatch Digits (HH : MM : SS : C) -->
+      <div class="sw-display-digits flex items-baseline justify-center gap-1 sm:gap-2 digit-display font-stencil text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight select-none">
         <div class="flex flex-col items-center">
           <span id="sw-hours">00</span>
           <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">h</span>
         </div>
-        <span class="opacity-75 text-5xl sm:text-6xl self-center -mt-3">:</span>
+        <span class="opacity-75 text-4xl sm:text-5xl self-center -mt-3">:</span>
         <div class="flex flex-col items-center">
           <span id="sw-minutes">00</span>
           <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">m</span>
         </div>
-        <span class="opacity-75 text-5xl sm:text-6xl self-center -mt-3">:</span>
+        <span class="opacity-75 text-4xl sm:text-5xl self-center -mt-3">:</span>
         <div class="flex flex-col items-center">
           <span id="sw-seconds">00</span>
           <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">s</span>
+        </div>
+        <span class="opacity-75 text-4xl sm:text-5xl self-center -mt-3">:</span>
+        <div class="flex flex-col items-center">
+          <span id="sw-tenths">0</span>
+          <span class="text-[11px] font-sans font-medium text-gray-400 -mt-1 tracking-normal">ms</span>
         </div>
       </div>
     </div>
@@ -2115,7 +2132,7 @@ body {
         <div class="pt-2 pb-1 text-center text-xs text-gray-400 space-y-1 border-t border-white/5">
           <div class="flex items-center justify-center gap-2 font-medium">
             <span class="text-gray-300">Speaking Timer & Stopwatch</span>
-            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.28</span>
+            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.29</span>
           </div>
           <div class="text-[11px] text-gray-500">
             <span data-i18n="set.maintainedBy">Maintained by</span> <span class="text-gray-300 font-semibold">rcoTech</span>
@@ -5501,11 +5518,12 @@ class SpeakingStopwatch {
   getTimeComponents() {
     const totalMs = Math.floor(this.elapsedMs);
     const ms = Math.floor((totalMs % 1000) / 10); // 2-digit centiseconds (00-99)
+    const tenths = Math.floor((totalMs % 1000) / 100); // 1-digit tenth of second (0-9)
     const totalSec = Math.floor(totalMs / 1000);
     const hours = Math.floor(totalSec / 3600);
     const minutes = Math.floor((totalSec % 3600) / 60);
     const seconds = totalSec % 60;
-    return { hours, minutes, seconds, ms, totalMs };
+    return { hours, minutes, seconds, ms, tenths, totalMs };
   }
 
   formatMs(msValue) {
@@ -6036,6 +6054,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const swHoursEl = document.getElementById('sw-hours');
   const swMinutesEl = document.getElementById('sw-minutes');
   const swSecondsEl = document.getElementById('sw-seconds');
+  const swTenthsEl = document.getElementById('sw-tenths');
   const swPlayBtn = document.getElementById('sw-play-btn');
   const swPlayIcon = document.getElementById('sw-play-icon');
   const swResetBtn = document.getElementById('sw-reset-btn');
@@ -6060,6 +6079,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (swHoursEl) swHoursEl.textContent = pad(comp.hours);
     if (swMinutesEl) swMinutesEl.textContent = pad(comp.minutes);
     if (swSecondsEl) swSecondsEl.textContent = pad(comp.seconds);
+    if (swTenthsEl) swTenthsEl.textContent = String(comp.tenths !== undefined ? comp.tenths : 0);
   }
 
   // Stopwatch Status Badge Elements
