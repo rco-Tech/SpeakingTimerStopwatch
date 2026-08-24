@@ -1,11 +1,9 @@
 /*
  * Speaking Timer & Stopwatch — Offline-capable Service Worker
- * Cache-first with runtime fill. Works for BOTH the source deployment
- * (index.html + css/js) and the single-file build (dist/voice-timer.html).
- * After the page has been opened online at least once, all fetched
- * assets (including CDN tailwind/lucide/fonts) are cached for offline use.
+ * Network-first for navigation requests (ensures immediate updates when online)
+ * and Cache-first / runtime cache for static assets with offline fallback.
  */
-const CACHE_NAME = 'speaking-timer-v3';
+const CACHE_NAME = 'speaking-timer-v4';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -27,21 +25,34 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return; // Only cache GET responses
 
+  // 1. Navigation / HTML requests: Network-First (online gets latest HTML, offline falls back to cache)
+  if (req.mode === 'navigate' || req.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(req)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(req).then((cached) => cached || caches.match('./')))
+    );
+    return;
+  }
+
+  // 2. Static assets & dependencies: Cache-First with runtime fallback
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
 
-      // Not cached — try network, and cache successful basic responses at runtime.
-      return fetch(req).then((network) => {
-        if (network && network.status === 200 && network.type === 'basic') {
-          const clone = network.clone();
+      return fetch(req).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         }
-        return network;
-      }).catch(() => {
-        // Offline fallback: serve the root document if we have it cached.
-        return caches.match('./').catch(() => new Response('Offline', { status: 503 }));
-      });
+        return networkResponse;
+      }).catch(() => caches.match('./').catch(() => new Response('Offline', { status: 503 })));
     })
   );
 });
