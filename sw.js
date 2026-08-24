@@ -1,9 +1,9 @@
-/*
- * Speaking Timer & Stopwatch — Offline-capable Service Worker
+﻿/*
+ * Speaking Timer & Stopwatch â€” Offline-capable Service Worker
  * Network-first for navigation requests (ensures immediate updates when online)
  * and Cache-first / runtime cache for static assets with offline fallback.
  */
-const CACHE_NAME = 'speaking-timer-v17';
+const CACHE_NAME = 'speaking-timer-v19';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

@@ -3,6 +3,15 @@
  * High-precision countdown timer with voice announcements, interval triggers, and presets.
  */
 
+const DEFAULT_PRESETS = [
+  { id: 'p1', name: '⚡ HIIT', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
+  { id: 'p2', name: '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
+  { id: 'p3', name: '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
+  { id: 'p4', name: '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
+  { id: 'p5', name: '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
+  { id: 'p6', name: '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
+];
+
 class SpeakingTimer {
   constructor() {
     this.totalDurationMs = 60000; // Default 1 minute
@@ -63,14 +72,7 @@ class SpeakingTimer {
         console.error('Failed to parse presets', e);
       }
     }
-    return [
-      { id: 'p1', name: '⚡ HIIT', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
-      { id: 'p2', name: '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
-      { id: 'p3', name: '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
-      { id: 'p4', name: '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
-      { id: 'p5', name: '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
-      { id: 'p6', name: '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
-    ];
+    return DEFAULT_PRESETS.map(p => ({ ...p }));
   }
 
   savePresets() {
@@ -92,6 +94,12 @@ class SpeakingTimer {
 
   deletePreset(id) {
     this.presets = this.presets.filter(p => p.id !== id);
+    this.savePresets();
+  }
+
+  /** Restore the 6 built-in presets, discarding any custom ones */
+  resetPresets() {
+    this.presets = DEFAULT_PRESETS.map(p => ({ ...p }));
     this.savePresets();
   }
 

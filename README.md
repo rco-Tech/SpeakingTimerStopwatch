@@ -1,4 +1,4 @@
-# ⏱️ Speaking Timer & Stopwatch `v1.17`
+# ⏱️ Speaking Timer & Stopwatch `v1.19`
 
 > ### 🏁 **TL;DR** — A gorgeous, **mobile-first** speaking timer & stopwatch with live voice callouts, live date & time clock, 8 OLED neon themes, 8 customizable LED digital fonts, haptics, wake-lock, and offline PWA capability. No install required — open [`index.html`](index.html) or run standalone!
 
@@ -8,9 +8,9 @@
 
 ## ✨ Key Features
 
-### 🗣️ Voice & Speech Engine (7 Languages)
+### 🗣️ Voice & Speech Engine (19 Languages)
 - **Periodic Spoken Time Announcements**: Spoken countdown callouts at intervals of `5s`, `10s`, `15s`, `30s`, `1m`, `2m`, `5m`.
-- **7 Supported Interface & Voice Languages**:
+- **19 Supported Interface & Voice Languages**:
   - 🇬🇧 English
   - 🇪🇸 Español
   - 🇩🇪 Deutsch
@@ -18,6 +18,18 @@
   - 🇷🇺 Русский
   - 🇨🇳 中文 (Mandarin)
   - 🇷🇴 Română
+  - 🇧🇷 Português
+  - 🇮🇹 Italiano
+  - 🇮🇳 हिन्दी
+  - 🇮🇩 Bahasa Indonesia
+  - 🇯🇵 日本語
+  - 🇰🇷 한국어
+  - 🇹🇷 Türkçe
+  - 🇳🇱 Nederlands
+  - 🇵🇱 Polski
+  - 🇺🇦 Українська
+  - 🇬🇷 Ελληνικά
+  - 🇸🇦 العربية (RTL)
 - **Seamless Language Switching**: Instant 1-tap switching via the header 🌐 Globe icon or Settings. All UI text, tooltips, presets, and voice engines re-target automatically.
 - **Pre-Start Countdown**: Spoken *"3, 2, 1, GO!"* with visual overlay on both Timer and Stopwatch.
 - **Final Countdown**: Spoken & audible *"5, 4, 3, 2, 1"* before expiration.

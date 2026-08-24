@@ -849,6 +849,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Reset Quick Presets to defaults ---
+  const resetPresetsBtn = document.getElementById('btn-reset-presets');
+  if (resetPresetsBtn) {
+    resetPresetsBtn.addEventListener('click', () => {
+      if (confirm(t('confirm.resetPresets'))) {
+        timer.resetPresets();
+        renderPresets();
+        if (sound.soundEnabled) sound.playBeep(900, 0.08);
+      }
+    });
+  }
+
   // --- App & Voice Language Selector ---
   const languageSelect = document.getElementById('setting-language');
   if (languageSelect && window.AppI18N) {
