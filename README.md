@@ -1,4 +1,4 @@
-# ⏱️ Speaking Timer & Stopwatch `v1.27`
+# ⏱️ Speaking Timer & Stopwatch `v1.28`
 
 > ### 🏁 **TL;DR** — A gorgeous, **mobile-first** speaking timer & stopwatch with live voice callouts, live date & time clock, 8 OLED neon themes, 8 customizable LED digital fonts, bare-minimal landscape scoreboard mode, haptics, wake-lock, and offline PWA capability. No install required — open [`index.html`](index.html) or run standalone!
 

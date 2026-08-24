@@ -486,7 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const swHoursEl = document.getElementById('sw-hours');
   const swMinutesEl = document.getElementById('sw-minutes');
   const swSecondsEl = document.getElementById('sw-seconds');
-  const swMsEl = document.getElementById('sw-ms');
   const swPlayBtn = document.getElementById('sw-play-btn');
   const swPlayIcon = document.getElementById('sw-play-icon');
   const swResetBtn = document.getElementById('sw-reset-btn');
@@ -511,7 +510,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (swHoursEl) swHoursEl.textContent = pad(comp.hours);
     if (swMinutesEl) swMinutesEl.textContent = pad(comp.minutes);
     if (swSecondsEl) swSecondsEl.textContent = pad(comp.seconds);
-    if (swMsEl) swMsEl.textContent = pad(comp.ms);
   }
 
   // Stopwatch Status Badge Elements

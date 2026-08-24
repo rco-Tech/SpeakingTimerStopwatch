@@ -328,33 +328,21 @@ body {
     width: auto !important;
   }
 
-  #open-keypad-btn {
+  #open-keypad-btn,
+  .sw-display-digits {
     font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
     line-height: 1 !important;
     gap: 0.4rem !important;
   }
 
-  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]) {
+  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([class*="text-"]),
+  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not([class*="text-"]) {
     font-size: clamp(2.5rem, 16vh, 6.5rem) !important;
   }
 
-  #open-keypad-btn span[data-i18n] {
-    font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
-  }
-
-  .sw-display-digits {
-    font-size: clamp(1.75rem, 11.5vh, 4rem) !important;
-    line-height: 1 !important;
-    gap: clamp(0.15rem, 0.8vw, 0.4rem) !important;
-    max-width: 100% !important;
-  }
-
-  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not(#sw-ms):not([class*="text-"]) {
-    font-size: clamp(1.35rem, 9vh, 3rem) !important;
-  }
-
+  #open-keypad-btn span[class*="text-"],
   .sw-display-digits span[class*="text-"] {
-    font-size: clamp(0.65rem, 2.8vh, 0.95rem) !important;
+    font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
   }
 
   /* Linear Progress Bar in Landscape */
