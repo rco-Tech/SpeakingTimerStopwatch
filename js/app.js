@@ -1037,16 +1037,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Support & Buy Me a Coffee QR toggle
-  const btnToggleDonateQR = document.getElementById('btn-toggle-donate-qr');
-  const donateQRContainer = document.getElementById('donate-qr-container');
-  if (btnToggleDonateQR && donateQRContainer) {
-    btnToggleDonateQR.addEventListener('click', () => {
-      donateQRContainer.classList.toggle('hidden');
-      if (sound.soundEnabled) sound.playBeep(900, 0.04);
-    });
-  }
-
   // Fullscreen toggle button
   document.getElementById('btn-fullscreen')?.addEventListener('click', () => {
     if (!document.fullscreenElement) {

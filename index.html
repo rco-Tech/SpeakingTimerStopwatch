@@ -802,35 +802,19 @@
         </button>
 
         <!-- Section: Support & Buy Me a Coffee -->
-        <div class="bg-neutral-800/60 p-3.5 rounded-2xl border border-white/5 space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <span class="text-xl">☕</span>
-              <div>
-                <div class="text-gray-100 font-semibold text-xs" data-i18n="set.supportTitle">Buy me a coffee</div>
-                <div class="text-[10px] text-gray-400" data-i18n="set.supportDesc">Support development & maintenance</div>
-              </div>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <!-- Direct Link to PayPal App / Web -->
-              <a href="https://www.paypal.com/qrcodes/p2pqrc/ESZLVV5QEGCAY" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 font-semibold text-xs flex items-center gap-1 transition active:scale-95">
-                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                <span>PayPal</span>
-              </a>
-              <!-- Toggle QR Code -->
-              <button type="button" id="btn-toggle-donate-qr" class="p-1.5 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95" title="Toggle QR Code">
-                <i data-lucide="qr-code" class="w-4 h-4 text-theme"></i>
-              </button>
+        <div class="bg-neutral-800/60 p-3.5 rounded-2xl border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">☕</span>
+            <div>
+              <div class="text-gray-100 font-semibold text-xs" data-i18n="set.supportTitle">Buy me a coffee</div>
+              <div class="text-[10px] text-gray-400" data-i18n="set.supportDesc">Support development & maintenance</div>
             </div>
           </div>
-
-          <!-- Donate QR container -->
-          <div id="donate-qr-container" class="hidden text-center p-3 rounded-xl bg-black/50 border border-white/10 space-y-2">
-            <a href="https://www.paypal.com/qrcodes/p2pqrc/ESZLVV5QEGCAY" target="_blank" rel="noopener noreferrer" class="inline-block p-2 bg-white rounded-2xl shadow-lg hover:scale-105 transition cursor-pointer" title="Tap to open PayPal">
-              <img src="icons/paypal-qr.png" id="img-paypal-qr" alt="PayPal QR Code" class="w-44 h-44 object-contain mx-auto rounded-xl">
-            </a>
-            <div class="text-[11px] text-gray-300 font-medium" data-i18n="set.scanPayPal">Tap image or scan with PayPal app / camera</div>
-          </div>
+          <!-- Direct Link to PayPal App / Web -->
+          <a href="https://www.paypal.com/qrcodes/p2pqrc/ESZLVV5QEGCAY" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 font-semibold text-xs flex items-center gap-1.5 transition active:scale-95 border border-amber-500/30 shadow-sm">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            <span>PayPal</span>
+          </a>
         </div>
 
         <!-- App Info & Version Footer -->
