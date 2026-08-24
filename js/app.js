@@ -369,6 +369,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function getPresetDisplayName(p) {
+    if (!p) return '';
+    // If it has a known built-in id (p1 - p6), translate it
+    if (p.id && (p.id === 'p1' || p.id === 'p2' || p.id === 'p3' || p.id === 'p4' || p.id === 'p5' || p.id === 'p6')) {
+      const tr = t(p.id);
+      if (tr && tr !== p.id) return tr;
+    }
+    // Match by standard duration in case older localStorage saved custom objects without id or with legacy text:
+    if (p.durationSec === 30 && (p.intervalSec === 10 || !p.intervalSec)) return t('p1');
+    if (p.durationSec === 15 && (p.intervalSec === 5 || !p.intervalSec)) return t('p2');
+    if (p.durationSec === 60 && (p.intervalSec === 15 || !p.intervalSec)) return t('p3');
+    if (p.durationSec === 180 && (p.intervalSec === 30 || !p.intervalSec)) return t('p4');
+    if (p.durationSec === 240 && (p.intervalSec === 60 || !p.intervalSec)) return t('p5');
+    if (p.durationSec === 1500 && (p.intervalSec === 300 || !p.intervalSec)) return t('p6');
+
+    return p.name || '';
+  }
+
   // Presets Rendering (2 buttons per row, full text visibility)
   function renderPresets() {
     if (!presetsContainer) return;
@@ -378,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const chip = document.createElement('button');
       chip.className = 'group relative flex items-center justify-between p-3 sm:py-3.5 sm:px-3.5 rounded-2xl glass-panel hover:border-theme transition active:scale-95 text-left border border-white/10 shadow-md';
       const colorVal = p.color || 'var(--primary)';
-      const displayName = t(p.id) || p.name;
+      const displayName = getPresetDisplayName(p);
       chip.innerHTML = `
         <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-1.5">
           <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: ${colorVal}; box-shadow: 0 0 8px ${colorVal}"></span>
@@ -726,11 +744,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const lang = opt.dataset.lang;
       if (window.AppI18N && AppI18N.setLang(lang)) {
         updateLanguageUI(lang);
-        renderPresets();
-        populateVoiceDropdown(sound.voices);
-        localizeQuickAddButtons();
         if (sound.soundEnabled) sound.playBeep(1000, 0.05);
-        setTimeout(() => closeModal('language'), 180);
+        setTimeout(() => {
+          window.location.reload();
+        }, 120);
       }
     });
   });
@@ -837,10 +854,10 @@ document.addEventListener('DOMContentLoaded', () => {
     languageSelect.addEventListener('change', (e) => {
       if (AppI18N.setLang(e.target.value)) {
         updateLanguageUI(e.target.value);
-        // Refresh everything that renders localized content dynamically.
-        renderPresets();
-        populateVoiceDropdown(sound.voices);
-        localizeQuickAddButtons();
+        if (sound.soundEnabled) sound.playBeep(1000, 0.05);
+        setTimeout(() => {
+          window.location.reload();
+        }, 120);
       }
     });
   }

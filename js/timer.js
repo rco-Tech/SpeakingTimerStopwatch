@@ -45,19 +45,31 @@ class SpeakingTimer {
     const saved = localStorage.getItem('speaking_timer_presets');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((p, idx) => {
+            if (!p.id || !p.id.startsWith('p_')) {
+              if (idx === 0 && p.durationSec === 30) p.id = 'p1';
+              else if (idx === 1 && p.durationSec === 15) p.id = 'p2';
+              else if (idx === 2 && p.durationSec === 60) p.id = 'p3';
+              else if (idx === 3 && p.durationSec === 180) p.id = 'p4';
+              else if (idx === 4 && p.durationSec === 240) p.id = 'p5';
+              else if (idx === 5 && p.durationSec === 1500) p.id = 'p6';
+            }
+            return p;
+          });
+        }
       } catch (e) {
         console.error('Failed to parse presets', e);
       }
     }
-    const t = (k) => (window.AppI18N ? AppI18N.t(k) : null);
     return [
-      { id: 'p1', name: t('p1') || '⚡ HIIT Work', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
-      { id: 'p2', name: t('p2') || '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
-      { id: 'p3', name: t('p3') || '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
-      { id: 'p4', name: t('p4') || '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
-      { id: 'p5', name: t('p5') || '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
-      { id: 'p6', name: t('p6') || '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
+      { id: 'p1', name: '⚡ HIIT', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
+      { id: 'p2', name: '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
+      { id: 'p3', name: '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
+      { id: 'p4', name: '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
+      { id: 'p5', name: '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
+      { id: 'p6', name: '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
     ];
   }
 

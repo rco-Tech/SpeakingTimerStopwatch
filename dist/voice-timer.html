@@ -3187,19 +3187,31 @@ class SpeakingTimer {
     const saved = localStorage.getItem('speaking_timer_presets');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((p, idx) => {
+            if (!p.id || !p.id.startsWith('p_')) {
+              if (idx === 0 && p.durationSec === 30) p.id = 'p1';
+              else if (idx === 1 && p.durationSec === 15) p.id = 'p2';
+              else if (idx === 2 && p.durationSec === 60) p.id = 'p3';
+              else if (idx === 3 && p.durationSec === 180) p.id = 'p4';
+              else if (idx === 4 && p.durationSec === 240) p.id = 'p5';
+              else if (idx === 5 && p.durationSec === 1500) p.id = 'p6';
+            }
+            return p;
+          });
+        }
       } catch (e) {
         console.error('Failed to parse presets', e);
       }
     }
-    const t = (k) => (window.AppI18N ? AppI18N.t(k) : null);
     return [
-      { id: 'p1', name: t('p1') || '⚡ HIIT Work', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
-      { id: 'p2', name: t('p2') || '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
-      { id: 'p3', name: t('p3') || '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
-      { id: 'p4', name: t('p4') || '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
-      { id: 'p5', name: t('p5') || '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
-      { id: 'p6', name: t('p6') || '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
+      { id: 'p1', name: '⚡ HIIT', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
+      { id: 'p2', name: '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
+      { id: 'p3', name: '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
+      { id: 'p4', name: '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
+      { id: 'p5', name: '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
+      { id: 'p6', name: '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
     ];
   }
 
@@ -4196,6 +4208,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function getPresetDisplayName(p) {
+    if (!p) return '';
+    // If it has a known built-in id (p1 - p6), translate it
+    if (p.id && (p.id === 'p1' || p.id === 'p2' || p.id === 'p3' || p.id === 'p4' || p.id === 'p5' || p.id === 'p6')) {
+      const tr = t(p.id);
+      if (tr && tr !== p.id) return tr;
+    }
+    // Match by standard duration in case older localStorage saved custom objects without id or with legacy text:
+    if (p.durationSec === 30 && (p.intervalSec === 10 || !p.intervalSec)) return t('p1');
+    if (p.durationSec === 15 && (p.intervalSec === 5 || !p.intervalSec)) return t('p2');
+    if (p.durationSec === 60 && (p.intervalSec === 15 || !p.intervalSec)) return t('p3');
+    if (p.durationSec === 180 && (p.intervalSec === 30 || !p.intervalSec)) return t('p4');
+    if (p.durationSec === 240 && (p.intervalSec === 60 || !p.intervalSec)) return t('p5');
+    if (p.durationSec === 1500 && (p.intervalSec === 300 || !p.intervalSec)) return t('p6');
+
+    return p.name || '';
+  }
+
   // Presets Rendering (2 buttons per row, full text visibility)
   function renderPresets() {
     if (!presetsContainer) return;
@@ -4205,7 +4235,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const chip = document.createElement('button');
       chip.className = 'group relative flex items-center justify-between p-3 sm:py-3.5 sm:px-3.5 rounded-2xl glass-panel hover:border-theme transition active:scale-95 text-left border border-white/10 shadow-md';
       const colorVal = p.color || 'var(--primary)';
-      const displayName = t(p.id) || p.name;
+      const displayName = getPresetDisplayName(p);
       chip.innerHTML = `
         <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-1.5">
           <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: ${colorVal}; box-shadow: 0 0 8px ${colorVal}"></span>
@@ -4553,11 +4583,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const lang = opt.dataset.lang;
       if (window.AppI18N && AppI18N.setLang(lang)) {
         updateLanguageUI(lang);
-        renderPresets();
-        populateVoiceDropdown(sound.voices);
-        localizeQuickAddButtons();
         if (sound.soundEnabled) sound.playBeep(1000, 0.05);
-        setTimeout(() => closeModal('language'), 180);
+        setTimeout(() => {
+          window.location.reload();
+        }, 120);
       }
     });
   });
@@ -4664,10 +4693,10 @@ document.addEventListener('DOMContentLoaded', () => {
     languageSelect.addEventListener('change', (e) => {
       if (AppI18N.setLang(e.target.value)) {
         updateLanguageUI(e.target.value);
-        // Refresh everything that renders localized content dynamically.
-        renderPresets();
-        populateVoiceDropdown(sound.voices);
-        localizeQuickAddButtons();
+        if (sound.soundEnabled) sound.playBeep(1000, 0.05);
+        setTimeout(() => {
+          window.location.reload();
+        }, 120);
       }
     });
   }
