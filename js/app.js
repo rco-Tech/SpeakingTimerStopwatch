@@ -851,7 +851,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (metronomeToggle) {
     metronomeToggle.addEventListener('change', (e) => {
       timer.metronomeTick = e.target.checked;
-      localStorage.setItem('timer_metronome', String(timer.metronomeTick));
+      stopwatch.metronomeTick = e.target.checked;
+      localStorage.setItem('timer_metronome', String(e.target.checked));
     });
   }
 

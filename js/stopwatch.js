@@ -28,6 +28,9 @@ class SpeakingStopwatch {
     this.speakLapTotal = localStorage.getItem('sw_speak_total') === 'true';
     this.vibrateEnabled = localStorage.getItem('sw_vibrate_enabled') !== 'false';
     this.soundEnabled = localStorage.getItem('sw_sound_enabled') !== 'false';
+    // Metronome tick support (synced with settings)
+    this.metronomeTick = localStorage.getItem('timer_metronome') !== 'false';
+    this.lastTickSec = null;
 
     // Callbacks
     this.onTick = null;
@@ -93,6 +96,7 @@ class SpeakingStopwatch {
     this.status = 'running';
     const now = performance.now();
     this.startTime = now - this.pausedElapsed;
+    this.lastTickSec = null;
 
     if (window.soundEngine && window.soundEngine.speakEvents) {
       if (this.pausedElapsed === 0) {
@@ -150,6 +154,7 @@ class SpeakingStopwatch {
     this.laps = [];
     this.lastLapTotalMs = 0;
     this.lastSpokenInterval = null;
+    this.lastTickSec = null;
 
     if (window.soundEngine && window.soundEngine.speakEvents) {
       window.soundEngine.playBeep(440, 0.08);
@@ -232,7 +237,7 @@ class SpeakingStopwatch {
 
     const wholeSeconds = Math.floor(this.elapsedMs / 1000);
 
-    // Interval Voice Trigger (e.g. every 5s, 10s, 30s)
+    // 1. Interval Voice Trigger (e.g. every 5s, 10s, 30s)
     if (
       this.intervalSpeakingEnabled &&
       this.intervalSec > 0 &&
@@ -248,6 +253,14 @@ class SpeakingStopwatch {
       }
       if (this.vibrateEnabled && navigator.vibrate) {
         navigator.vibrate(100);
+      }
+    }
+
+    // 2. Metronome Click (every whole second)
+    if (this.metronomeTick && wholeSeconds >= 1) {
+      if (this.lastTickSec !== wholeSeconds) {
+        this.lastTickSec = wholeSeconds;
+        if (window.soundEngine) window.soundEngine.playClick();
       }
     }
 
