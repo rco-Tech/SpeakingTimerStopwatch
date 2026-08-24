@@ -1064,14 +1064,69 @@ document.addEventListener('DOMContentLoaded', () => {
   updateHeaderDateTime();
   setInterval(updateHeaderDateTime, 1000);
 
-  // Fullscreen toggle button
-  document.getElementById('btn-fullscreen')?.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
+  // Fullscreen & Landscape Scoreboard Mode
+  const btnFullscreen = document.getElementById('btn-fullscreen');
+  const btnExitLandscape = document.getElementById('btn-exit-landscape');
+
+  async function enterLandscapeFullscreen() {
+    try {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+      }
+      if (screen.orientation && screen.orientation.lock) {
+        await screen.orientation.lock('landscape').catch(() => {});
+      }
+    } catch (e) {
+      console.log('Fullscreen/orientation lock not supported or denied:', e);
+    }
+    document.body.classList.add('landscape-mode');
+  }
+
+  async function exitLandscapeFullscreen() {
+    try {
+      if (screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+      }
+      if (document.fullscreenElement) {
+        await document.exitFullscreen().catch(() => {});
+      }
+    } catch (e) {
+      console.log('Exit fullscreen error:', e);
+    }
+    document.body.classList.remove('landscape-mode');
+  }
+
+  btnFullscreen?.addEventListener('click', () => {
+    if (document.body.classList.contains('landscape-mode') || document.fullscreenElement) {
+      exitLandscapeFullscreen();
     } else {
-      document.exitFullscreen().catch(() => {});
+      enterLandscapeFullscreen();
     }
   });
+
+  btnExitLandscape?.addEventListener('click', () => {
+    exitLandscapeFullscreen();
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+      document.body.classList.remove('landscape-mode');
+    }
+  });
+
+  // Physical Gyro / Device orientation changes
+  function syncOrientationState() {
+    const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+    if (!isLandscape && !document.fullscreenElement) {
+      document.body.classList.remove('landscape-mode');
+    }
+  }
+
+  window.addEventListener('resize', syncOrientationState);
+  window.addEventListener('orientationchange', syncOrientationState);
+  if (screen.orientation) {
+    screen.orientation.addEventListener('change', syncOrientationState);
+  }
 
   // Global Mute Toggle in Header
   const headerMuteBtn = document.getElementById('btn-header-mute');

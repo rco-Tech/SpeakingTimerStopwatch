@@ -1,12 +1,18 @@
-# ⏱️ Speaking Timer & Stopwatch `v1.19`
+# ⏱️ Speaking Timer & Stopwatch `v1.20`
 
-> ### 🏁 **TL;DR** — A gorgeous, **mobile-first** speaking timer & stopwatch with live voice callouts, live date & time clock, 8 OLED neon themes, 8 customizable LED digital fonts, haptics, wake-lock, and offline PWA capability. No install required — open [`index.html`](index.html) or run standalone!
+> ### 🏁 **TL;DR** — A gorgeous, **mobile-first** speaking timer & stopwatch with live voice callouts, live date & time clock, 8 OLED neon themes, 8 customizable LED digital fonts, bare-minimal landscape scoreboard mode, haptics, wake-lock, and offline PWA capability. No install required — open [`index.html`](index.html) or run standalone!
 
 **Speaking Timer & Stopwatch** is a professional, self-contained web and progressive web application (PWA) designed for fitness training, HIIT, boxing rounds, Tabata intervals, sprint laps, cooking, presentations, and Pomodoro productivity. It combines **real-time text-to-speech voice announcements**, **synthesized audio effects**, **8 OLED neon color palettes**, and **8 digital typography styles** into one ultra-sleek, battery-friendly dark-mode interface.
 
 ---
 
 ## ✨ Key Features
+
+### 🖥️ Bare-Minimal Fullscreen & Landscape Scoreboard Mode
+- **Orientation-Aware Layout (Gyro & Rotation)**: Rotating your phone horizontally automatically strips away all navigation, cards, and toolbars, converting the screen into an unobstructed, giant-digit gym/stadium display.
+- **Forced Landscape / Fullscreen Toggle**: Tap the header Fullscreen icon to lock landscape orientation and enter full-screen scoreboard mode immediately.
+- **Giant Digits**: Scaled dynamically up to massive viewport proportions for ultra-high visibility from across the room.
+- **Minimal Floating Controls**: Floating Play/Pause, Reset/Clear/Lap, and a subtle Exit button.
 
 ### 🗣️ Voice & Speech Engine (19 Languages)
 - **Periodic Spoken Time Announcements**: Spoken countdown callouts at intervals of `5s`, `10s`, `15s`, `30s`, `1m`, `2m`, `5m`.
