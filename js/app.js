@@ -1000,9 +1000,29 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('open-keypad-btn')?.addEventListener('click', () => {
+    const isLandscape = document.body.classList.contains('landscape-mode') || window.matchMedia('(orientation: landscape)').matches;
+    if (timer.status === 'running' || timer.status === 'precount') {
+      timer.pause();
+      return;
+    }
+    if (isLandscape) {
+      timer.start();
+      return;
+    }
     keypadBuffer = '';
     updateKeypadDisplay();
     openModal('keypad');
+  });
+
+  document.querySelector('.sw-display-card')?.addEventListener('click', (e) => {
+    const isLandscape = document.body.classList.contains('landscape-mode') || window.matchMedia('(orientation: landscape)').matches;
+    if (isLandscape) {
+      if (stopwatch.isRunning) {
+        stopwatch.pause();
+      } else {
+        stopwatch.start();
+      }
+    }
   });
 
   // --- Share & QR Code Modal ---

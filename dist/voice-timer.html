@@ -963,18 +963,19 @@ body {
 /* BARE-MINIMAL LANDSCAPE & FULLSCREEN SCOREBOARD MODE                       */
 /* ========================================================================= */
 
-body.landscape-mode,
-@media (orientation: landscape) and (max-height: 550px) {
+@media (orientation: landscape) {
   body {
     max-width: 100vw !important;
     width: 100vw !important;
     height: 100vh !important;
     height: 100dvh !important;
     margin: 0 !important;
-    padding: 0.5rem 1.5rem !important;
+    padding: 0.75rem 2rem !important;
     overflow: hidden !important;
     justify-content: center !important;
     align-items: center !important;
+    background-color: #000000 !important;
+    background-image: none !important;
   }
 
   header {
@@ -990,14 +991,16 @@ body.landscape-mode,
     width: 100% !important;
     height: 100% !important;
     max-height: 100dvh !important;
-    justify-content: center !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
     align-items: center !important;
-    gap: 0.25rem !important;
-    padding: 0 !important;
+    gap: 2rem !important;
+    padding: 0.5rem 1.5rem !important;
     margin: 0 !important;
   }
 
-  /* Hide everything except display card & main controls */
+  /* Hide everything except display card & controls */
   .timer-quick-add-row,
   .timer-quick-settings-card,
   .timer-presets-card,
@@ -1008,9 +1011,15 @@ body.landscape-mode,
     display: none !important;
   }
 
-  /* Giant Digits Card */
+  /* Giant Digits Card - Left / Main Area */
   .timer-display-card,
   .sw-display-card {
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -1022,47 +1031,213 @@ body.landscape-mode,
   }
 
   #open-keypad-btn {
-    font-size: clamp(4rem, 26vh, 12rem) !important;
+    font-size: clamp(4.5rem, 30vh, 16rem) !important;
     line-height: 1 !important;
     gap: 0.5rem !important;
   }
 
   #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds) {
-    font-size: clamp(3rem, 20vh, 9rem) !important;
+    font-size: clamp(3.5rem, 24vh, 12rem) !important;
   }
 
   #sw-time {
-    font-size: clamp(4rem, 26vh, 12rem) !important;
+    font-size: clamp(4.5rem, 30vh, 16rem) !important;
     line-height: 1 !important;
   }
 
   #sw-ms {
-    font-size: clamp(2.25rem, 15vh, 6.5rem) !important;
+    font-size: clamp(2.5rem, 18vh, 9rem) !important;
   }
 
-  /* Controls row */
+  /* Linear Progress Bar in Landscape */
+  .timer-display-card > div:nth-child(3) {
+    max-width: 85% !important;
+    margin-top: 1.25rem !important;
+  }
+
+  /* Controls Column - Right Side of Screen (Stacked vertically 1 under the other) */
   .timer-controls-row,
   .sw-controls-row {
-    padding-top: 0.25rem !important;
-    gap: 2rem !important;
+    flex: 0 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.85rem !important;
+    padding: 0 !important;
+    width: auto !important;
+  }
+
+  /* Play/Pause Button on top */
+  #timer-play-btn,
+  #sw-play-btn {
+    order: 1 !important;
+    width: 4.75rem !important;
+    height: 4.75rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* Reset Button under Play */
+  #timer-reset-btn,
+  #sw-reset-btn {
+    order: 2 !important;
+    min-width: 6.5rem !important;
+    padding: 0.6rem 1.25rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 1rem !important;
     justify-content: center !important;
   }
 
-  #timer-play-btn,
-  #sw-play-btn {
-    width: 4.5rem !important;
-    height: 4.5rem !important;
-  }
-
-  #timer-reset-btn,
+  /* Clear / Lap Button under Reset */
   #timer-clear-btn,
-  #sw-reset-btn,
   #sw-lap-btn {
-    padding: 0.5rem 1.25rem !important;
+    order: 3 !important;
+    min-width: 6.5rem !important;
+    padding: 0.6rem 1.25rem !important;
     font-size: 0.875rem !important;
     border-radius: 1rem !important;
+    justify-content: center !important;
+  }
+
+  /* Hide share button in stopwatch minimal landscape */
+  .sw-controls-row > button[data-open-modal="share"] {
+    display: none !important;
   }
 }
+
+/* Also apply same styling when body.landscape-mode is set */
+body.landscape-mode {
+  max-width: 100vw !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0.75rem 2rem !important;
+  overflow: hidden !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+body.landscape-mode header {
+  display: none !important;
+}
+
+body.landscape-mode #btn-exit-landscape {
+  display: flex !important;
+}
+
+body.landscape-mode #timer-section,
+body.landscape-mode #stopwatch-section {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100dvh !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 2rem !important;
+  padding: 0.5rem 1.5rem !important;
+  margin: 0 !important;
+}
+
+body.landscape-mode .timer-quick-add-row,
+body.landscape-mode .timer-quick-settings-card,
+body.landscape-mode .timer-presets-card,
+body.landscape-mode .timer-edit-hint,
+body.landscape-mode .sw-quick-settings-card,
+body.landscape-mode .sw-laps-card,
+body.landscape-mode .sw-units-hint {
+  display: none !important;
+}
+
+body.landscape-mode .timer-display-card,
+body.landscape-mode .sw-display-card {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+}
+
+body.landscape-mode #open-keypad-btn {
+  font-size: clamp(4.5rem, 30vh, 16rem) !important;
+  line-height: 1 !important;
+  gap: 0.5rem !important;
+}
+
+body.landscape-mode #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds) {
+  font-size: clamp(3.5rem, 24vh, 12rem) !important;
+}
+
+body.landscape-mode #sw-time {
+  font-size: clamp(4.5rem, 30vh, 16rem) !important;
+  line-height: 1 !important;
+}
+
+body.landscape-mode #sw-ms {
+  font-size: clamp(2.5rem, 18vh, 9rem) !important;
+}
+
+body.landscape-mode .timer-display-card > div:nth-child(3) {
+  max-width: 85% !important;
+  margin-top: 1.25rem !important;
+}
+
+body.landscape-mode .timer-controls-row,
+body.landscape-mode .sw-controls-row {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+  padding: 0 !important;
+  width: auto !important;
+}
+
+body.landscape-mode #timer-play-btn,
+body.landscape-mode #sw-play-btn {
+  order: 1 !important;
+  width: 4.75rem !important;
+  height: 4.75rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+body.landscape-mode #timer-reset-btn,
+body.landscape-mode #sw-reset-btn {
+  order: 2 !important;
+  min-width: 6.5rem !important;
+  padding: 0.6rem 1.25rem !important;
+  font-size: 0.875rem !important;
+  border-radius: 1rem !important;
+  justify-content: center !important;
+}
+
+body.landscape-mode #timer-clear-btn,
+body.landscape-mode #sw-lap-btn {
+  order: 3 !important;
+  min-width: 6.5rem !important;
+  padding: 0.6rem 1.25rem !important;
+  font-size: 0.875rem !important;
+  border-radius: 1rem !important;
+  justify-content: center !important;
+}
+
+body.landscape-mode .sw-controls-row > button[data-open-modal="share"] {
+  display: none !important;
+}
+
 
 
 </style>
@@ -2026,7 +2201,7 @@ body.landscape-mode,
         <div class="pt-2 pb-1 text-center text-xs text-gray-400 space-y-1 border-t border-white/5">
           <div class="flex items-center justify-center gap-2 font-medium">
             <span class="text-gray-300">Speaking Timer & Stopwatch</span>
-            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.20</span>
+            <span class="px-2 py-0.5 rounded-full bg-white/10 text-theme font-mono font-bold text-[11px]">v1.21</span>
           </div>
           <div class="text-[11px] text-gray-500">
             <span data-i18n="set.maintainedBy">Maintained by</span> <span class="text-gray-300 font-semibold">rcoTech</span>
@@ -6461,9 +6636,29 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('open-keypad-btn')?.addEventListener('click', () => {
+    const isLandscape = document.body.classList.contains('landscape-mode') || window.matchMedia('(orientation: landscape)').matches;
+    if (timer.status === 'running' || timer.status === 'precount') {
+      timer.pause();
+      return;
+    }
+    if (isLandscape) {
+      timer.start();
+      return;
+    }
     keypadBuffer = '';
     updateKeypadDisplay();
     openModal('keypad');
+  });
+
+  document.querySelector('.sw-display-card')?.addEventListener('click', (e) => {
+    const isLandscape = document.body.classList.contains('landscape-mode') || window.matchMedia('(orientation: landscape)').matches;
+    if (isLandscape) {
+      if (stopwatch.isRunning) {
+        stopwatch.pause();
+      } else {
+        stopwatch.start();
+      }
+    }
   });
 
   // --- Share & QR Code Modal ---
