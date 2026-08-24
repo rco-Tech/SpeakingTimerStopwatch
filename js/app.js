@@ -657,6 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Modals Management ---
   const modals = {
+    language: document.getElementById('modal-language'),
     theme: document.getElementById('modal-theme'),
     font: document.getElementById('modal-font'),
     settings: document.getElementById('modal-settings'),
@@ -683,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const modalName = btn.dataset.openModal;
       if (modalName === 'settings') populateSettingsUI();
       if (modalName === 'share') generateShareContent();
+      if (modalName === 'language' && window.AppI18N) updateLanguageUI(AppI18N.lang);
       openModal(modalName);
     });
   });
@@ -701,6 +703,33 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === modal) {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
+      }
+    });
+  });
+
+  // Language option clicks & sync
+  function updateLanguageUI(lang) {
+    document.querySelectorAll('.language-option').forEach(btn => {
+      const isCurrent = btn.dataset.lang === lang;
+      const checkIcon = btn.querySelector('.lang-check');
+      if (checkIcon) {
+        checkIcon.classList.toggle('hidden', !isCurrent);
+      }
+      btn.classList.toggle('border-theme', isCurrent);
+    });
+    if (languageSelect) languageSelect.value = lang;
+  }
+
+  document.querySelectorAll('.language-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const lang = opt.dataset.lang;
+      if (window.AppI18N && AppI18N.setLang(lang)) {
+        updateLanguageUI(lang);
+        renderPresets();
+        populateVoiceDropdown(sound.voices);
+        localizeQuickAddButtons();
+        if (sound.soundEnabled) sound.playBeep(1000, 0.05);
+        setTimeout(() => closeModal('language'), 180);
       }
     });
   });
@@ -803,8 +832,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const languageSelect = document.getElementById('setting-language');
   if (languageSelect && window.AppI18N) {
     languageSelect.value = AppI18N.lang;
+    updateLanguageUI(AppI18N.lang);
     languageSelect.addEventListener('change', (e) => {
       if (AppI18N.setLang(e.target.value)) {
+        updateLanguageUI(e.target.value);
         // Refresh everything that renders localized content dynamically.
         renderPresets();
         populateVoiceDropdown(sound.voices);
@@ -1022,9 +1053,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Register PWA Service Worker (only over http/https — skip file:// and blob://)
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(err => {
+      navigator.serviceWorker.register('./sw.js').then((reg) => {
+        // Proactively check for newer versions on startup
+        reg.update().catch(() => {});
+      }).catch((err) => {
         console.log('Service Worker registration skipped or unavailable:', err);
       });
+    });
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
     });
   }
 

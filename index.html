@@ -58,13 +58,18 @@
           <i id="header-mute-icon" data-lucide="volume-2" class="w-5 h-5"></i>
         </button>
 
+        <!-- Language Selector -->
+        <button id="btn-open-language" data-open-modal="language" title="Language" data-i18n-title="tt.language" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+          <i data-lucide="globe" class="w-5 h-5"></i>
+        </button>
+
         <!-- Theme Palette -->
         <button id="btn-open-theme" data-open-modal="theme" title="Color Themes" data-i18n-title="tt.themes" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
           <i data-lucide="palette" class="w-5 h-5"></i>
         </button>
 
         <!-- Font Selector -->
-        <button id="btn-open-font" data-open-modal="font" title="Display Fonts" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95 font-mono font-bold text-sm">
+        <button id="btn-open-font" data-open-modal="font" title="Display Fonts" data-i18n-title="tt.fonts" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95 font-mono font-bold text-sm">
           <span class="w-5 h-5 flex items-center justify-center">A</span>
         </button>
 
@@ -74,7 +79,7 @@
         </button>
 
         <!-- Settings Gear -->
-        <button id="btn-open-settings" data-open-modal="settings" title="Settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
+        <button id="btn-open-settings" data-open-modal="settings" title="Settings" data-i18n-title="tt.settings" class="p-2 rounded-xl glass-panel text-gray-300 hover:text-white transition active:scale-95">
           <i data-lucide="settings" class="w-5 h-5"></i>
         </button>
       </div>
@@ -378,6 +383,113 @@
     </div>
 
   </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: LANGUAGE SELECTOR                                                  -->
+  <!-- ========================================================================= -->
+  <div id="modal-language" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] flex flex-col animate-in fade-in slide-in-from-bottom duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="globe" class="w-5 h-5 text-theme"></i>
+          <h2 class="text-base font-bold text-gray-100" data-i18n="modal.language.title">App & Voice Language</h2>
+        </div>
+        <button data-close-modal="language" class="p-1 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-gray-400 mb-3" data-i18n="modal.language.desc">
+        Select language for interface text and spoken announcements:
+      </p>
+
+      <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="language-options-container">
+        <!-- English -->
+        <button data-lang="en" class="language-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇬🇧</span>
+            <div class="text-left">
+              <div class="text-sm font-bold text-gray-100">English</div>
+              <div class="text-[11px] text-gray-400">English</div>
+            </div>
+          </div>
+          <i data-lucide="check" class="lang-check w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- Spanish -->
+        <button data-lang="es" class="language-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇪🇸</span>
+            <div class="text-left">
+              <div class="text-sm font-bold text-gray-100">Español</div>
+              <div class="text-[11px] text-gray-400">Spanish</div>
+            </div>
+          </div>
+          <i data-lucide="check" class="lang-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- German -->
+        <button data-lang="de" class="language-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇩🇪</span>
+            <div class="text-left">
+              <div class="text-sm font-bold text-gray-100">Deutsch</div>
+              <div class="text-[11px] text-gray-400">German</div>
+            </div>
+          </div>
+          <i data-lucide="check" class="lang-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- French -->
+        <button data-lang="fr" class="language-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇫🇷</span>
+            <div class="text-left">
+              <div class="text-sm font-bold text-gray-100">Français</div>
+              <div class="text-[11px] text-gray-400">French</div>
+            </div>
+          </div>
+          <i data-lucide="check" class="lang-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- Russian -->
+        <button data-lang="ru" class="language-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇷🇺</span>
+            <div class="text-left">
+              <div class="text-sm font-bold text-gray-100">Русский</div>
+              <div class="text-[11px] text-gray-400">Russian</div>
+            </div>
+          </div>
+          <i data-lucide="check" class="lang-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- Chinese -->
+        <button data-lang="zh" class="language-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇨🇳</span>
+            <div class="text-left">
+              <div class="text-sm font-bold text-gray-100">中文 (Mandarin)</div>
+              <div class="text-[11px] text-gray-400">Chinese</div>
+            </div>
+          </div>
+          <i data-lucide="check" class="lang-check hidden w-5 h-5 text-theme"></i>
+        </button>
+
+        <!-- Romanian -->
+        <button data-lang="ro" class="language-option w-full p-3.5 rounded-2xl glass-panel flex items-center justify-between border hover:border-theme transition group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇷🇴</span>
+            <div class="text-left">
+              <div class="text-sm font-bold text-gray-100">Română</div>
+              <div class="text-[11px] text-gray-400">Romanian</div>
+            </div>
+          </div>
+          <i data-lucide="check" class="lang-check hidden w-5 h-5 text-theme"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ========================================================================= -->
   <!-- MODAL: FONT SELECTOR (Matching Screenshot 1)                              -->
