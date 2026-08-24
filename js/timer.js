@@ -9,18 +9,18 @@ class SpeakingTimer {
     this.remainingMs = 60000;
     this.status = 'idle'; // 'idle' | 'precount' | 'running' | 'paused' | 'completed'
 
-    this.preCountdownSec = 0; // 0, 3, 5, 10
+    this.preCountdownSec = parseInt(localStorage.getItem('timer_precount_sec') || '0', 10); // 0, 3, 5, 10
     this.currentPreCount = 0;
 
-    this.intervalSpeakingEnabled = true;
-    this.intervalSec = 10; // e.g. 10 seconds
+    this.intervalSpeakingEnabled = localStorage.getItem('timer_interval_enabled') !== 'false';
+    this.intervalSec = parseInt(localStorage.getItem('timer_interval_sec') || '10', 10); // e.g. 10 seconds
     this.lastSpokenInterval = null;
 
-    this.finalCountdownEnabled = true; // 5, 4, 3, 2, 1
+    this.finalCountdownEnabled = localStorage.getItem('timer_countdown_enabled') !== 'false'; // 5, 4, 3, 2, 1
     this.lastSpokenCountdown = null;
 
-    this.vibrateEnabled = true;
-    this.soundEnabled = true;
+    this.vibrateEnabled = localStorage.getItem('timer_vibrate_enabled') !== 'false';
+    this.soundEnabled = localStorage.getItem('timer_sound_enabled') !== 'false';
     // Metronome on by default; persists across sessions (localStorage)
     this.metronomeTick = localStorage.getItem('timer_metronome') !== 'false';
     this.expirySound = localStorage.getItem('timer_expiry_sound') || 'whistle'; // 'whistle' | 'bell' | 'alarm' | 'chime' | 'none'

@@ -93,6 +93,13 @@ class SoundEngine {
       if (match) {
         this.selectedVoice = match;
         this._userPickedLang = match.lang; // Keep lang in sync
+      } else if (this._userPickedLang) {
+        // Name didn't match (e.g. device change), match by normalized language
+        const normTarget = this._normLang(this._userPickedLang);
+        const langMatch = this.voices.find(v => this._normLang(v.lang) === normTarget);
+        this.selectedVoice = langMatch || this.voices.find(v => v.lang.startsWith('en')) || this.voices[0];
+      } else {
+        this.selectedVoice = this.voices.find(v => v.lang.startsWith('en')) || this.voices[0];
       }
     }
 

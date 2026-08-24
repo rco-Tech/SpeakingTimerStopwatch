@@ -1,4 +1,4 @@
-﻿{
+{
     "name":  "Speaking Timer \u0026 Stopwatch",
     "short_name":  "VoiceTimer",
     "description":  "A beautiful, speaking timer and stopwatch with OLED dark themes, customizable LED digital fonts, and voice announcements.",
@@ -26,6 +26,6 @@
                       "purpose":  "maskable"
                   }
               ],
-    "scope":  "/SpeakingTimerStopwatch/",
-    "start_url":  "/SpeakingTimerStopwatch/"
+    "scope":  "./",
+    "start_url":  "./"
 }

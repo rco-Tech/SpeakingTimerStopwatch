@@ -16,14 +16,14 @@ class SpeakingStopwatch {
     this.lastLapTotalMs = 0;
 
     // Interval voice settings
-    this.intervalSpeakingEnabled = true;
-    this.intervalSec = 10;
+    this.intervalSpeakingEnabled = localStorage.getItem('sw_interval_enabled') !== 'false';
+    this.intervalSec = parseInt(localStorage.getItem('sw_interval_sec') || '5', 10);
     this.lastSpokenInterval = null;
 
-    this.speakLapTime = true;
-    this.speakLapTotal = false;
-    this.vibrateEnabled = true;
-    this.soundEnabled = true;
+    this.speakLapTime = localStorage.getItem('sw_speak_lap') !== 'false';
+    this.speakLapTotal = localStorage.getItem('sw_speak_total') === 'true';
+    this.vibrateEnabled = localStorage.getItem('sw_vibrate_enabled') !== 'false';
+    this.soundEnabled = localStorage.getItem('sw_sound_enabled') !== 'false';
 
     // Callbacks
     this.onTick = null;

@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-$root = 'c:/Projects/VSCode/SpeakingTimerStopwatch'
+$root = $PSScriptRoot
 
 $html    = [System.IO.File]::ReadAllText("$root\index.html",      [System.Text.Encoding]::UTF8)
 $css     = [System.IO.File]::ReadAllText("$root\css\style.css",   [System.Text.Encoding]::UTF8)

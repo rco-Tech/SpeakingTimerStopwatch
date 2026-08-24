@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="dark" data-theme="cyan">
 <head>
   <meta charset="UTF-8">
@@ -133,6 +133,7 @@ lucide.createIcons({icons});\``);if(typeof c>"u")throw new Error("`createIcons()
 
   <!-- Custom Stylesheet -->
   
+
 <style>
 /* latin-ext */
 @font-face {
@@ -959,7 +960,7 @@ body {
 }
 
 </style>
-<link rel="manifest" href="data:application/manifest+json,%7B%20%22name%22%3A%20%22Speaking%20Timer%20%5Cu0026%20Stopwatch%22%2C%20%22short_name%22%3A%20%22VoiceTimer%22%2C%20%22description%22%3A%20%22A%20beautiful%2C%20speaking%20timer%20and%20stopwatch%20with%20OLED%20dark%20themes%2C%20customizable%20LED%20digital%20fonts%2C%20and%20voice%20announcements.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22background_color%22%3A%20%22%2308090d%22%2C%20%22theme_color%22%3A%20%22%2300e5ff%22%2C%20%22orientation%22%3A%20%22portrait-primary%22%2C%20%22icons%22%3A%20%5B%20%7B%20%22src%22%3A%20%22icons%2Ficon-192.png%22%2C%20%22sizes%22%3A%20%22192x192%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22any%22%20%7D%2C%20%7B%20%22src%22%3A%20%22icons%2Ficon-512.png%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22any%22%20%7D%2C%20%7B%20%22src%22%3A%20%22icons%2Ficon-maskable-512.png%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22maskable%22%20%7D%20%5D%2C%20%22scope%22%3A%20%22%2FSpeakingTimerStopwatch%2F%22%2C%20%22start_url%22%3A%20%22%2FSpeakingTimerStopwatch%2F%22%7D">
+<link rel="manifest" href="data:application/manifest+json,%7B%20%22name%22%3A%20%22Speaking%20Timer%20%5Cu0026%20Stopwatch%22%2C%20%22short_name%22%3A%20%22VoiceTimer%22%2C%20%22description%22%3A%20%22A%20beautiful%2C%20speaking%20timer%20and%20stopwatch%20with%20OLED%20dark%20themes%2C%20customizable%20LED%20digital%20fonts%2C%20and%20voice%20announcements.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22background_color%22%3A%20%22%2308090d%22%2C%20%22theme_color%22%3A%20%22%2300e5ff%22%2C%20%22orientation%22%3A%20%22portrait-primary%22%2C%20%22icons%22%3A%20%5B%20%7B%20%22src%22%3A%20%22icons%2Ficon-192.png%22%2C%20%22sizes%22%3A%20%22192x192%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22any%22%20%7D%2C%20%7B%20%22src%22%3A%20%22icons%2Ficon-512.png%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22any%22%20%7D%2C%20%7B%20%22src%22%3A%20%22icons%2Ficon-maskable-512.png%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image%2Fpng%22%2C%20%22purpose%22%3A%20%22maskable%22%20%7D%20%5D%2C%20%22scope%22%3A%20%22.%2F%22%2C%20%22start_url%22%3A%20%22.%2F%22%7D">
 </head>
 <body class="flex flex-col justify-between max-w-lg mx-auto px-4 safe-pt safe-pb antialiased">
 
@@ -1689,7 +1690,6 @@ body {
   
   
   
-
 <script>
 /* === audio.js === */
 /**
@@ -1787,6 +1787,13 @@ class SoundEngine {
       if (match) {
         this.selectedVoice = match;
         this._userPickedLang = match.lang; // Keep lang in sync
+      } else if (this._userPickedLang) {
+        // Name didn't match (e.g. device change), match by normalized language
+        const normTarget = this._normLang(this._userPickedLang);
+        const langMatch = this.voices.find(v => this._normLang(v.lang) === normTarget);
+        this.selectedVoice = langMatch || this.voices.find(v => v.lang.startsWith('en')) || this.voices[0];
+      } else {
+        this.selectedVoice = this.voices.find(v => v.lang.startsWith('en')) || this.voices[0];
       }
     }
 
@@ -2114,18 +2121,18 @@ class SpeakingTimer {
     this.remainingMs = 60000;
     this.status = 'idle'; // 'idle' | 'precount' | 'running' | 'paused' | 'completed'
 
-    this.preCountdownSec = 0; // 0, 3, 5, 10
+    this.preCountdownSec = parseInt(localStorage.getItem('timer_precount_sec') || '0', 10); // 0, 3, 5, 10
     this.currentPreCount = 0;
 
-    this.intervalSpeakingEnabled = true;
-    this.intervalSec = 10; // e.g. 10 seconds
+    this.intervalSpeakingEnabled = localStorage.getItem('timer_interval_enabled') !== 'false';
+    this.intervalSec = parseInt(localStorage.getItem('timer_interval_sec') || '10', 10); // e.g. 10 seconds
     this.lastSpokenInterval = null;
 
-    this.finalCountdownEnabled = true; // 5, 4, 3, 2, 1
+    this.finalCountdownEnabled = localStorage.getItem('timer_countdown_enabled') !== 'false'; // 5, 4, 3, 2, 1
     this.lastSpokenCountdown = null;
 
-    this.vibrateEnabled = true;
-    this.soundEnabled = true;
+    this.vibrateEnabled = localStorage.getItem('timer_vibrate_enabled') !== 'false';
+    this.soundEnabled = localStorage.getItem('timer_sound_enabled') !== 'false';
     // Metronome on by default; persists across sessions (localStorage)
     this.metronomeTick = localStorage.getItem('timer_metronome') !== 'false';
     this.expirySound = localStorage.getItem('timer_expiry_sound') || 'whistle'; // 'whistle' | 'bell' | 'alarm' | 'chime' | 'none'
@@ -2473,14 +2480,14 @@ class SpeakingStopwatch {
     this.lastLapTotalMs = 0;
 
     // Interval voice settings
-    this.intervalSpeakingEnabled = true;
-    this.intervalSec = 10;
+    this.intervalSpeakingEnabled = localStorage.getItem('sw_interval_enabled') !== 'false';
+    this.intervalSec = parseInt(localStorage.getItem('sw_interval_sec') || '5', 10);
     this.lastSpokenInterval = null;
 
-    this.speakLapTime = true;
-    this.speakLapTotal = false;
-    this.vibrateEnabled = true;
-    this.soundEnabled = true;
+    this.speakLapTime = localStorage.getItem('sw_speak_lap') !== 'false';
+    this.speakLapTotal = localStorage.getItem('sw_speak_total') === 'true';
+    this.vibrateEnabled = localStorage.getItem('sw_vibrate_enabled') !== 'false';
+    this.soundEnabled = localStorage.getItem('sw_sound_enabled') !== 'false';
 
     // Callbacks
     this.onTick = null;
@@ -2998,6 +3005,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerIntervalToggle.checked = timer.intervalSpeakingEnabled;
     timerIntervalToggle.addEventListener('change', (e) => {
       timer.intervalSpeakingEnabled = e.target.checked;
+      localStorage.setItem('timer_interval_enabled', String(e.target.checked));
     });
   }
 
@@ -3005,13 +3013,17 @@ document.addEventListener('DOMContentLoaded', () => {
     timerIntervalSelect.value = String(timer.intervalSec);
     timerIntervalSelect.addEventListener('change', (e) => {
       timer.intervalSec = parseInt(e.target.value, 10);
+      localStorage.setItem('timer_interval_sec', String(timer.intervalSec));
     });
   }
 
   if (timerSpeakingToggle) {
-    timerSpeakingToggle.checked = sound.speechSynthesis !== null;
+    timerSpeakingToggle.checked = !sound.isMuted;
     timerSpeakingToggle.addEventListener('change', (e) => {
       sound.setMute(!e.target.checked);
+      localStorage.setItem('sound_muted', String(sound.isMuted));
+      updateMuteButtonUI();
+      if (swSpeakingToggle) swSpeakingToggle.checked = e.target.checked;
     });
   }
 
@@ -3019,6 +3031,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerCountdownToggle.checked = timer.finalCountdownEnabled;
     timerCountdownToggle.addEventListener('change', (e) => {
       timer.finalCountdownEnabled = e.target.checked;
+      localStorage.setItem('timer_countdown_enabled', String(e.target.checked));
     });
   }
 
@@ -3026,6 +3039,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerSoundToggle.checked = timer.soundEnabled;
     timerSoundToggle.addEventListener('change', (e) => {
       timer.soundEnabled = e.target.checked;
+      localStorage.setItem('timer_sound_enabled', String(e.target.checked));
     });
   }
 
@@ -3033,6 +3047,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerVibrateToggle.checked = timer.vibrateEnabled;
     timerVibrateToggle.addEventListener('change', (e) => {
       timer.vibrateEnabled = e.target.checked;
+      localStorage.setItem('timer_vibrate_enabled', String(e.target.checked));
     });
   }
 
@@ -3040,6 +3055,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerPrecountSelect.value = String(timer.preCountdownSec);
     timerPrecountSelect.addEventListener('change', (e) => {
       timer.preCountdownSec = parseInt(e.target.value, 10);
+      localStorage.setItem('timer_precount_sec', String(timer.preCountdownSec));
     });
   }
 
@@ -3261,6 +3277,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swIntervalToggle.checked = stopwatch.intervalSpeakingEnabled;
     swIntervalToggle.addEventListener('change', (e) => {
       stopwatch.intervalSpeakingEnabled = e.target.checked;
+      localStorage.setItem('sw_interval_enabled', String(e.target.checked));
     });
   }
 
@@ -3268,6 +3285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swIntervalSelect.value = String(stopwatch.intervalSec);
     swIntervalSelect.addEventListener('change', (e) => {
       stopwatch.intervalSec = parseInt(e.target.value, 10);
+      localStorage.setItem('sw_interval_sec', String(stopwatch.intervalSec));
     });
   }
 
@@ -3275,6 +3293,9 @@ document.addEventListener('DOMContentLoaded', () => {
     swSpeakingToggle.checked = !sound.isMuted;
     swSpeakingToggle.addEventListener('change', (e) => {
       sound.setMute(!e.target.checked);
+      localStorage.setItem('sound_muted', String(sound.isMuted));
+      updateMuteButtonUI();
+      if (timerSpeakingToggle) timerSpeakingToggle.checked = e.target.checked;
     });
   }
 
@@ -3282,6 +3303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swSpeakLapToggle.checked = stopwatch.speakLapTime;
     swSpeakLapToggle.addEventListener('change', (e) => {
       stopwatch.speakLapTime = e.target.checked;
+      localStorage.setItem('sw_speak_lap', String(e.target.checked));
     });
   }
 
@@ -3289,6 +3311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swSpeakTotalToggle.checked = stopwatch.speakLapTotal;
     swSpeakTotalToggle.addEventListener('change', (e) => {
       stopwatch.speakLapTotal = e.target.checked;
+      localStorage.setItem('sw_speak_total', String(e.target.checked));
     });
   }
 
@@ -3296,6 +3319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swVibrateToggle.checked = stopwatch.vibrateEnabled;
     swVibrateToggle.addEventListener('change', (e) => {
       stopwatch.vibrateEnabled = e.target.checked;
+      localStorage.setItem('sw_vibrate_enabled', String(e.target.checked));
     });
   }
 

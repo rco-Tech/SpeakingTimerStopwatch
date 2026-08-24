@@ -299,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerIntervalToggle.checked = timer.intervalSpeakingEnabled;
     timerIntervalToggle.addEventListener('change', (e) => {
       timer.intervalSpeakingEnabled = e.target.checked;
+      localStorage.setItem('timer_interval_enabled', String(e.target.checked));
     });
   }
 
@@ -306,13 +307,17 @@ document.addEventListener('DOMContentLoaded', () => {
     timerIntervalSelect.value = String(timer.intervalSec);
     timerIntervalSelect.addEventListener('change', (e) => {
       timer.intervalSec = parseInt(e.target.value, 10);
+      localStorage.setItem('timer_interval_sec', String(timer.intervalSec));
     });
   }
 
   if (timerSpeakingToggle) {
-    timerSpeakingToggle.checked = sound.speechSynthesis !== null;
+    timerSpeakingToggle.checked = !sound.isMuted;
     timerSpeakingToggle.addEventListener('change', (e) => {
       sound.setMute(!e.target.checked);
+      localStorage.setItem('sound_muted', String(sound.isMuted));
+      updateMuteButtonUI();
+      if (swSpeakingToggle) swSpeakingToggle.checked = e.target.checked;
     });
   }
 
@@ -320,6 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerCountdownToggle.checked = timer.finalCountdownEnabled;
     timerCountdownToggle.addEventListener('change', (e) => {
       timer.finalCountdownEnabled = e.target.checked;
+      localStorage.setItem('timer_countdown_enabled', String(e.target.checked));
     });
   }
 
@@ -327,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerSoundToggle.checked = timer.soundEnabled;
     timerSoundToggle.addEventListener('change', (e) => {
       timer.soundEnabled = e.target.checked;
+      localStorage.setItem('timer_sound_enabled', String(e.target.checked));
     });
   }
 
@@ -334,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerVibrateToggle.checked = timer.vibrateEnabled;
     timerVibrateToggle.addEventListener('change', (e) => {
       timer.vibrateEnabled = e.target.checked;
+      localStorage.setItem('timer_vibrate_enabled', String(e.target.checked));
     });
   }
 
@@ -341,6 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerPrecountSelect.value = String(timer.preCountdownSec);
     timerPrecountSelect.addEventListener('change', (e) => {
       timer.preCountdownSec = parseInt(e.target.value, 10);
+      localStorage.setItem('timer_precount_sec', String(timer.preCountdownSec));
     });
   }
 
@@ -562,6 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swIntervalToggle.checked = stopwatch.intervalSpeakingEnabled;
     swIntervalToggle.addEventListener('change', (e) => {
       stopwatch.intervalSpeakingEnabled = e.target.checked;
+      localStorage.setItem('sw_interval_enabled', String(e.target.checked));
     });
   }
 
@@ -569,6 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swIntervalSelect.value = String(stopwatch.intervalSec);
     swIntervalSelect.addEventListener('change', (e) => {
       stopwatch.intervalSec = parseInt(e.target.value, 10);
+      localStorage.setItem('sw_interval_sec', String(stopwatch.intervalSec));
     });
   }
 
@@ -576,6 +587,9 @@ document.addEventListener('DOMContentLoaded', () => {
     swSpeakingToggle.checked = !sound.isMuted;
     swSpeakingToggle.addEventListener('change', (e) => {
       sound.setMute(!e.target.checked);
+      localStorage.setItem('sound_muted', String(sound.isMuted));
+      updateMuteButtonUI();
+      if (timerSpeakingToggle) timerSpeakingToggle.checked = e.target.checked;
     });
   }
 
@@ -583,6 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swSpeakLapToggle.checked = stopwatch.speakLapTime;
     swSpeakLapToggle.addEventListener('change', (e) => {
       stopwatch.speakLapTime = e.target.checked;
+      localStorage.setItem('sw_speak_lap', String(e.target.checked));
     });
   }
 
@@ -590,6 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swSpeakTotalToggle.checked = stopwatch.speakLapTotal;
     swSpeakTotalToggle.addEventListener('change', (e) => {
       stopwatch.speakLapTotal = e.target.checked;
+      localStorage.setItem('sw_speak_total', String(e.target.checked));
     });
   }
 
@@ -597,6 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swVibrateToggle.checked = stopwatch.vibrateEnabled;
     swVibrateToggle.addEventListener('change', (e) => {
       stopwatch.vibrateEnabled = e.target.checked;
+      localStorage.setItem('sw_vibrate_enabled', String(e.target.checked));
     });
   }
 
