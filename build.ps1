@@ -79,6 +79,13 @@ $jsBlock = "<script>`n" +
            "</script>"
 $html = $html.Replace('</body>', $jsBlock + "`n</body>")
 
+# --- Inline images for standalone bundle ---
+if (Test-Path "$root\icons\paypal-qr.png") {
+    $qrBytes = [System.IO.File]::ReadAllBytes("$root\icons\paypal-qr.png")
+    $qrBase64 = [System.Convert]::ToBase64String($qrBytes)
+    $html = $html.Replace('src="icons/paypal-qr.png"', "src=""data:image/png;base64,$qrBase64""")
+}
+
 # --- Write output ---
 $distDir = "$root\dist"
 if (!(Test-Path $distDir)) { New-Item -ItemType Directory -Path $distDir | Out-Null }

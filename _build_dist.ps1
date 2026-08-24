@@ -55,6 +55,12 @@ $jsBlock = "<script>`n" +
            "</script>"
 $html = $html.Replace('</body>', "`n" + $jsBlock + "`n</body>")
 
+if (Test-Path "$root\icons\paypal-qr.png") {
+    $qrBytes = [System.IO.File]::ReadAllBytes("$root\icons\paypal-qr.png")
+    $qrBase64 = [System.Convert]::ToBase64String($qrBytes)
+    $html = $html.Replace('src="icons/paypal-qr.png"', "src=""data:image/png;base64,$qrBase64""")
+}
+
 $distDir = "$root\dist"
 if (!(Test-Path $distDir)) { New-Item -ItemType Directory -Path $distDir | Out-Null }
 $outFile = "$distDir\voice-timer.html"
