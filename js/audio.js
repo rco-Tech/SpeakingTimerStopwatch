@@ -37,6 +37,10 @@ class SoundEngine {
       console.warn('Failed to load speech settings', e);
     }
 
+    // Preferred announcement language — kept in sync with AppI18N (see i18n.js).
+    // Announcements are spoken in this language; voice selection prefers it too.
+    this.preferredLang = (window.AppI18N && window.AppI18N.lang) || 'en';
+
     this.initAudioContext = this.initAudioContext.bind(this);
 
     // Try immediately — works on Firefox & Safari
@@ -80,13 +84,16 @@ class SoundEngine {
     if (fresh.length === 0) return; // Not ready yet — polling fallback will retry
     this.voices = fresh;
 
-    // Default to an English voice (only if no voice was explicitly chosen by the user)
+    // Default to the app's preferred language (only if no voice was explicitly chosen by the user)
     if (!this._userPickedVoice) {
-      const preferred =
-        this.voices.find(v => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel')) && v.lang.startsWith('en'))
-        || this.voices.find(v => v.lang.startsWith('en'))
-        || this.voices[0];
-      this.selectedVoice = preferred;
+      const pref = this.preferredLang || 'en';
+      const isQuality = v => v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel');
+      const pickBest = list => list.length ? (list.find(isQuality) || list[0]) : null;
+
+      const byPref = this.voices.filter(v => this._primary(v.lang) === pref);
+      const byEn = this.voices.filter(v => this._primary(v.lang) === 'en');
+
+      this.selectedVoice = pickBest(byPref) || pickBest(byEn) || this.voices[0];
     } else {
       // Re-resolve by name — voice objects are recreated on each getVoices() call on Android
       const match = this.voices.find(v => v.name === this._userPickedVoice);
@@ -97,9 +104,15 @@ class SoundEngine {
         // Name didn't match (e.g. device change), match by normalized language
         const normTarget = this._normLang(this._userPickedLang);
         const langMatch = this.voices.find(v => this._normLang(v.lang) === normTarget);
-        this.selectedVoice = langMatch || this.voices.find(v => v.lang.startsWith('en')) || this.voices[0];
+        this.selectedVoice = langMatch
+          || this.voices.find(v => this._primary(v.lang) === (this.preferredLang || 'en'))
+          || this.voices.find(v => v.lang.startsWith('en'))
+          || this.voices[0];
       } else {
-        this.selectedVoice = this.voices.find(v => v.lang.startsWith('en')) || this.voices[0];
+        this.selectedVoice =
+          this.voices.find(v => this._primary(v.lang) === (this.preferredLang || 'en'))
+          || this.voices.find(v => v.lang.startsWith('en'))
+          || this.voices[0];
       }
     }
 
@@ -326,6 +339,27 @@ class SoundEngine {
     return lang.replace(/_/g, '-');
   }
 
+  /** Primary BCP-47 subtag: "pt-BR" -> "pt", "zh_CN" -> "zh" */
+  _primary(lang) {
+    return String(lang || '').trim().split(/[-_]/)[0].toLowerCase();
+  }
+
+  /**
+   * Retarget announcements to another language (called by AppI18N.setLang).
+   * Clears any previously hand-picked voice so selection re-resolves to a
+   * voice matching the new language.
+   */
+  setPreferredLang(lang) {
+    this.preferredLang = lang;
+    this._userPickedVoice = null;
+    this._userPickedLang = null;
+    try {
+      localStorage.removeItem('sound_voice_name');
+      localStorage.removeItem('sound_voice_lang');
+    } catch (e) { /* ignore */ }
+    this.loadVoices();
+  }
+
   /**
    * Speaks the provided text via Web Speech API.
    * Hardened for Android Chrome / Samsung quirks:
@@ -350,7 +384,7 @@ class SoundEngine {
 
       // Determine the target name and lang from user choice or current default
       const targetName = this._userPickedVoice || (this.selectedVoice && this.selectedVoice.name);
-      const targetLang = this._userPickedLang || (this.selectedVoice && this.selectedVoice.lang);
+      const targetLang = this._userPickedLang || (this.selectedVoice && this.selectedVoice.lang) || this.preferredLang;
 
       if (targetName && liveVoices.length > 0) {
         // Primary: match by exact name (works on desktop & iOS)
@@ -371,6 +405,10 @@ class SoundEngine {
       } else if (this.selectedVoice) {
         utterance.voice = this.selectedVoice;
         utterance.lang = this._normLang(this.selectedVoice.lang);
+      } else if (this.preferredLang) {
+        // No matching voice object available — still route the TTS engine
+        // to the right language so digits/phrases are pronounced natively.
+        utterance.lang = this._normLang(this.preferredLang);
       }
 
       utterance.rate = this.speechRate;
@@ -386,28 +424,30 @@ class SoundEngine {
   }
 
   /**
-   * Formats seconds into natural speaking text (e.g. 90 -> "1 minute 30 seconds")
+   * Formats seconds into natural speaking text (e.g. 90 -> "1 minute 30 seconds"),
+   * localized via AppI18N (word order & plurals per language).
    */
   formatSecondsForSpeech(totalSeconds, isRemaining = true) {
+    const i18n = window.AppI18N;
     const s = Math.round(totalSeconds);
-    if (s <= 0) return 'Time is up!';
+    if (s <= 0) return i18n ? i18n.t('sp.timeupDefault') : 'Time is up!';
 
     const hours = Math.floor(s / 3600);
     const minutes = Math.floor((s % 3600) / 60);
     const seconds = s % 60;
 
+    const unitPart = (n, key, one, many) =>
+      i18n ? `${n} ${i18n.unit(n, key)}` : `${n} ${n === 1 ? one : many}`;
+
     const parts = [];
-    if (hours > 0) {
-      parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
-    }
-    if (minutes > 0) {
-      parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
-    }
-    if (seconds > 0 || parts.length === 0) {
-      parts.push(`${seconds} ${seconds === 1 ? 'second' : 'seconds'}`);
-    }
+    if (hours > 0) parts.push(unitPart(hours, 'u.hour', 'hour', 'hours'));
+    if (minutes > 0) parts.push(unitPart(minutes, 'u.minute', 'minute', 'minutes'));
+    if (seconds > 0 || parts.length === 0) parts.push(unitPart(seconds, 'u.second', 'second', 'seconds'));
 
     const phrase = parts.join(' ');
+    if (i18n) {
+      return i18n.t(isRemaining ? 'sp.remainingTpl' : 'sp.elapsedTpl', { phrase });
+    }
     return isRemaining ? `${phrase} remaining` : `${phrase} elapsed`;
   }
 }

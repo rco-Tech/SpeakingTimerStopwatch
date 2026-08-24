@@ -3,7 +3,7 @@
  * Network-first for navigation requests (ensures immediate updates when online)
  * and Cache-first / runtime cache for static assets with offline fallback.
  */
-const CACHE_NAME = 'speaking-timer-v6';
+const CACHE_NAME = 'speaking-timer-v7';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

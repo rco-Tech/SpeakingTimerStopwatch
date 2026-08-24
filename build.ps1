@@ -15,9 +15,11 @@ $jsAudio = [System.IO.File]::ReadAllText("$root\js\audio.js",    [System.Text.En
 $jsTmr   = [System.IO.File]::ReadAllText("$root\js\timer.js",    [System.Text.Encoding]::UTF8)
 $jsSw    = [System.IO.File]::ReadAllText("$root\js\stopwatch.js",[System.Text.Encoding]::UTF8)
 $jsApp   = [System.IO.File]::ReadAllText("$root\js\app.js",      [System.Text.Encoding]::UTF8)
+$jsI18n  = [System.IO.File]::ReadAllText("$root\js\i18n.js",     [System.Text.Encoding]::UTF8)
 
 # --- Strip external file references ---
 $html = $html -replace '<link\s+rel="stylesheet"\s+href="css/style\.css"[^>]*/?\s*>', ''
+$html = $html -replace '<script\s+src="js/i18n\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/audio\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/timer\.js"\s*></script>', ''
 $html = $html -replace '<script\s+src="js/stopwatch\.js"\s*></script>', ''
@@ -69,6 +71,7 @@ $html = $html.Replace('</head>', $cssBlock + "`n" + $manifestLink + "`n</head>")
 
 # --- Inline JS before </body> ---
 $jsBlock = "<script>`n" +
+           "/* === i18n.js === */`n" + $jsI18n + "`n" +
            "/* === audio.js === */`n" + $jsAudio + "`n" +
            "/* === timer.js === */`n" + $jsTmr   + "`n" +
            "/* === stopwatch.js === */`n" + $jsSw + "`n" +

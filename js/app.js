@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const stopwatch = window.speakingStopwatch;
   const sound = window.soundEngine;
 
+  // Translation helper (i18n.js) — safe no-op fallback if not loaded
+  const t = (key, params) => (window.AppI18N ? AppI18N.t(key, params) : key);
+
   // App State
   const state = {
     activeTab: 'timer', // 'timer' | 'stopwatch'
@@ -191,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timerStatusBadge) {
         timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.3)]';
         timerStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse-dot';
-        timerStatusText.textContent = 'RUNNING';
+        timerStatusText.textContent = t('st.running');
       }
       requestWakeLock();
     } else if (status === 'paused') {
@@ -201,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timerStatusBadge) {
         timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)]';
         timerStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
-        timerStatusText.textContent = 'PAUSED';
+        timerStatusText.textContent = t('st.paused');
       }
       releaseWakeLock();
     } else if (status === 'completed') {
@@ -211,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timerStatusBadge) {
         timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-rose-500/20 border border-rose-500/40 text-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.3)]';
         timerStatusDot.className = 'w-2 h-2 rounded-full bg-rose-400';
-        timerStatusText.textContent = "TIME'S UP!";
+        timerStatusText.textContent = t('st.timesup');
       }
       releaseWakeLock();
     } else if (status === 'precount') {
@@ -221,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timerStatusBadge) {
         timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400';
         timerStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
-        timerStatusText.textContent = 'GET READY';
+        timerStatusText.textContent = t('st.getready');
       }
     } else {
       // Idle / Stopped / Reset
@@ -231,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timerStatusBadge) {
         timerStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-400';
         timerStatusDot.className = 'w-1.5 h-1.5 rounded-full bg-gray-400';
-        timerStatusText.textContent = 'READY';
+        timerStatusText.textContent = t('st.ready');
       }
       releaseWakeLock();
     }
@@ -284,6 +287,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Quick Add Time Buttons
+  const localizeQuickAddButtons = () => {
+    document.querySelectorAll('[data-add-time]').forEach(btn => {
+      const delta = parseInt(btn.dataset.addTime, 10);
+      // Localized label: "+10s" / "+1m" (+10秒, +10 с, ...)
+      const isSeconds = delta < 60;
+      btn.textContent = isSeconds ? `+${delta}${t('digits.s')}` : `+${delta / 60}${t('digits.m')}`;
+    });
+  };
+  localizeQuickAddButtons();
+
   document.querySelectorAll('[data-add-time]').forEach(btn => {
     btn.addEventListener('click', () => {
       const delta = parseInt(btn.dataset.addTime, 10);
@@ -412,10 +425,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const comp = timer.getTimeComponents();
     const duration = comp.totalSec;
     if (duration <= 0) {
-      alert('Please set a timer duration first before saving as a preset.');
+      alert(t('alert.needDuration'));
       return;
     }
-    const name = prompt('Enter a name for this preset:', `Workout (${formatSecShort(duration)})`);
+    const name = prompt(t('prompt.presetName'), `${t('prompt.presetDefault')} (${formatSecShort(duration)})`);
     if (name && name.trim()) {
       timer.addPreset(name.trim(), duration, timer.intervalSec);
       renderPresets();
@@ -471,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (swStatusBadge) {
         swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.3)]';
         swStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse-dot';
-        swStatusText.textContent = 'RUNNING';
+        swStatusText.textContent = t('st.running');
       }
       requestWakeLock();
     } else if (status === 'paused') {
@@ -483,7 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (swStatusBadge) {
         swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)]';
         swStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
-        swStatusText.textContent = 'PAUSED';
+        swStatusText.textContent = t('st.paused');
       }
       releaseWakeLock();
     } else if (status === 'precount') {
@@ -495,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (swStatusBadge) {
         swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400';
         swStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
-        swStatusText.textContent = 'GET READY';
+        swStatusText.textContent = t('st.getready');
       }
     } else {
       // Idle / Reset
@@ -507,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (swStatusBadge) {
         swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-400';
         swStatusDot.className = 'w-1.5 h-1.5 rounded-full bg-gray-400';
-        swStatusText.textContent = 'READY';
+        swStatusText.textContent = t('st.ready');
       }
       releaseWakeLock();
     }
@@ -537,10 +550,10 @@ document.addEventListener('DOMContentLoaded', () => {
       let badge = '';
       let borderClass = 'border-white/5';
       if (lap.isFastest) {
-        badge = '<span class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Fastest</span>';
+        badge = `<span class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">${t('badge.fastest')}</span>`;
         borderClass = 'border-emerald-500/30 bg-emerald-500/5';
       } else if (lap.isSlowest) {
-        badge = '<span class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-rose-500/20 text-rose-400 border border-rose-500/30">Slowest</span>';
+        badge = `<span class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-rose-500/20 text-rose-400 border border-rose-500/30">${t('badge.slowest')}</span>`;
         borderClass = 'border-rose-500/30 bg-rose-500/5';
       }
 
@@ -728,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // If the platform exposes no text-to-speech voices (e.g. some Android webviews),
     // don't leave the dropdown stuck on "Loading device voices..."
     if (!voices || voices.length === 0) {
-      voiceSelect.innerHTML = '<option value="">No voice found on this device (text-to-speech unavailable)</option>';
+      voiceSelect.innerHTML = `<option value="">${t('set.voicenone')}</option>`;
       return;
     }
     const currentName = sound.selectedVoice ? sound.selectedVoice.name : null;
@@ -786,6 +799,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- App & Voice Language Selector ---
+  const languageSelect = document.getElementById('setting-language');
+  if (languageSelect && window.AppI18N) {
+    languageSelect.value = AppI18N.lang;
+    languageSelect.addEventListener('change', (e) => {
+      if (AppI18N.setLang(e.target.value)) {
+        // Refresh everything that renders localized content dynamically.
+        renderPresets();
+        populateVoiceDropdown(sound.voices);
+        localizeQuickAddButtons();
+      }
+    });
+  }
+
   if (speechRateSlider) {
     speechRateSlider.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
@@ -807,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (testVoiceBtn) {
     testVoiceBtn.addEventListener('click', () => {
       sound.initAudioContext();
-      sound.speak('This is a test of your speaking timer voice. Ready, set, go!', true);
+      sound.speak(t('sp.test'), true);
     });
   }
 
@@ -868,9 +895,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const ss = padded.slice(4, 6);
     if (keypadDigitsEl) {
       keypadDigitsEl.innerHTML = `
-        <span class="${hh !== '00' ? 'text-theme' : 'text-gray-500'}">${hh}</span><span class="text-xs text-gray-500 font-sans">h</span>
-        <span class="${mm !== '00' || hh !== '00' ? 'text-theme' : 'text-gray-500'}">${mm}</span><span class="text-xs text-gray-500 font-sans">m</span>
-        <span class="${ss !== '00' || mm !== '00' || hh !== '00' ? 'text-theme' : 'text-gray-500'}">${ss}</span><span class="text-xs text-gray-500 font-sans">s</span>
+        <span class="${hh !== '00' ? 'text-theme' : 'text-gray-500'}">${hh}</span><span class="text-xs text-gray-500 font-sans">${t('digits.h')}</span>
+        <span class="${mm !== '00' || hh !== '00' ? 'text-theme' : 'text-gray-500'}">${mm}</span><span class="text-xs text-gray-500 font-sans">${t('digits.m')}</span>
+        <span class="${ss !== '00' || mm !== '00' || hh !== '00' ? 'text-theme' : 'text-gray-500'}">${ss}</span><span class="text-xs text-gray-500 font-sans">${t('digits.s')}</span>
       `;
     }
   }
@@ -941,7 +968,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const shareTextEl = document.getElementById('share-text-area');
     if (shareTextEl) {
       navigator.clipboard.writeText(shareTextEl.value).then(() => {
-        alert('Copied to clipboard!');
+        alert(t('alert.copied'));
       });
     }
   });

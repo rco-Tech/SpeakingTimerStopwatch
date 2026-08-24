@@ -76,7 +76,8 @@ class SpeakingStopwatch {
         if (this.onPreCountTick) this.onPreCountTick('GO!');
         if (window.soundEngine) {
           window.soundEngine.playWhistle();
-          window.soundEngine.speak('Go!', true);
+          const goText = (window.AppI18N ? AppI18N.t('sp.go') : 'Go!');
+          window.soundEngine.speak(goText, true);
         }
         if (this.vibrateEnabled && navigator.vibrate) {
           navigator.vibrate([150, 50, 150]);
@@ -102,11 +103,13 @@ class SpeakingStopwatch {
       if (this.pausedElapsed === 0) {
         if (this.preCountdownSec === 0) {
           window.soundEngine.playDoubleBeep(true);
-          window.soundEngine.speak('Stopwatch started');
+          const startText = (window.AppI18N ? AppI18N.t('sp.swStarted') : 'Stopwatch started');
+          window.soundEngine.speak(startText);
         }
       } else {
         window.soundEngine.playDoubleBeep(true);
-        window.soundEngine.speak('Resumed');
+        const resumeText = (window.AppI18N ? AppI18N.t('sp.resumed') : 'Resumed');
+        window.soundEngine.speak(resumeText);
       }
     }
 
@@ -134,7 +137,8 @@ class SpeakingStopwatch {
 
     if (window.soundEngine && window.soundEngine.speakEvents) {
       window.soundEngine.playDoubleBeep(false);
-      window.soundEngine.speak('Paused');
+      const pausedText = (window.AppI18N ? AppI18N.t('sp.paused') : 'Paused');
+      window.soundEngine.speak(pausedText);
     }
 
     this.notifyTick();
@@ -195,11 +199,16 @@ class SpeakingStopwatch {
       let speechParts = [];
       if (this.speakLapTime) {
         const splitSec = (splitMs / 1000).toFixed(1);
-        speechParts.push(`Lap ${lapNumber}, ${splitSec} seconds`);
+        speechParts.push(
+          window.AppI18N ? AppI18N.t('sp.lapTpl', { n: lapNumber, sec: splitSec }) : `Lap ${lapNumber}, ${splitSec} seconds`
+        );
       }
       if (this.speakLapTotal) {
         const totalSec = Math.round(currentTotalMs / 1000);
-        speechParts.push(`Total time ${window.soundEngine.formatSecondsForSpeech(totalSec, false)}`);
+        const totalPhrase = window.soundEngine.formatSecondsForSpeech(totalSec, false);
+        speechParts.push(
+          window.AppI18N ? AppI18N.t('sp.totalTpl', { phrase: totalPhrase }) : `Total time ${totalPhrase}`
+        );
       }
       if (speechParts.length > 0) {
         window.soundEngine.speak(speechParts.join('. '));

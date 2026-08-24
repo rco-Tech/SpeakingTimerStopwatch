@@ -50,13 +50,14 @@ class SpeakingTimer {
         console.error('Failed to parse presets', e);
       }
     }
+    const t = (k) => (window.AppI18N ? AppI18N.t(k) : null);
     return [
-      { id: 'p1', name: '⚡ HIIT Work', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
-      { id: 'p2', name: '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
-      { id: 'p3', name: '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
-      { id: 'p4', name: '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
-      { id: 'p5', name: '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
-      { id: 'p6', name: '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
+      { id: 'p1', name: t('p1') || '⚡ HIIT Work', durationSec: 30, intervalSec: 10, color: '#00e5ff' },
+      { id: 'p2', name: t('p2') || '🧘 Rest Interval', durationSec: 15, intervalSec: 5, color: '#39ff14' },
+      { id: 'p3', name: t('p3') || '💪 Core Plank', durationSec: 60, intervalSec: 15, color: '#ffb703' },
+      { id: 'p4', name: t('p4') || '🥊 Boxing Round', durationSec: 180, intervalSec: 30, color: '#ff0055' },
+      { id: 'p5', name: t('p5') || '☕ Coffee / Tea', durationSec: 240, intervalSec: 60, color: '#ff6b00' },
+      { id: 'p6', name: t('p6') || '🍅 Pomodoro Focus', durationSec: 1500, intervalSec: 300, color: '#d946ef' },
     ];
   }
 
@@ -147,7 +148,8 @@ class SpeakingTimer {
         if (this.onPreCountTick) this.onPreCountTick('GO!');
         if (window.soundEngine) {
           window.soundEngine.playWhistle();
-          window.soundEngine.speak('Go!', true);
+          const goText = (window.AppI18N ? AppI18N.t('sp.go') : 'Go!');
+          window.soundEngine.speak(goText, true);
         }
         if (this.vibrateEnabled && navigator.vibrate) {
           navigator.vibrate([150, 50, 150]);
@@ -199,7 +201,8 @@ class SpeakingTimer {
 
     if (window.soundEngine && window.soundEngine.speakEvents) {
       window.soundEngine.playDoubleBeep(false);
-      window.soundEngine.speak('Timer paused');
+      const pausedText = (window.AppI18N ? AppI18N.t('sp.timerPaused') : 'Timer paused');
+      window.soundEngine.speak(pausedText);
     }
 
     this.notifyTick();
@@ -307,10 +310,11 @@ class SpeakingTimer {
         window.soundEngine.playChime();
       }
 
-      // Voice Announcement
+      // Voice Announcement — localize generic defaults, keep custom user text
       if (this.expirySpeechText) {
+        const spoken = (window.AppI18N ? AppI18N.resolveExpiry(this.expirySpeechText) : this.expirySpeechText);
         setTimeout(() => {
-          window.soundEngine.speak(this.expirySpeechText, true);
+          window.soundEngine.speak(spoken, true);
         }, 400);
       }
     }

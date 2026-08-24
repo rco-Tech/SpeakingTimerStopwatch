@@ -10,6 +10,7 @@
 
 ### 🗣️ Voice & Audio Synthesis
 - Configurable spoken announcements — every `5s`, `10s`, `15s`, `30s`, `1m`, `2m`, and more.
+- **7 interface & voice languages** — English, Español, Deutsch, Français, Русский, 中文 (Mandarin), Română. Switchable in **Settings → App & Voice Language**: it translates the whole UI *and* all spoken announcements (voice auto-selected to match).
 - Pre‑start countdown **"3, 2, 1, GO!"** (available on both Timer and Stopwatch) and a final **"5, 4, 3, 2, 1"** countdown.
 - Realistic synthesized effects — **Referee Whistle**, **Boxing Ring Bell**, **Digital Alarm**, **Gentle Marimba Chimes**, and **Metronome Ticks**.
 - Pick any device TTS voice and tune **rate / pitch** with a live “Test Voice” preview.
@@ -75,6 +76,7 @@ Upload the whole folder to any static host (GitHub Pages, Netlify, Vercel, etc.)
 ├── js/
 │   ├── app.js            # App state & orchestration
 │   ├── audio.js          # Web Audio synth + effects
+│   ├── i18n.js           # UI + voice translations (en/es/de/fr/ru/zh/ro)
 │   ├── timer.js          # Countdown & voice scheduling
 │   └── stopwatch.js      # Lap stopwatch logic
 ├── manifest.webmanifest  # PWA manifest (installable app)
@@ -95,7 +97,7 @@ Upload the whole folder to any static host (GitHub Pages, Netlify, Vercel, etc.)
 
 - **HTML + Tailwind CSS** — responsive, mobile-first UI
 - **Google Fonts** — the 8 LED-style font families
-- **Web Speech API** — device TTS voice announcements
+- **Web Speech API** — device TTS voice announcements (multi-language)
 - **Web Audio API** — synthesized sound effects
 - **PWA manifest + service worker** — installable fullscreen app
 
