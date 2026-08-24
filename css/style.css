@@ -328,27 +328,26 @@ body {
     width: auto !important;
   }
 
-  #open-keypad-btn {
+  #open-keypad-btn,
+  .sw-display-digits {
     font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
     line-height: 1 !important;
     gap: 0.4rem !important;
   }
 
-  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]) {
+  #open-keypad-btn span:not(#timer-hours):not(#timer-minutes):not(#timer-seconds):not([data-i18n]),
+  .sw-display-digits span:not(#sw-hours):not(#sw-minutes):not(#sw-seconds):not([data-i18n]) {
     font-size: clamp(2.5rem, 16vh, 6.5rem) !important;
   }
 
-  #open-keypad-btn span[data-i18n] {
+  #open-keypad-btn span[data-i18n],
+  .sw-display-digits span[data-i18n] {
     font-size: clamp(0.75rem, 3.5vh, 1.25rem) !important;
   }
 
-  #sw-time {
-    font-size: clamp(3.25rem, 22vh, 8.5rem) !important;
-    line-height: 1 !important;
-  }
-
-  #sw-ms {
-    font-size: clamp(1.8rem, 13vh, 5rem) !important;
+  .sw-ms-badge {
+    margin-top: 0.75rem !important;
+    font-size: clamp(0.75rem, 3vh, 1rem) !important;
   }
 
   /* Linear Progress Bar in Landscape */
