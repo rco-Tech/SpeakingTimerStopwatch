@@ -1185,7 +1185,7 @@ body {
 
       <div class="flex items-baseline justify-center digit-display font-stencil font-extrabold tracking-tight">
         <span id="sw-time" class="text-6xl sm:text-7xl">00:00</span>
-        <span id="sw-ms" class="text-3xl sm:text-4xl text-theme opacity-80 font-mono ml-1">.00</span>
+        <span id="sw-ms" class="font-target text-3xl sm:text-4xl text-theme opacity-80 ml-1">.00</span>
       </div>
       <div class="mt-2 text-[11px] text-gray-400 font-mono tracking-wider">
         MINUTES : SECONDS . CENTISECONDS
@@ -1214,8 +1214,21 @@ body {
 
     <!-- Stopwatch Quick Options Bar -->
     <div class="p-3 rounded-2xl glass-panel space-y-2.5">
+      <!-- Top row: Pre-countdown -->
+      <div class="flex items-center justify-between text-xs gap-2">
+        <div class="flex items-center gap-1.5">
+          <span class="text-gray-300">Countdown before starting:</span>
+          <select id="sw-precount-select" class="bg-black/50 border border-white/10 text-theme text-xs rounded-lg px-2 py-1 outline-none focus:border-theme">
+            <option value="0">Off (0s)</option>
+            <option value="3" selected>3s</option>
+            <option value="5">5s</option>
+            <option value="10">10s</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Row 1: Interval Speaking & Speak Lap Time -->
-      <div class="grid grid-cols-2 gap-2 text-xs">
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-white/5">
         <label class="flex items-center gap-2 cursor-pointer select-none">
           <input type="checkbox" id="sw-interval-toggle" checked class="w-4 h-4 rounded accent-yellow-400 cursor-pointer">
           <span class="text-gray-200">Interval</span>
@@ -2469,11 +2482,15 @@ window.speakingTimer = new SpeakingTimer();
 
 class SpeakingStopwatch {
   constructor() {
-    this.status = 'idle'; // 'idle' | 'running' | 'paused'
+    this.status = 'idle'; // 'idle' | 'precount' | 'running' | 'paused'
     this.elapsedMs = 0;
     this.startTime = 0;
     this.pausedElapsed = 0;
     this.animFrameId = null;
+
+    // Pre-countdown (3s default)
+    this.preCountdownSec = parseInt(localStorage.getItem('sw_precount_sec') || '3', 10);
+    this.currentPreCount = 0;
 
     // Laps array: [{ id, lapNumber, splitMs, totalMs, isFastest, isSlowest }]
     this.laps = [];
@@ -2492,21 +2509,76 @@ class SpeakingStopwatch {
     // Callbacks
     this.onTick = null;
     this.onStateChange = null;
+    this.onPreCountTick = null;
     this.onLapAdded = null;
   }
 
   start() {
-    if (this.status === 'running') return;
+    if (this.status === 'running' || this.status === 'precount') return;
 
+    if (this.preCountdownSec > 0 && this.status === 'idle') {
+      this.startPreCountdown();
+      return;
+    }
+
+    this.runStopwatch();
+  }
+
+  startPreCountdown() {
+    this.status = 'precount';
+    this.currentPreCount = this.preCountdownSec;
+    this.notifyState();
+
+    const doStep = () => {
+      if (this.status !== 'precount') return;
+
+      if (this.currentPreCount > 0) {
+        if (this.onPreCountTick) this.onPreCountTick(this.currentPreCount);
+
+        if (window.soundEngine) {
+          window.soundEngine.playBeep(700, 0.1);
+          window.soundEngine.speak(String(this.currentPreCount), true);
+        }
+        if (this.vibrateEnabled && navigator.vibrate) {
+          navigator.vibrate(80);
+        }
+
+        this.currentPreCount--;
+        setTimeout(doStep, 1000);
+      } else {
+        // Pre-countdown finished -> GO!
+        if (this.onPreCountTick) this.onPreCountTick('GO!');
+        if (window.soundEngine) {
+          window.soundEngine.playWhistle();
+          window.soundEngine.speak('Go!', true);
+        }
+        if (this.vibrateEnabled && navigator.vibrate) {
+          navigator.vibrate([150, 50, 150]);
+        }
+        setTimeout(() => {
+          if (this.status === 'precount') {
+            this.runStopwatch();
+          }
+        }, 500);
+      }
+    };
+
+    doStep();
+  }
+
+  runStopwatch() {
     this.status = 'running';
     const now = performance.now();
     this.startTime = now - this.pausedElapsed;
 
     if (window.soundEngine && window.soundEngine.speakEvents) {
-      window.soundEngine.playDoubleBeep(true);
       if (this.pausedElapsed === 0) {
-        window.soundEngine.speak('Stopwatch started');
+        if (this.preCountdownSec === 0) {
+          window.soundEngine.playDoubleBeep(true);
+          window.soundEngine.speak('Stopwatch started');
+        }
       } else {
+        window.soundEngine.playDoubleBeep(true);
         window.soundEngine.speak('Resumed');
       }
     }
@@ -2516,11 +2588,17 @@ class SpeakingStopwatch {
   }
 
   pause() {
-    if (this.status !== 'running') return;
+    if (this.status !== 'running' && this.status !== 'precount') return;
 
     if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;
+    }
+
+    if (this.status === 'precount') {
+      this.status = 'idle';
+      this.notifyState();
+      return;
     }
 
     this.status = 'paused';
@@ -2950,7 +3028,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const precountOverlay = document.getElementById('precount-overlay');
   const precountNumber = document.getElementById('precount-number');
 
-  timer.onPreCountTick = (value) => {
+  const handlePreCountTick = (value) => {
     precountOverlay.classList.remove('hidden');
     precountNumber.textContent = value;
     precountNumber.classList.remove('animate-count-pop');
@@ -2963,6 +3041,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 700);
     }
   };
+
+  timer.onPreCountTick = handlePreCountTick;
+  stopwatch.onPreCountTick = handlePreCountTick;
 
   // Initial timer display
   updateTimerDisplay(timer.getTimeComponents(), 0);
@@ -3189,6 +3270,17 @@ document.addEventListener('DOMContentLoaded', () => {
         swStatusText.textContent = 'PAUSED';
       }
       releaseWakeLock();
+    } else if (status === 'precount') {
+      swPlayBtn.classList.add('btn-running', 'bg-amber-400', 'text-black');
+      swPlayBtn.innerHTML = SVG_ICONS.pause;
+      swLapBtn.disabled = true;
+      swLapBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      if (swStatusBadge) {
+        swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400';
+        swStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
+        swStatusText.textContent = 'GET READY';
+      }
     } else {
       // Idle / Reset
       swPlayBtn.classList.add('bg-theme', 'text-black');
@@ -3259,6 +3351,8 @@ document.addEventListener('DOMContentLoaded', () => {
     sound.initAudioContext();
     if (stopwatch.status === 'running') {
       stopwatch.pause();
+    } else if (stopwatch.status === 'precount') {
+      stopwatch.pause();
     } else {
       stopwatch.start();
     }
@@ -3273,6 +3367,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Stopwatch Quick Toggles sync
+  const swPrecountSelect = document.getElementById('sw-precount-select');
+  if (swPrecountSelect) {
+    swPrecountSelect.value = String(stopwatch.preCountdownSec);
+    swPrecountSelect.addEventListener('change', (e) => {
+      stopwatch.preCountdownSec = parseInt(e.target.value, 10);
+      localStorage.setItem('sw_precount_sec', String(stopwatch.preCountdownSec));
+    });
+  }
+
   if (swIntervalToggle) {
     swIntervalToggle.checked = stopwatch.intervalSpeakingEnabled;
     swIntervalToggle.addEventListener('change', (e) => {

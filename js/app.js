@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const precountOverlay = document.getElementById('precount-overlay');
   const precountNumber = document.getElementById('precount-number');
 
-  timer.onPreCountTick = (value) => {
+  const handlePreCountTick = (value) => {
     precountOverlay.classList.remove('hidden');
     precountNumber.textContent = value;
     precountNumber.classList.remove('animate-count-pop');
@@ -257,6 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 700);
     }
   };
+
+  timer.onPreCountTick = handlePreCountTick;
+  stopwatch.onPreCountTick = handlePreCountTick;
 
   // Initial timer display
   updateTimerDisplay(timer.getTimeComponents(), 0);
@@ -483,6 +486,17 @@ document.addEventListener('DOMContentLoaded', () => {
         swStatusText.textContent = 'PAUSED';
       }
       releaseWakeLock();
+    } else if (status === 'precount') {
+      swPlayBtn.classList.add('btn-running', 'bg-amber-400', 'text-black');
+      swPlayBtn.innerHTML = SVG_ICONS.pause;
+      swLapBtn.disabled = true;
+      swLapBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      if (swStatusBadge) {
+        swStatusBadge.className = 'mb-2 px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400';
+        swStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse-dot';
+        swStatusText.textContent = 'GET READY';
+      }
     } else {
       // Idle / Reset
       swPlayBtn.classList.add('bg-theme', 'text-black');
@@ -553,6 +567,8 @@ document.addEventListener('DOMContentLoaded', () => {
     sound.initAudioContext();
     if (stopwatch.status === 'running') {
       stopwatch.pause();
+    } else if (stopwatch.status === 'precount') {
+      stopwatch.pause();
     } else {
       stopwatch.start();
     }
@@ -567,6 +583,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Stopwatch Quick Toggles sync
+  const swPrecountSelect = document.getElementById('sw-precount-select');
+  if (swPrecountSelect) {
+    swPrecountSelect.value = String(stopwatch.preCountdownSec);
+    swPrecountSelect.addEventListener('change', (e) => {
+      stopwatch.preCountdownSec = parseInt(e.target.value, 10);
+      localStorage.setItem('sw_precount_sec', String(stopwatch.preCountdownSec));
+    });
+  }
+
   if (swIntervalToggle) {
     swIntervalToggle.checked = stopwatch.intervalSpeakingEnabled;
     swIntervalToggle.addEventListener('change', (e) => {

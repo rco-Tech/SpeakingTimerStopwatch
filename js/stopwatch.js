@@ -5,11 +5,15 @@
 
 class SpeakingStopwatch {
   constructor() {
-    this.status = 'idle'; // 'idle' | 'running' | 'paused'
+    this.status = 'idle'; // 'idle' | 'precount' | 'running' | 'paused'
     this.elapsedMs = 0;
     this.startTime = 0;
     this.pausedElapsed = 0;
     this.animFrameId = null;
+
+    // Pre-countdown (3s default)
+    this.preCountdownSec = parseInt(localStorage.getItem('sw_precount_sec') || '3', 10);
+    this.currentPreCount = 0;
 
     // Laps array: [{ id, lapNumber, splitMs, totalMs, isFastest, isSlowest }]
     this.laps = [];
@@ -28,21 +32,76 @@ class SpeakingStopwatch {
     // Callbacks
     this.onTick = null;
     this.onStateChange = null;
+    this.onPreCountTick = null;
     this.onLapAdded = null;
   }
 
   start() {
-    if (this.status === 'running') return;
+    if (this.status === 'running' || this.status === 'precount') return;
 
+    if (this.preCountdownSec > 0 && this.status === 'idle') {
+      this.startPreCountdown();
+      return;
+    }
+
+    this.runStopwatch();
+  }
+
+  startPreCountdown() {
+    this.status = 'precount';
+    this.currentPreCount = this.preCountdownSec;
+    this.notifyState();
+
+    const doStep = () => {
+      if (this.status !== 'precount') return;
+
+      if (this.currentPreCount > 0) {
+        if (this.onPreCountTick) this.onPreCountTick(this.currentPreCount);
+
+        if (window.soundEngine) {
+          window.soundEngine.playBeep(700, 0.1);
+          window.soundEngine.speak(String(this.currentPreCount), true);
+        }
+        if (this.vibrateEnabled && navigator.vibrate) {
+          navigator.vibrate(80);
+        }
+
+        this.currentPreCount--;
+        setTimeout(doStep, 1000);
+      } else {
+        // Pre-countdown finished -> GO!
+        if (this.onPreCountTick) this.onPreCountTick('GO!');
+        if (window.soundEngine) {
+          window.soundEngine.playWhistle();
+          window.soundEngine.speak('Go!', true);
+        }
+        if (this.vibrateEnabled && navigator.vibrate) {
+          navigator.vibrate([150, 50, 150]);
+        }
+        setTimeout(() => {
+          if (this.status === 'precount') {
+            this.runStopwatch();
+          }
+        }, 500);
+      }
+    };
+
+    doStep();
+  }
+
+  runStopwatch() {
     this.status = 'running';
     const now = performance.now();
     this.startTime = now - this.pausedElapsed;
 
     if (window.soundEngine && window.soundEngine.speakEvents) {
-      window.soundEngine.playDoubleBeep(true);
       if (this.pausedElapsed === 0) {
-        window.soundEngine.speak('Stopwatch started');
+        if (this.preCountdownSec === 0) {
+          window.soundEngine.playDoubleBeep(true);
+          window.soundEngine.speak('Stopwatch started');
+        }
       } else {
+        window.soundEngine.playDoubleBeep(true);
         window.soundEngine.speak('Resumed');
       }
     }
@@ -52,11 +111,17 @@ class SpeakingStopwatch {
   }
 
   pause() {
-    if (this.status !== 'running') return;
+    if (this.status !== 'running' && this.status !== 'precount') return;
 
     if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;
+    }
+
+    if (this.status === 'precount') {
+      this.status = 'idle';
+      this.notifyState();
+      return;
     }
 
     this.status = 'paused';
