@@ -9,7 +9,7 @@ class SpeakingTimer {
     this.remainingMs = 60000;
     this.status = 'idle'; // 'idle' | 'precount' | 'running' | 'paused' | 'completed'
 
-    this.preCountdownSec = parseInt(localStorage.getItem('timer_precount_sec') || '0', 10); // 0, 3, 5, 10
+    this.preCountdownSec = parseInt(localStorage.getItem('timer_precount_sec') || '3', 10); // 0, 3, 5, 10
     this.currentPreCount = 0;
 
     this.intervalSpeakingEnabled = localStorage.getItem('timer_interval_enabled') !== 'false';
